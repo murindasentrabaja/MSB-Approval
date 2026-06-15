@@ -114,13 +114,13 @@
   .stat-card:active { transform: translateY(-2px) scale(0.98); }
 
   /* Buttons */
-  button { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-  button:not(.tab-btn):hover { 
+  button, a.btn-link { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  button:not(.tab-btn):hover, a.btn-link:hover { 
       transform: translateY(-3px); 
       box-shadow: 0 10px 20px -5px rgba(0,0,0,0.15); 
       filter: brightness(1.05); 
   }
-  button:not(.tab-btn):active { 
+  button:not(.tab-btn):active, a.btn-link:active { 
       transform: translateY(1px) scale(0.95); 
       box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
       filter: brightness(0.95); 
@@ -337,6 +337,12 @@
           <option value="rejected">❌ Rejected</option>
           <option value="empty">⚪ Unfilled</option>
         </select>
+        
+        <a id="sppDetailBtn" href="https://murindasentrabaja.github.io/SPP-Form/" target="_blank" class="btn-link bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl hidden items-center gap-2 shrink-0 transition-all shadow-md">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          SPP Detail
+        </a>
+
         <button id="addRowBtn" class="btn-primary text-sm font-bold px-5 py-2.5 rounded-xl hidden items-center gap-2 shrink-0">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
           Add Record Row
@@ -827,7 +833,8 @@ function getFilteredRows(){
   const cfg = getActiveConfig();
   if(!cfg) return [];
 
-  let rows = data.rows;
+  // Gunakan spread operator agar data.rows original tidak termutasi
+  let rows = [...data.rows];
   
   const deptFilter = activeTab === "karyawan" ? cfg.dept : cfg.deptFilter;
   if(deptFilter){
@@ -837,21 +844,35 @@ function getFilteredRows(){
     }
   }
 
+  const approvalCandidates = cfg.approvalCol 
+      ? [cfg.approvalCol, cfg.approvalCol.split(' ')[0], "Status Approval", "Status"] 
+      : ["Status Approval", "Status"];
+  const idx = findHeaderIndex(data.headers, approvalCandidates);
+
   const sf = $("filterStatus").value;
-  if(sf && cfg.approvalCol){
-    const approvalCandidates = cfg.approvalCol 
-        ? [cfg.approvalCol, cfg.approvalCol.split(' ')[0], "Status Approval", "Status"] 
-        : ["Status Approval", "Status"];
-    const idx = findHeaderIndex(data.headers, approvalCandidates);
-    if(idx !== -1){
-      rows = rows.filter(r => classifyStatus(r[idx], cfg.approvalCol) === sf);
-    }
+  if(sf && cfg.approvalCol && idx !== -1){
+    rows = rows.filter(r => classifyStatus(r[idx], cfg.approvalCol) === sf);
   }
 
   const q = $("searchBox").value.trim().toLowerCase();
   if(q){
     rows = rows.filter(r => r.some(c => String(c ?? "").toLowerCase().includes(q)));
   }
+
+  // Reverse urutan agar item yang paling baru ditambahkan (terbawah di sheet) berada paling atas
+  rows.reverse();
+
+  // Memindahkan data yang sudah "Approved" ke baris bagian paling bawah.
+  if (idx !== -1) {
+    rows.sort((a, b) => {
+      const statA = classifyStatus(a[idx], cfg.approvalCol);
+      const statB = classifyStatus(b[idx], cfg.approvalCol);
+      if (statA === 'approved' && statB !== 'approved') return 1;
+      if (statA !== 'approved' && statB === 'approved') return -1;
+      return 0; // Maintain urutan untuk status yang sama
+    });
+  }
+
   return rows;
 }
 
@@ -895,6 +916,18 @@ function renderTable(){
   } else {
       addBtn.classList.add("hidden");
       addBtn.classList.remove("flex");
+  }
+
+  /* LOGIKA TOMBOL SPP DETAIL */
+  const sppDetailBtn = $("sppDetailBtn");
+  if (sppDetailBtn) {
+      if (activeTab === "spp") {
+          sppDetailBtn.classList.remove("hidden");
+          sppDetailBtn.classList.add("flex");
+      } else {
+          sppDetailBtn.classList.add("hidden");
+          sppDetailBtn.classList.remove("flex");
+      }
   }
 
   const rows = getFilteredRows();
