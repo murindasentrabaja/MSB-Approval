@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MSB CORE SYSTEMS - Digital Approval Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { font-family: 'Plus Jakarta Sans', sans-serif; cursor: default; }
+  a, button, select, input, [onclick] { cursor: pointer; }
+
+  body {
+    background: linear-gradient(-45deg, #e6fffa, #e0f2fe, #fff7ed, #faf5ff);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    z-index: -1;
+    animation: blobFloat 20s infinite alternate;
+  }
+  .blob-1 { width: 400px; height: 400px; background: #0ea5e9; top: -100px; right: -100px; animation-delay: 0s; }
+  .blob-2 { width: 350px; height: 350px; background: #22c55e; bottom: -50px; left: -100px; animation-delay: -5s; }
+  .blob-3 { width: 300px; height: 300px; background: #f97316; top: 40%; left: 30%; animation-delay: -10s; }
+
+  @keyframes blobFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(50px, 20px) scale(1.1); }
+    100% { transform: translate(-20px, 50px) scale(0.9); }
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+
+  .glass-dark {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { 
+    background: linear-gradient(to bottom, #0ea5e9, #22c55e);
+    border-radius: 6px; 
+  }
+  .scrollbar-thin::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 6px; }
+
+  .badge {
+    font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px;
+    display: inline-flex; align-items: center; gap: 4px;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.5);
+  }
+  .badge-approved { background: rgba(34, 197, 94, 0.15); color: #15803d; border: 1px solid rgba(34, 197, 94, 0.3); }
+  .badge-pending  { background: rgba(245, 158, 11, 0.15); color: #a16207; border: 1px solid rgba(245, 158, 11, 0.3); }
+  .badge-rejected { background: rgba(239, 68, 68, 0.15); color: #b91c1c; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .badge-empty    { background: rgba(148, 163, 184, 0.15); color: #475569; border: 1px solid rgba(148, 163, 184, 0.3); }
+
+  .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform:none; } }
+
+  /* Interactive Table Rows */
+  tbody tr { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+  tbody tr:hover { 
+    background-color: rgba(255, 255, 255, 0.95) !important; 
+    transform: scale(1.01) translateY(-3px);
+    box-shadow: 0 15px 30px -5px rgba(14, 165, 233, 0.15), 0 8px 15px -5px rgba(14, 165, 233, 0.1);
+    border-radius: 12px;
+    z-index: 10; position: relative;
+  }
+  tbody tr:active {
+    transform: scale(0.995) translateY(0);
+    box-shadow: 0 4px 10px rgba(14, 165, 233, 0.1);
+  }
+  tbody tr:hover td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+  tbody tr:hover td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+  td { transition: color 0.3s ease; }
+  tr:hover td { color: #0f172a; }
+
+  /* Dynamic Stat Cards */
+  .stat-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative; overflow: hidden; cursor: pointer;
+  }
+  .stat-card::after {
+    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg); transition: all 0.7s ease; z-index: 1; pointer-events: none;
+  }
+  .stat-card:hover::after { left: 200%; }
+  .stat-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1), 0 10px 15px -5px rgba(0, 0, 0, 0.05);
+    border-color: rgba(255, 255, 255, 1);
+    background: rgba(255, 255, 255, 0.85);
+  }
+  .stat-card:active { transform: translateY(-2px) scale(0.98); }
+
+  /* Buttons */
+  button { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  button:not(.tab-btn):hover { 
+      transform: translateY(-3px); 
+      box-shadow: 0 10px 20px -5px rgba(0,0,0,0.15); 
+      filter: brightness(1.05); 
+  }
+  button:not(.tab-btn):active { 
+      transform: translateY(1px) scale(0.95); 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+      filter: brightness(0.95); 
+  }
+
+  /* Primary Gradient Button */
+  .btn-primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 50%, #f97316 100%);
+    background-size: 200% auto;
+    color: white;
+  }
+  .btn-primary:hover {
+    background-position: right center;
+    box-shadow: 0 12px 25px -5px rgba(22, 163, 74, 0.3), 0 8px 10px -6px rgba(14, 165, 233, 0.2);
+    transform: translateY(-3px) scale(1.02);
+  }
+  .btn-primary:active { transform: translateY(1px) scale(0.98); }
+
+  /* Inputs & Selects */
+  input, select { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0; }
+  input:hover, select:hover { 
+      border-color: #94a3b8; 
+      background: rgba(255, 255, 255, 0.95); 
+      transform: translateY(-1px); 
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+  input:focus, select:focus {
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    background: #ffffff;
+  }
+
+  /* Navigation Tabs */
+  .tab-btn { position: relative; overflow: hidden; transition: all 0.3s ease; }
+  .tab-btn::before {
+    content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 3px;
+    background: #0284c7; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); transform: translateX(-50%);
+    border-top-left-radius: 3px; border-top-right-radius: 3px;
+  }
+  .tab-btn:hover::before { width: 80%; }
+  .tab-btn:active { transform: scale(0.95); }
+  .tab-btn.font-bold::before { width: 100%; }
+
+  /* Images / Thumbnails */
+  .group\/img img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  .group\/img:hover img { transform: scale(1.15) rotate(3deg); }
+  
+  /* Login Box Hover */
+  #loginScreen > div { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  #loginScreen > div:hover {
+    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.15), 0 20px 30px -10px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+  }
+
+  .spinner { 
+    border: 3px solid rgba(14, 165, 233, 0.1); 
+    border-top-color: #0ea5e9; 
+    background: linear-gradient(to right, #0ea5e9, #22c55e, #f97316);
+    -webkit-background-clip: text;
+    border-radius: 50%; width: 40px; height: 40px; 
+    animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; 
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .sticky-right {
+    position: sticky; right: 0; background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(5px);
+    box-shadow: -4px 0 8px rgba(0,0,0,0.02);
+  }
+  tr:hover .sticky-right { background: rgb(255, 255, 255); }
+</style>
+</head>
+<body class="min-h-screen text-slate-800">
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<script>
+  // Google Apps Script Web App Deployment URL
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyF63tiQjrhIBh0MWSqMv5iqNXjovBbWDKUAOjJZgjQLWnTnrariTX0TwLWbuf_K9Re/exec";
+  const AUTO_REFRESH_SECONDS = 60; 
+  const APPSHEET_APP_NAME = "MSBHumanResource-310640119";
+</script>
+
+<div id="loginScreen" class="min-h-screen flex flex-col items-center justify-center px-4 relative">
+  <div class="w-full max-w-md glass rounded-3xl p-10 fade-in shadow-2xl border border-white/50">
+    <div class="flex flex-col items-center text-center mb-8">
+      <img src="Murinda Logo.png" alt="Murinda Logo" class="w-40 h-auto mb-5">
+      <h1 class="text-2xl font-extrabold text-slate-950 tracking-tight">PT Murinda Sentra Baja</h1>
+      <p class="text-sm text-slate-600 mt-1">Digital Approval Portal</p>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5 ml-1">Login As</label>
+        <select id="loginRole" class="w-full rounded-xl px-4 py-3 text-sm bg-white/80">
+          <option value="">-- Select Your Role --</option>
+          <optgroup label="Management">
+            <option>Engineering Manager</option>
+            <option>Equipment & Tools Manager</option>
+            <option>HR&GA Manager</option>
+            <option>HSE Manager</option>
+            <option>Maintenance Manager</option>
+            <option>Production Manager</option>
+            <option>Quality Control Manager</option>
+            <option>General Manager</option>
+          </optgroup>
+          <optgroup label="Staff & Operational">
+            <option>Warehouse Supervisor/Coordinator</option>
+            <option>Warehouse Staff</option>
+            <option>HR Staff</option>
+            <option>Security</option>
+            <option>Procurement</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5 ml-1">Password</label>
+        <input id="loginPass" type="password" placeholder="•••••" class="w-full rounded-xl px-4 py-3 text-sm bg-white/80" />
+      </div>
+    </div>
+
+    <p id="loginError" class="text-xs text-red-600 mt-3 text-center bg-red-50 py-2 rounded-lg hidden border border-red-200"></p>
+
+    <button id="loginBtn" class="mt-6 w-full btn-primary font-bold py-3.5 rounded-xl">
+      Secure Login
+    </button>
+
+    <div class="mt-8 pt-6 border-t border-slate-200/50 text-center">
+      <p class="text-xs text-slate-500">MSB ERP System</p>
+      <div id="connStatus" class="inline-flex items-center gap-2 mt-1.5 text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
+        </span>
+        Checking Connection...
+      </div>
+    </div>
+  </div>
+  
+  <footer class="absolute bottom-4 text-center w-full text-[10px] text-slate-400">
+    Licensed to PT Murinda Sentra Baja<br>
+    Developed by Aspuro Amarulloh Khoiri
+  </footer>
+</div>
+
+<div id="dashboard" class="hidden fade-in relative pb-16">
+  <header class="glass sticky top-0 z-30 border-b border-white/50">
+    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <img src="Murinda Logo.png" alt="Murinda Logo" class="h-10 w-auto">
+        <div>
+          <h1 class="text-lg font-extrabold text-slate-950 tracking-tight">MSB Approval System</h1>
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span class="relative flex h-1.5 w-1.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+            </span>
+            <span id="lastSyncText">Live</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <div class="hidden sm:flex items-center gap-2 glass-dark text-white text-xs px-4 py-2 rounded-full font-medium shadow-inner">
+            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            <span id="roleBadge"></span>
+        </div>
+        <button id="refreshBtn" class="text-xs px-4 py-2 rounded-xl bg-white hover:bg-sky-50 text-sky-700 font-semibold transition border border-sky-100 shadow-sm flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 003.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            Refresh Data
+        </button>
+        <button id="logoutBtn" class="text-xs px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-semibold transition border border-red-100 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            Logout
+        </button>
+      </div>
+    </div>
+
+    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 flex gap-6 border-t border-slate-100">
+      <button data-tab="karyawan" class="tab-btn px-1 py-4 text-sm font-bold border-b-2 border-sky-600 text-sky-700 relative flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        Employee Database
+        <span id="badge-karyawan" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
+      </button>
+      <button data-tab="spp" class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-sky-600 hidden flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        SPP Documents
+        <span id="badge-spp" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
+      </button>
+      <button data-tab="lkp" class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-sky-600 hidden flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+        LKP Documents
+        <span id="badge-lkp" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-[90rem] mx-auto px-4 sm:px-6 py-6">
+    <div id="statsBar" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"></div>
+
+    <div class="glass rounded-2xl p-4 mb-4 flex flex-col md:flex-row gap-3 shadow-sm border border-white/50">
+      <div class="relative flex-1">
+        <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <input id="searchBox" type="text" placeholder="Search parameters inside the active system index..." class="w-full bg-white/70 border border-slate-200 rounded-xl pl-11 pr-4 py-2.5 text-sm" />
+      </div>
+      <div class="flex gap-3">
+        <select id="filterStatus" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white/70 focus:ring-sky-500">
+          <option value="">All Verification Status</option>
+          <option value="approved">✅ Approved</option>
+          <option value="pending">🟡 Pending</option>
+          <option value="rejected">❌ Rejected</option>
+          <option value="empty">⚪ Unfilled</option>
+        </select>
+        <button id="addRowBtn" class="btn-primary text-sm font-bold px-5 py-2.5 rounded-xl hidden items-center gap-2 shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          Add Record Row
+        </button>
+      </div>
+    </div>
+
+    <div id="loadingBox" class="glass rounded-2xl flex flex-col items-center justify-center py-20 my-10 hidden shadow-inner border border-white/50">
+      <div class="spinner mb-5"></div>
+      <p class="text-base font-semibold bg-gradient-to-r from-sky-600 to-green-600 bg-clip-text text-transparent animate-pulse">Synchronizing with Secure MSB Databases...</p>
+      <p class="text-xs text-slate-400 mt-1">Please wait a moment while we process the records.</p>
+    </div>
+
+    <div id="errorBox" class="hidden bg-red-50 border-l-4 border-red-500 text-red-900 rounded-xl p-5 text-sm font-medium shadow-md fade-in my-6">
+        <div class="flex items-center gap-3">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <span id="errorText"></span>
+        </div>
+    </div>
+
+    <div id="tableWrap" class="bg-white/60 backdrop-blur-sm border border-white rounded-2xl overflow-hidden shadow-xl transition-all duration-300">
+      <div class="overflow-x-auto scrollbar-thin">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-100/70 border-b border-slate-200">
+            <tr id="tableHead" class="text-slate-900"></tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-slate-100 bg-white/40"></tbody>
+        </table>
+      </div>
+      
+      <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16 text-center text-sm text-slate-500 bg-white/50">
+        <svg class="w-16 h-16 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+        <span class="font-medium text-slate-600 text-base">No Data Records Found</span>
+        <p class="mt-1">The requested structural metrics do not match the current filters.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="absolute bottom-0 w-full py-4 text-center text-[10px] text-slate-400 bg-white/30 backdrop-blur-xs border-t border-slate-100">
+    PT Murinda Sentra Baja | Developed by Aspuro Amarulloh khoiri <a href="#" class="text-sky-600 hover:underline">Privacy Policy</a>.
+  </footer>
+</div>
+
+<div id="rowModal" class="hidden fixed inset-0 bg-slate-950/40 z-50 flex items-center justify-center px-4 backdrop-blur-sm transition-all duration-300 opacity-0">
+  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col transform scale-95 transition-all duration-300 border border-slate-100 overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+      <div class="flex items-center gap-3">
+        <div id="modalIcon" class="w-10 h-10 rounded-xl btn-primary flex items-center justify-center text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 00-2 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        </div>
+        <h3 id="modalTitle" class="text-lg font-extrabold text-slate-950 tracking-tight">Data Parameters Form</h3>
+      </div>
+      <button id="closeModalBtn" class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all text-2xl leading-none">&times;</button>
+    </div>
+    <div id="modalBody" class="p-6 overflow-y-auto space-y-4 grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4 scrollbar-thin bg-white"></div>
+    <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+      <button id="cancelModalBtn" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white border border-slate-200 hover:bg-slate-100 shadow-sm">Cancel</button>
+      <button id="saveModalBtn" class="px-5 py-2.5 rounded-xl text-sm font-bold btn-primary flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        Save System Data
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="actionModal" class="hidden fixed inset-0 bg-slate-950/40 z-[60] flex items-center justify-center px-4 backdrop-blur-sm transition-all duration-300 opacity-0">
+  <div class="glass rounded-3xl shadow-2xl w-full max-w-md transform scale-95 transition-all duration-300 border border-white/60 p-7">
+    <div class="flex items-center gap-4 mb-5">
+        <div id="actionIconWin" class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner"></div>
+        <h3 id="actionTitle" class="text-xl font-extrabold text-slate-950 tracking-tight">Confirm Status Update</h3>
+    </div>
+    <div class="p-4 rounded-xl bg-white/50 border border-white/80 text-sm text-slate-700 space-y-2 mb-6 shadow-inner" id="actionBody"></div>
+    <div class="flex justify-end gap-3">
+      <button id="actionCancel" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white/80 border border-slate-200 hover:bg-white">Dismiss</button>
+      <button id="actionConfirm" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white shadow-md flex items-center gap-2"></button>
+    </div>
+  </div>
+</div>
+
+<div id="lightboxModal" class="hidden fixed inset-0 bg-slate-950/85 z-[100] flex flex-col items-center justify-center p-4 backdrop-blur-md transition-all duration-300 opacity-0" onclick="closeLightbox()">
+  <button class="absolute top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white text-3xl font-light" onclick="closeLightbox()">&times;</button>
+  <img id="lightboxImg" class="max-w-full max-h-[80vh] rounded-2xl shadow-2xl border border-white/10 transform scale-95 transition-all duration-300 object-contain">
+  <p id="lightboxTitle" class="text-white font-semibold mt-4 tracking-wide text-sm bg-slate-900/60 px-5 py-2 rounded-full backdrop-blur-xs border border-white/10 shadow-lg"></p>
+</div>
+
+<div id="toast" class="fixed bottom-6 right-6 z-[100] hidden transform translate-y-10 opacity-0 transition-all duration-300 ease-out flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl border border-white/20 text-white text-sm font-medium">
+    <div id="toastIcon"></div>
+    <div id="toastMsg"></div>
+</div>
+
+<script>
+/* ============================================================
+ * ROLE CONFIGURED ENHANCED UNIQUE PASSWORDS
+ * ============================================================ */
+const ROLE_PASSWORDS = {
+  "Engineering Manager":              "111111",
+  "Equipment & Tools Manager":        "111112",
+  "HR&GA Manager":                    "111113",
+  "HSE Manager":                      "111114",
+  "Maintenance Manager":              "111115",
+  "Production Manager":               "111116",
+  "Quality Control Manager":          "111117",
+  "General Manager":                  "111118",
+  "HR Staff":                         "111119",
+  "Security":                         "111120",
+  "Procurement":                      "111121",
+  "Warehouse Supervisor/Coordinator": "111122",
+  "Warehouse Staff":                  "111123"
+};
+
+const KARYAWAN_ROLE_CONFIG = {
+  "Engineering Manager":              { sheet:"Karyawan", approvalCol:"Manager", dept:"Engineering",         canSee:true },
+  "Equipment & Tools Manager":        { sheet:"Karyawan", approvalCol:"Manager", dept:"Equipment & Tools",   canSee:true },
+  "HR&GA Manager":                    { sheet:"Karyawan", approvalCol:"Manager", dept:"HR&GA",               canSee:true },
+  "HSE Manager":                      { sheet:"Karyawan", approvalCol:"Manager", dept:"HSE",                 canSee:true },
+  "Maintenance Manager":              { sheet:"Karyawan", approvalCol:"Manager", dept:"Maintenance",         canSee:true },
+  "Production Manager":               { sheet:"Karyawan", approvalCol:"Manager", dept:"Production",          canSee:true },
+  "Quality Control Manager":          { sheet:"Karyawan", approvalCol:"Manager", dept:"Quality Control",     canSee:true },
+  "HR Staff":                         { sheet:"Karyawan", approvalCol:"HRD",     dept:null,                  canSee:true },
+  "Security":                         { sheet:"Karyawan", approvalCol:"Security",dept:null,                  canSee:true },
+  "General Manager":                  { sheet:"Karyawan", approvalCol:null,      dept:null,                  canSee:false },
+  "Procurement":                      { sheet:"Karyawan", approvalCol:null,      dept:null,                  canSee:false },
+  "Warehouse Supervisor/Coordinator": { sheet:"Karyawan", approvalCol:null,      dept:null,                  canSee:false },
+  "Warehouse Staff":                  { sheet:"Karyawan", approvalCol:null,      dept:null,                  canSee:false }
+};
+
+const SPP_ROLE_CONFIG = {
+  "Warehouse Staff":                  { canSee:true,  approvalCol:"Dibuat Oleh",                          deptFilter:null },
+  "Warehouse Supervisor/Coordinator": { canSee:true,  approvalCol:"Diperiksa Supervisor/Coordinator",     deptFilter:null },
+  "General Manager":                  { canSee:true,  approvalCol:"Disetujui Oleh General Manager",       deptFilter:null },
+  "Production Manager":               { canSee:true,  approvalCol:"Diketahui Oleh Manager",               deptFilter:"Production" },
+  "Procurement":                      { canSee:true,  approvalCol:"Diperiksa Supervisor/Coordinator",     deptFilter:null }
+};
+
+const LKP_ROLE_CONFIG = {
+  "Quality Control Manager":          { canSee: true, approvalCol: "Diketahui Oleh", deptFilter: null },
+  "Production Manager":               { canSee: true, approvalCol: "Disetujui Oleh", deptFilter: null },
+  "General Manager":                  { canSee: true, approvalCol: null,             deptFilter: null }
+};
+
+/* ============================================================
+ * STATE REPOSITORIES
+ * ============================================================ */
+let currentRole = null;
+let activeTab   = "karyawan"; 
+let dataCache   = { karyawan:{headers:[], rows:[]}, spp:{headers:[], rows:[]}, lkp:{headers:[], rows:[]} };
+let refreshTimer = null;
+let isMobile = window.innerWidth < 768;
+
+/* ============================================================
+ * UTILITIES FUNCTIONS
+ * ============================================================ */
+function $(id){ return document.getElementById(id); }
+
+function showToast(msg, type='success'){
+  const t = $("toast");
+  const icon = $("toastIcon");
+  $("toastMsg").textContent = msg;
+  
+  t.className = "fixed bottom-6 right-6 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl border border-white/20 text-white text-sm font-semibold transition-all duration-300 backdrop-blur-sm";
+  
+  if(type === 'success'){
+    t.classList.add("bg-emerald-600/90");
+    icon.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+  } else if (type === 'error') {
+    t.classList.add("bg-red-600/90");
+    icon.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+  } else {
+    t.classList.add("bg-slate-800/90");
+    icon.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+  }
+
+  t.classList.remove("hidden");
+  setTimeout(() => { t.classList.remove("translate-y-10", "opacity-0"); }, 10);
+
+  setTimeout(()=>{
+    t.classList.add("translate-y-10", "opacity-0");
+    setTimeout(() => t.classList.add("hidden"), 300);
+  }, 4000);
+}
+
+function toggleModal(id, show) {
+    const m = $(id);
+    const body = m.querySelector('div') || m.querySelector('img');
+    if (show) {
+        m.classList.remove('hidden');
+        setTimeout(() => {
+            m.classList.remove('opacity-0');
+            if(body) body.classList.remove('scale-95');
+        }, 10);
+    } else {
+        m.classList.add('opacity-0');
+        if(body) body.classList.add('scale-95');
+        setTimeout(() => m.classList.add('hidden'), 300);
+    }
+}
+
+function escapeHtml(s){
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+}
+
+function classifyStatus(value, approvalCol){
+  const v = String(value ?? "").trim().toLowerCase();
+  if(!v) return "empty";
+  if(v === "pending") return "pending";
+  if(["ditolak","reject","rejected","tolak"].includes(v)) return "rejected";
+  return "approved";
+}
+
+function statusBadge(value, approvalCol){
+  const s = classifyStatus(value, approvalCol);
+  const icon = {
+      approved: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>',
+      pending: '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>',
+      rejected: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>',
+      empty: '<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>'
+  }[s];
+  const label = {approved:(value||"Approved"), pending:"Pending", rejected:"Rejected", empty:"Unfilled"}[s];
+  const cls   = {approved:"badge-approved", pending:"badge-pending", rejected:"badge-rejected", empty:"badge-empty"}[s];
+  return `<span class="badge ${cls}">${icon}${escapeHtml(label)}</span>`;
+}
+
+function viewImage(url, title) {
+  $("lightboxImg").src = url;
+  $("lightboxTitle").textContent = title;
+  toggleModal("lightboxModal", true);
+}
+
+function closeLightbox() {
+  toggleModal("lightboxModal", false);
+}
+
+/* ============================================================
+ * ASYNC NETWORK INTEGRITY
+ * ============================================================ */
+async function apiGet(params){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_URL")){
+    throw new Error("Apps Script URL structure is unconfigured.");
+  }
+  const url = APPS_SCRIPT_URL + "?" + new URLSearchParams(params).toString();
+  const res = await fetch(url, { method:"GET" });
+  if(!res.ok) throw new Error("HTTP Status Flag " + res.status);
+  const j = await res.json();
+  if(j.error) throw new Error(j.error);
+  return j;
+}
+async function apiPost(body){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_URL")){
+    throw new Error("Apps Script URL structure is unconfigured.");
+  }
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method:"POST",
+    headers:{ "Content-Type":"text/plain;charset=utf-8" },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok) throw new Error("HTTP Status Flag " + res.status);
+  const j = await res.json();
+  if(j.error) throw new Error(j.error);
+  return j;
+}
+
+/* ============================================================
+ * INTERACTIVE LOGIC PIPELINES
+ * ============================================================ */
+async function checkConnection(){
+  try {
+    await apiGet({ action:"ping" });
+    $("connStatus").innerHTML = '<span class="relative flex h-2 w-2"><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span><span class="text-emerald-700">Connected</span>';
+    $("connStatus").className = "inline-flex items-center gap-2 mt-1.5 text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 shadow-inner";
+  } catch(e){
+    $("connStatus").innerHTML = '<span class="relative flex h-2 w-2"><span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span></span><span class="text-red-700">Connection Failed</span>';
+    $("connStatus").className = "inline-flex items-center gap-2 mt-1.5 text-xs font-bold px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-700 shadow-inner";
+    console.error(e);
+  }
+}
+
+$("loginBtn").onclick = () => {
+  const role = $("loginRole").value;
+  const pass = $("loginPass").value;
+  const err  = $("loginError");
+  err.classList.add("hidden");
+  
+  if(!role){ 
+      err.textContent = "Please select your system role."; 
+      err.classList.remove("hidden"); 
+      $("loginRole").focus();
+      return; 
+  }
+  
+  if(pass !== ROLE_PASSWORDS[role]){ 
+      err.textContent = "Incorrect password parameters. Access denied."; 
+      err.classList.remove("hidden"); 
+      $("loginPass").value = "";
+      $("loginPass").focus();
+      return; 
+  }
+  
+  $("loginBtn").innerText = "Authenticating Gateway...";
+  $("loginBtn").disabled = true;
+  
+  setTimeout(() => { 
+      currentRole = role;
+      enterDashboard();
+      $("loginBtn").innerText = "Secure Login";
+      $("loginBtn").disabled = false;
+  }, 800);
+};
+$("loginPass").addEventListener("keypress", e => { if(e.key==="Enter") $("loginBtn").click(); });
+
+function enterDashboard(){
+  toggleModal("loginScreen", false);
+  setTimeout(() => {
+      $("dashboard").classList.remove("hidden");
+      document.body.classList.remove('justify-center'); 
+  }, 300);
+  
+  $("roleBadge").textContent = currentRole;
+
+  const sppBtn = document.querySelector('[data-tab="spp"]');
+  const lkpBtn = document.querySelector('[data-tab="lkp"]');
+
+  if(SPP_ROLE_CONFIG[currentRole]?.canSee) sppBtn.classList.remove("hidden");
+  else sppBtn.classList.add("hidden");
+
+  if(LKP_ROLE_CONFIG[currentRole]?.canSee) lkpBtn.classList.remove("hidden");
+  else lkpBtn.classList.add("hidden");
+
+  const karyawanCfg = KARYAWAN_ROLE_CONFIG[currentRole];
+  if(!karyawanCfg?.canSee){
+    document.querySelector('[data-tab="karyawan"]').classList.add("hidden");
+    if(SPP_ROLE_CONFIG[currentRole]?.canSee) {
+        switchTab("spp");
+    } else if (LKP_ROLE_CONFIG[currentRole]?.canSee) {
+        switchTab("lkp");
+    }
+  } else {
+    switchTab("karyawan");
+  }
+
+  loadData(true);
+  if(refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(() => loadData(false), AUTO_REFRESH_SECONDS*1000);
+}
+
+$("logoutBtn").onclick = () => {
+  currentRole = null;
+  if(refreshTimer) clearInterval(refreshTimer);
+  
+  $("dashboard").classList.add("hidden");
+  $("loginScreen").classList.remove("hidden");
+  $("loginPass").value = "";
+  $("loginRole").value = "";
+  document.querySelector('[data-tab="karyawan"]').classList.remove("hidden");
+  showToast("You have been securely logged out of the portal system.");
+};
+
+$("refreshBtn").onclick = () => loadData(true);
+document.querySelectorAll(".tab-btn").forEach(b => {
+  b.onclick = () => switchTab(b.dataset.tab);
+});
+
+function switchTab(tab){
+  activeTab = tab;
+  document.querySelectorAll(".tab-btn").forEach(b => {
+    if(b.dataset.tab === tab){
+      b.classList.add("border-sky-600","text-sky-700");
+      b.classList.remove("border-transparent","text-slate-500","font-medium");
+      b.classList.add("font-bold");
+    } else {
+      b.classList.remove("border-sky-600","text-sky-700","font-bold");
+      b.classList.add("border-transparent","text-slate-500","font-medium");
+    }
+  });
+  $("searchBox").value = "";
+  $("filterStatus").value = "";
+  renderTable();
+}
+
+async function loadData(showLoader=false){
+  if(showLoader){ 
+      $("loadingBox").classList.remove("hidden"); 
+      $("tableWrap").classList.add("hidden"); 
+      $("statsBar").classList.add("opacity-50");
+  }
+  $("errorBox").classList.add("hidden");
+  
+  const syncIcon = '<svg class="w-3 h-3 animate-spin text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 003.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>';
+  $("lastSyncText").innerHTML = syncIcon + " Synchronizing MSB ERP System...";
+
+  try {
+    const sheetsToLoad = ["Karyawan"];
+    if(SPP_ROLE_CONFIG[currentRole]?.canSee) sheetsToLoad.push("SPP");
+    if(LKP_ROLE_CONFIG[currentRole]?.canSee) sheetsToLoad.push("LKP"); 
+
+    for(const s of sheetsToLoad){
+      const r = await apiGet({ action:"getData", sheet:s });
+      dataCache[s.toLowerCase()] = { headers:r.headers || [], rows:r.rows || [] };
+    }
+    
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    $("lastSyncText").innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Updated: ' + timeStr;
+    
+    renderTable();
+    updateTabBadges(); 
+  } catch(e){
+    $("errorText").textContent = "Synchronization Interrupted: " + e.message;
+    $("errorBox").classList.remove("hidden");
+    $("lastSyncText").innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Sync Failed';
+    showToast("Failed to pull updated entries.", "error");
+  } finally {
+    $("loadingBox").classList.add("hidden");
+    $("tableWrap").classList.remove("hidden");
+    $("statsBar").classList.remove("opacity-50");
+  }
+}
+
+/* ============================================================
+ * BADGE NOTIFICATION LOGIC
+ * ============================================================ */
+function getPendingCount(tabName) {
+  const data = dataCache[tabName];
+  if(!data || !data.headers.length) return 0;
+  
+  let cfg;
+  if(tabName === "karyawan") cfg = KARYAWAN_ROLE_CONFIG[currentRole];
+  else if(tabName === "spp") cfg = SPP_ROLE_CONFIG[currentRole];
+  else if(tabName === "lkp") cfg = LKP_ROLE_CONFIG[currentRole];
+  
+  if(!cfg || !cfg.canSee) return 0;
+  
+  let rows = data.rows;
+  const deptFilter = tabName === "karyawan" ? cfg.dept : cfg.deptFilter;
+  if(deptFilter){
+    const deptColIdx = findHeaderIndex(data.headers, ["Departemen","Department","Dept","Departement"]);
+    if(deptColIdx !== -1){
+      rows = rows.filter(r => String(r[deptColIdx] ?? "").trim().toLowerCase() === deptFilter.toLowerCase());
+    }
+  }
+  
+  if(cfg.approvalCol) {
+    const approvalCandidates = cfg.approvalCol 
+        ? [cfg.approvalCol, cfg.approvalCol.split(' ')[0], "Status Approval", "Status"] 
+        : ["Status Approval", "Status"];
+        
+    const approvalIdx = findHeaderIndex(data.headers, approvalCandidates);
+    if(approvalIdx !== -1){
+      return rows.filter(r => {
+        const stat = classifyStatus(r[approvalIdx], cfg.approvalCol);
+        return stat === 'pending' || stat === 'empty';
+      }).length;
+    }
+  }
+  return 0;
+}
+
+function updateTabBadges() {
+  const tabs = ["karyawan", "spp", "lkp"];
+  tabs.forEach(tab => {
+    const count = getPendingCount(tab);
+    const badge = $("badge-" + tab);
+    if(badge) {
+      if(count > 0) {
+        badge.textContent = count;
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
+    }
+  });
+}
+
+function getActiveConfig(){
+  if(activeTab === "karyawan"){
+    const c = KARYAWAN_ROLE_CONFIG[currentRole];
+    return c?.canSee ? c : null;
+  } else if(activeTab === "spp") {
+    return SPP_ROLE_CONFIG[currentRole] || null;
+  } else if (activeTab === "lkp") {
+    return LKP_ROLE_CONFIG[currentRole] || null;
+  }
+  return null;
+}
+
+function getFilteredRows(){
+  const data = dataCache[activeTab];
+  if(!data) return [];
+  const cfg = getActiveConfig();
+  if(!cfg) return [];
+
+  let rows = data.rows;
+  
+  const deptFilter = activeTab === "karyawan" ? cfg.dept : cfg.deptFilter;
+  if(deptFilter){
+    const deptColIdx = findHeaderIndex(data.headers, ["Departemen","Department","Dept","Departement"]);
+    if(deptColIdx !== -1){
+      rows = rows.filter(r => String(r[deptColIdx] ?? "").trim().toLowerCase() === deptFilter.toLowerCase());
+    }
+  }
+
+  const sf = $("filterStatus").value;
+  if(sf && cfg.approvalCol){
+    const approvalCandidates = cfg.approvalCol 
+        ? [cfg.approvalCol, cfg.approvalCol.split(' ')[0], "Status Approval", "Status"] 
+        : ["Status Approval", "Status"];
+    const idx = findHeaderIndex(data.headers, approvalCandidates);
+    if(idx !== -1){
+      rows = rows.filter(r => classifyStatus(r[idx], cfg.approvalCol) === sf);
+    }
+  }
+
+  const q = $("searchBox").value.trim().toLowerCase();
+  if(q){
+    rows = rows.filter(r => r.some(c => String(c ?? "").toLowerCase().includes(q)));
+  }
+  return rows;
+}
+
+function findHeaderIndex(headers, candidates){
+  for(const cand of candidates){
+    if(!cand) continue;
+    const i = headers.findIndex(h => String(h).trim().toLowerCase() === cand.toLowerCase());
+    if(i !== -1) return i;
+  }
+  return -1;
+}
+
+function renderTable(){
+  const data = dataCache[activeTab];
+  if(!data || !data.headers.length){
+    $("tableHead").innerHTML = ""; $("tableBody").innerHTML = "";
+    $("emptyState").classList.remove("hidden");
+    $("emptyState").querySelector('p').textContent = "Active sheet headers map is currently empty.";
+    renderStats([]);
+    return;
+  }
+  const cfg = getActiveConfig();
+  if(!cfg){
+    $("tableHead").innerHTML = ""; $("tableBody").innerHTML = "";
+    $("emptyState").classList.remove("hidden");
+    $("emptyState").querySelector('p').textContent = "Access authorization layout denied for this sheet.";
+    renderStats([]);
+    return;
+  }
+
+  /* LOGIKA AKSES EDIT EKSKLUSIF */
+  let showEdit = false; 
+  if (activeTab === "karyawan" && currentRole === "HR Staff") showEdit = true;
+  if (activeTab === "spp" && currentRole === "Procurement") showEdit = true;
+  if (activeTab === "lkp" && currentRole === "Production Manager") showEdit = true; 
+
+  const addBtn = $("addRowBtn");
+  if (showEdit) {
+      addBtn.classList.remove("hidden");
+      addBtn.classList.add("flex");
+  } else {
+      addBtn.classList.add("hidden");
+      addBtn.classList.remove("flex");
+  }
+
+  const rows = getFilteredRows();
+  const headers = data.headers;
+
+  let theadHtml = headers.map(h => `<th class="px-4 py-4 text-left font-bold text-slate-950 whitespace-nowrap tracking-tight">${escapeHtml(h)}</th>`).join("");
+  theadHtml += `<th class="px-4 py-4 text-center font-bold text-slate-950 whitespace-nowrap tracking-tight sticky-right z-10Header">Action Gate</th>`;
+  $("tableHead").innerHTML = theadHtml;
+
+  const approvalCandidates = cfg.approvalCol 
+        ? [cfg.approvalCol, cfg.approvalCol.split(' ')[0], "Status Approval", "Status"] 
+        : ["Status Approval", "Status"];
+  const approvalIdx = findHeaderIndex(headers, approvalCandidates);
+
+  if(rows.length === 0){
+    $("tableBody").innerHTML = "";
+    $("emptyState").classList.remove("hidden");
+  } else {
+    $("emptyState").classList.add("hidden");
+    $("tableBody").innerHTML = rows.map((row, index) => {
+      const realIdx = data.rows.indexOf(row); 
+      
+      const cells = headers.map((h, i) => {
+        const isApprovalCol = (i === approvalIdx);
+        const val = row[i];
+        const valStr = String(val ?? "").trim();
+        const isIdCol = i === 0 || h.toLowerCase().includes('nik') || h.toLowerCase().includes('id');
+        
+        const isImageField = h.toLowerCase().includes('foto') || h.toLowerCase().includes('gambar') || h.toLowerCase().includes('image') || h.toLowerCase().includes('lampiran') || valStr.toLowerCase().endsWith('.jpg') || valStr.toLowerCase().endsWith('.jpeg') || valStr.toLowerCase().endsWith('.png');
+
+        if(isApprovalCol){
+          return `<td class="px-4 py-3 whitespace-nowrap">${statusBadge(val, cfg.approvalCol)}</td>`;
+        }
+        
+        if(isImageField && valStr){
+          const currentSheetName = activeTab === "karyawan" ? "Karyawan" : activeTab === "spp" ? "SPP" : "LKP";
+          
+          let appNameForImage = APPSHEET_APP_NAME;
+          if (activeTab === "lkp") {
+              appNameForImage = "QCPassMurindaSentraBaja-40996000";
+          }
+          
+          const appSheetImgUrl = `https://www.appsheet.com/template/gettablefileurl?appName=${encodeURIComponent(appNameForImage)}&tableName=${encodeURIComponent(currentSheetName)}&fileName=${encodeURIComponent(valStr)}`;
+          
+          return `<td class="px-4 py-3 whitespace-nowrap">
+            <div class="relative group/img w-12 h-12 rounded-xl overflow-hidden border border-slate-200/80 shadow-xs cursor-pointer hover:scale-105 transition-all duration-200 bg-slate-50 flex items-center justify-center" onclick="viewImage('${appSheetImgUrl}', '${escapeHtml(h)}: ${escapeHtml(valStr)}')">
+              <img src="${appSheetImgUrl}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/16/16410.png'; this.className='w-5 h-5 opacity-30';">
+              <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+              </div>
+            </div>
+          </td>`;
+        }
+
+        const cellClass = isIdCol ? "font-semibold text-slate-950" : "text-slate-700";
+        return `<td class="px-4 py-3 whitespace-nowrap ${cellClass}">${escapeHtml(val)}</td>`;
+      }).join("");
+
+      let actionBtns = "";
+      if(approvalIdx !== -1){
+          const targetColName = headers[approvalIdx];
+          const s = classifyStatus(row[approvalIdx], targetColName);
+          if(s !== 'approved') actionBtns += `<button onclick="openAction(${realIdx},'approve')" class="text-[11px] px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white font-bold transition flex items-center gap-1 border border-emerald-200">Approve</button>`;
+          if(s !== 'pending')  actionBtns += `<button onclick="openAction(${realIdx},'pending')" class="text-[11px] px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-500 text-amber-800 hover:text-white font-bold transition flex items-center gap-1 border border-amber-200">Pending</button>`;
+          if(s !== 'rejected') actionBtns += `<button onclick="openAction(${realIdx},'reject')"  class="text-[11px] px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-600 text-red-700 hover:text-white font-bold transition flex items-center gap-1 border border-red-200">Reject</button>`;
+      }
+
+      let editBtnHtml = "";
+      if (showEdit) {
+          editBtnHtml = `<button onclick="openEdit(${realIdx})" class="text-[11px] px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-800 text-slate-700 hover:text-white font-bold transition flex items-center gap-1 border border-slate-200 hover:border-slate-800">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+              Edit
+          </button>`;
+      }
+
+      const rowAnimDelay = isMobile ? 0 : (index % 10) * 30;
+
+      return `<tr class="fade-in group" style="animation-delay: ${rowAnimDelay}ms">${cells}
+        <td class="px-4 py-3 whitespace-nowrap sticky-right z-10Row bg-white/95 backdrop-blur-xs">
+          <div class="flex gap-1.5 justify-center">
+            ${actionBtns}
+            ${editBtnHtml}
+          </div>
+        </td></tr>`;
+    }).join("");
+  }
+
+  renderStats(rows, approvalIdx, approvalIdx !== -1 ? headers[approvalIdx] : null);
+}
+
+/* ============================================================
+ * LUXURIOUS NUMERICAL STATS BLOCK
+ * ============================================================ */
+function renderStats(rows, approvalIdx, approvalCol){
+  const container = $("statsBar");
+  
+  if(approvalIdx === undefined || approvalIdx === -1){
+    container.innerHTML = `
+      <div class="stat-card glass rounded-2xl p-5 border border-white/50 shadow-sm col-span-2 lg:col-span-1">
+        <div class="text-xs font-semibold text-slate-500 tracking-wider uppercase">Filtered Records Totals</div>
+        <div class="text-3xl font-extrabold text-slate-950 mt-1">${rows.length}</div>
+        <p class="text-xs text-slate-400 mt-1">Rows Active</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const counts = { approved:0, pending:0, rejected:0, empty:0 };
+  rows.forEach(r => counts[classifyStatus(r[approvalIdx], approvalCol)]++);
+  
+  const statsDef = [
+      { label: "Approved Records", value: counts.approved, color: "emerald", icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' },
+      { label: "Pending Items",   value: counts.pending,  color: "amber",   icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' },
+      { label: "Rejected Items",  value: counts.rejected, color: "red",     icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' },
+      { label: "Unfilled Parameters",value: counts.empty,   color: "slate",   icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>' }
+  ];
+
+  container.innerHTML = statsDef.map(s => `
+    <div class="stat-card glass rounded-2xl p-5 border border-white/50 shadow-sm flex items-start gap-4">
+      <div class="w-10 h-10 rounded-xl bg-${s.color}-100 text-${s.color}-600 flex items-center justify-center shrink-0 mt-1 border border-${s.color}-200">${s.icon}</div>
+      <div>
+        <div class="text-xs font-semibold text-slate-500 tracking-wider uppercase">${s.label}</div>
+        <div class="text-3xl font-extrabold text-${s.color}-700 mt-1">${s.value}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+$("searchBox").addEventListener("input", renderTable);
+$("filterStatus").addEventListener("change", renderTable);
+
+/* ============================================================
+ * GLASSMORPHISM VERIFICATION ACTION MODAL
+ * ============================================================ */
+let pendingAction = null;
+function openAction(rowIdx, type){
+  const data = dataCache[activeTab];
+  const headers = data.headers;
+  const cfg = getActiveConfig();
+  
+  const approvalCandidates = cfg.approvalCol 
+        ? [cfg.approvalCol, cfg.approvalCol.split(' ')[0], "Status Approval", "Status"] 
+        : ["Status Approval", "Status"];
+  const approvalIdx = findHeaderIndex(headers, approvalCandidates);
+  
+  if(approvalIdx === -1){ showToast("Approval target column schema missing.", "error"); return; }
+  const realColName = headers[approvalIdx];
+
+  let newValue, label, btnColor, iconHtml, winBg, iconColor;
+  
+  const iconApprove = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+  const iconPending = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+  const iconReject  = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+
+  if(type === "approve"){
+    newValue = currentRole; // Mengisi nama jabatan
+    label = "Approve"; btnColor = "bg-emerald-600 hover:bg-emerald-700"; 
+    iconHtml = iconApprove; winBg = "bg-emerald-100"; iconColor = "text-emerald-700";
+  } else if(type === "pending"){
+    newValue = "Pending"; label = "Flag Pending"; btnColor = "bg-amber-500 hover:bg-amber-600";
+    iconHtml = iconPending; winBg = "bg-amber-100"; iconColor = "text-amber-800";
+  } else {
+    newValue = "Ditolak"; label = "Reject"; btnColor = "bg-red-600 hover:bg-red-700";
+    iconHtml = iconReject; winBg = "bg-red-100"; iconColor = "text-red-700";
+  }
+
+  const sheetParamName = activeTab === "spp" ? "SPP" : activeTab === "lkp" ? "LKP" : "Karyawan";
+  pendingAction = { rowIdx, newValue, sheet: sheetParamName, column: realColName };
+  
+  $("actionTitle").textContent = "Confirm " + label;
+  $("actionIconWin").className = `w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner ${winBg} ${iconColor} border border-white/50`;
+  $("actionIconWin").innerHTML = iconHtml;
+  
+  $("actionBody").innerHTML = `
+    <div class="flex justify-between"><span>Active Component:</span><span class="font-bold text-slate-950">${pendingAction.sheet}</span></div>
+    <div class="flex justify-between"><span>Column Key:</span><span class="font-bold text-slate-950">${escapeHtml(realColName)}</span></div>
+    <div class="flex justify-between pt-2 border-t border-slate-200 mt-2"><span>Target Value:</span><span class="font-bold ${iconColor} text-base">${escapeHtml(newValue)}</span></div>
+  `;
+  
+  const confirmBtn = $("actionConfirm");
+  confirmBtn.className = "px-5 py-2.5 rounded-xl text-sm font-bold text-white shadow-md flex items-center gap-2 " + btnColor;
+  confirmBtn.innerHTML = iconHtml.replace('w-6 h-6','w-4 h-4') + " Confirm " + label;
+  
+  toggleModal("actionModal", true);
+}
+
+$("actionCancel").onclick = () => toggleModal("actionModal", false);
+
+$("actionConfirm").onclick = async () => {
+  if(!pendingAction) return;
+  $("actionConfirm").disabled = true;
+  $("actionConfirm").innerText = "Processing Transaction...";
+  
+  try {
+    await apiPost({
+      action: "updateCell",
+      sheet:  pendingAction.sheet,
+      rowIndex: pendingAction.rowIdx,
+      column: pendingAction.column,
+      value: pendingAction.newValue,
+      actor: currentRole
+    });
+    showToast(`Successfully transformed row structural parameter to ${pendingAction.newValue}.`);
+    toggleModal("actionModal", false);
+    await loadData(false); 
+  } catch(e){
+    showToast("Transaction failed: " + e.message, "error");
+  } finally {
+    $("actionConfirm").disabled = false;
+    pendingAction = null;
+  }
+};
+
+/* ============================================================
+ * PARAMETRIC ENTRY EDIT / ADD ROW MANAGEMENT
+ * ============================================================ */
+let editingRowIdx = null;
+
+function openEdit(rowIdx){
+  editingRowIdx = rowIdx;
+  const data = dataCache[activeTab];
+  const row  = data.rows[rowIdx] || [];
+  
+  $("modalTitle").textContent = "Modify Transaction Node #" + (rowIdx + 1);
+  $("modalIcon").className = "w-10 h-10 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center border border-sky-200";
+  $("modalIcon").innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 00-2 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>';
+  $("saveModalBtn").innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Commit Updates';
+
+  generateModalFields(data.headers, row);
+  toggleModal("rowModal", true);
+}
+
+$("addRowBtn").onclick = () => {
+  editingRowIdx = null;
+  const data = dataCache[activeTab];
+  if(!data || !data.headers.length){ showToast("Database arrays are not yet fully mapped.", "error"); return; }
+  
+  $("modalTitle").textContent = "Insert New Entry Row Matrix";
+  $("modalIcon").className = "w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center border border-green-200";
+  $("modalIcon").innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>';
+  $("saveModalBtn").innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Append Database Node';
+
+  generateModalFields(data.headers, []);
+  toggleModal("rowModal", true);
+};
+
+function generateModalFields(headers, row) {
+    $("modalBody").innerHTML = headers.map((h,i) => {
+        if(editingRowIdx === null && (h.toLowerCase().includes('id') || h.toLowerCase().includes('timestamp'))){
+            return `<input type="hidden" data-col="${i}" value="" />`;
+        }
+        
+        let isDisable = editingRowIdx !== null && i === 0 ? 'disabled bg-slate-100 text-slate-500' : '';
+        const colLower = h.toLowerCase().trim();
+        const val = escapeHtml(row[i] ?? "");
+        
+        if (activeTab === "lkp") {
+            const pmCols = [
+                "correction mutu (perbaikan segera)", "target selesai", "estimasi biaya perbaikan", 
+                "kategori", "analisa penyebab", "tindakan perbaikan", "target penyelesaian", "catatan"
+            ];
+            
+            const isPmCol = pmCols.includes(colLower);
+            
+            if (currentRole === "Production Manager") {
+                if (!isPmCol) {
+                    isDisable = 'disabled bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed';
+                }
+            } else if (currentRole === "Quality Control Manager") {
+                isDisable = 'disabled bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed';
+            }
+
+            if (colLower === "correction mutu (perbaikan segera)") {
+                const opts = ["", "Reject", "Rework", "Downgrade", "Repair", "use as is"];
+                const optHtml = opts.map(o => `<option value="${o}" ${o.toLowerCase()===val.toLowerCase()?'selected':''}>${o || '-- Pilih Tindakan --'}</option>`).join('');
+                const selectCls = `w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-sky-500 transition-all ${isDisable ? 'bg-slate-100' : 'bg-white/70'}`;
+                return `<div class="${editingRowIdx === null && h.toLowerCase().includes('id') ? 'hidden' : ''}">
+                    <label class="block text-xs font-bold text-slate-600 mb-1 ml-1 tracking-wide uppercase">${escapeHtml(h)}</label>
+                    <select data-col="${i}" ${isDisable} class="${selectCls}">${optHtml}</select>
+                </div>`;
+            }
+
+            if (colLower === "kategori") {
+                const opts = ["", "Metode", "Mesin", "Material", "SDM", "Manajemen"];
+                const optHtml = opts.map(o => `<option value="${o}" ${o.toLowerCase()===val.toLowerCase()?'selected':''}>${o || '-- Pilih Kategori --'}</option>`).join('');
+                const selectCls = `w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-sky-500 transition-all ${isDisable ? 'bg-slate-100' : 'bg-white/70'}`;
+                return `<div class="${editingRowIdx === null && h.toLowerCase().includes('id') ? 'hidden' : ''}">
+                    <label class="block text-xs font-bold text-slate-600 mb-1 ml-1 tracking-wide uppercase">${escapeHtml(h)}</label>
+                    <select data-col="${i}" ${isDisable} class="${selectCls}">${optHtml}</select>
+                </div>`;
+            }
+        }
+
+        const inputType = colLower.includes('tgl') || colLower.includes('tanggal') || colLower.includes('date') ? 'date' : 'text';
+
+        return `
+            <div class="${editingRowIdx === null && (h.toLowerCase().includes('id') || h.toLowerCase().includes('timestamp')) ? 'hidden' : ''}">
+            <label class="block text-xs font-bold text-slate-600 mb-1 ml-1 tracking-wide uppercase">${escapeHtml(h)}</label>
+            <input type="${inputType}" data-col="${i}" value="${val}" ${isDisable} class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-sky-500 transition-all ${isDisable ? 'bg-slate-100' : 'bg-white/70'}" placeholder="Type key parameters for ${escapeHtml(h)}..." />
+            </div>
+        `;
+    }).join("");
+}
+
+$("closeModalBtn").onclick = $("cancelModalBtn").onclick = () => toggleModal("rowModal", false);
+
+$("saveModalBtn").onclick = async () => {
+  const inputs = document.querySelectorAll("#modalBody input[data-col], #modalBody select[data-col]");
+  const values = Array.from(inputs).map(i => i.value);
+  
+  if(values.length > 0 && String(values[0]).trim() === "" && editingRowIdx === null){
+      showToast("Primary metric parameters (column 1) cannot be left blank.", "error");
+      inputs[0].focus();
+      return;
+  }
+
+  $("saveModalBtn").disabled = true;
+  $("saveModalBtn").innerText = "Processing Transaction Registry...";
+  
+  try {
+    const sheetName = activeTab === "spp" ? "SPP" : activeTab === "lkp" ? "LKP" : "Karyawan";
+    if(editingRowIdx === null){
+      await apiPost({ action:"addRow", sheet: sheetName, values, actor: currentRole });
+      showToast("Record successfully written to remote core master data rows.");
+    } else {
+      await apiPost({ action:"updateRow", sheet: sheetName, rowIndex: editingRowIdx, values, actor: currentRole });
+      showToast("Remote master records updated successfully.");
+    }
+    toggleModal("rowModal", false);
+    await loadData(false); 
+  } catch(e){
+    showToast("Commit failed: " + e.message, "error");
+  } finally {
+    $("saveModalBtn").disabled = false;
+  }
+};
+
+/* ============================================================
+ * GATEWAY CONTEXT INITIALIZATION
+ * ============================================================ */
+checkConnection();
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        if (!$("rowModal").classList.contains('hidden')) toggleModal("rowModal", false);
+        if (!$("actionModal").classList.contains('hidden')) toggleModal("actionModal", false);
+        if (!$("lightboxModal").classList.contains('hidden')) closeLightbox();
+    }
+});
+</script>
+</body>
+</html>
