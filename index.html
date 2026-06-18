@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MSB CORE SYSTEMS - Digital Approval Portal</title>
+<title>MSB Secure System - Digital Approval Portal</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -202,7 +202,7 @@
 
 <script>
   // Google Apps Script Web App Deployment URL
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwUdfdWtN69hHTuT7iR8PGXS0VSVTiiy6IbCNj4n7Je4873-aoyTEu-9jQs3IEns_dA/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxt-h08L84cqrk8tW8gdqfJM2gUrFC8IfCgDXgbzqYsdKudZOLihPVw_hz3apW-xbM/exec";
   const AUTO_REFRESH_SECONDS = 60; 
   const APPSHEET_APP_NAME = "MSBHumanResource-310640119";
 </script>
@@ -305,18 +305,23 @@
     <div class="max-w-[90rem] mx-auto px-4 sm:px-6 flex gap-6 border-t border-slate-100">
       <button data-tab="karyawan" class="tab-btn px-1 py-4 text-sm font-bold border-b-2 border-sky-600 text-sky-700 relative flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-        Employee Database
+        Izin Terpadu Karyawan
         <span id="badge-karyawan" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
       </button>
       <button data-tab="spp" class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-sky-600 hidden flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        SPP Documents
+        Surat Permintaan Pengadaan (SPP)
         <span id="badge-spp" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
       </button>
       <button data-tab="lkp" class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-sky-600 hidden flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-        LKP Documents
+        Laporan Ketidaksesuaian (LKP)
         <span id="badge-lkp" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
+      </button>
+      <button data-tab="gudang" class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-sky-600 hidden flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+        Permintaan Gudang
+        <span id="badge-gudang" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
       </button>
     </div>
   </header>
@@ -327,7 +332,7 @@
     <div class="glass rounded-2xl p-4 mb-4 flex flex-col md:flex-row gap-3 shadow-sm border border-white/50">
       <div class="relative flex-1">
         <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-        <input id="searchBox" type="text" placeholder="Search parameters inside the active system index..." class="w-full bg-white/70 border border-slate-200 rounded-xl pl-11 pr-4 py-2.5 text-sm" />
+        <input id="searchBox" type="text" placeholder="Cari sesuatu sobat MSB..." class="w-full bg-white/70 border border-slate-200 rounded-xl pl-11 pr-4 py-2.5 text-sm" />
       </div>
       <div class="flex gap-3">
         <select id="filterStatus" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white/70 focus:ring-sky-500">
@@ -483,12 +488,26 @@ const LKP_ROLE_CONFIG = {
   "General Manager":                  { canSee: true, approvalCol: null,             deptFilter: null }
 };
 
+/* KONFIGURASI ROLE PERMINTAAN GUDANG */
+const GUDANG_ROLE_CONFIG = {
+  "Engineering Manager":              { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"Engineering" },
+  "Equipment & Tools Manager":        { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"Equipment & Tools" },
+  "HR&GA Manager":                    { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"HR&GA" },
+  "HSE Manager":                      { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"HSE" },
+  "Maintenance Manager":              { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"Maintenance" },
+  "Production Manager":               { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"Production" },
+  "Quality Control Manager":          { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"Quality Control" },
+  "General Manager":                  { canSee:true,  approvalCol:null,             deptFilter:null },
+  "Warehouse Supervisor/Coordinator": { canSee:true,  approvalCol:"Diketahui Oleh", deptFilter:null },
+  "Warehouse Staff":                  { canSee:true,  approvalCol:null,             deptFilter:null }
+};
+
 /* ============================================================
  * STATE REPOSITORIES
  * ============================================================ */
 let currentRole = null;
 let activeTab   = "karyawan"; 
-let dataCache   = { karyawan:{headers:[], rows:[]}, spp:{headers:[], rows:[]}, lkp:{headers:[], rows:[]} };
+let dataCache   = { karyawan:{headers:[], rows:[]}, spp:{headers:[], rows:[]}, lkp:{headers:[], rows:[]}, gudang:{headers:[], rows:[]} };
 let refreshTimer = null;
 let isMobile = window.innerWidth < 768;
 
@@ -574,6 +593,49 @@ function viewImage(url, title) {
 function closeLightbox() {
   toggleModal("lightboxModal", false);
 }
+
+// Fitur pembantu untuk merender sel
+function renderRowCells(row, headers, approvalIdx, cfg) {
+  return headers.map((h, i) => {
+    const isApprovalCol = (i === approvalIdx);
+    const val = row[i];
+    const valStr = String(val ?? "").trim();
+    const isIdCol = i === 0 || h.toLowerCase().includes('nik') || h.toLowerCase().includes('id');
+    const isImageField = h.toLowerCase().includes('foto') || h.toLowerCase().includes('gambar') || h.toLowerCase().includes('image') || h.toLowerCase().includes('lampiran') || valStr.toLowerCase().endsWith('.jpg') || valStr.toLowerCase().endsWith('.jpeg') || valStr.toLowerCase().endsWith('.png');
+
+    if(isApprovalCol){
+      return `<td class="px-4 py-3 whitespace-nowrap">${statusBadge(val, cfg.approvalCol)}</td>`;
+    }
+    
+    if(isImageField && valStr){
+      const currentSheetName = activeTab === "karyawan" ? "Karyawan" : activeTab === "spp" ? "SPP" : activeTab === "lkp" ? "LKP" : "Permintaan Gudang";
+      let appNameForImage = APPSHEET_APP_NAME;
+      if (activeTab === "lkp") appNameForImage = "QCPassMurindaSentraBaja-40996000";
+      
+      const appSheetImgUrl = `https://www.appsheet.com/template/gettablefileurl?appName=${encodeURIComponent(appNameForImage)}&tableName=${encodeURIComponent(currentSheetName)}&fileName=${encodeURIComponent(valStr)}`;
+      
+      return `<td class="px-4 py-3 whitespace-nowrap">
+        <div class="relative group/img w-12 h-12 rounded-xl overflow-hidden border border-slate-200/80 shadow-xs cursor-pointer hover:scale-105 transition-all duration-200 bg-slate-50 flex items-center justify-center" onclick="viewImage('${appSheetImgUrl}', '${escapeHtml(h)}: ${escapeHtml(valStr)}')">
+          <img src="${appSheetImgUrl}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/16/16410.png'; this.className='w-5 h-5 opacity-30';">
+          <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+          </div>
+        </div>
+      </td>`;
+    }
+
+    const cellClass = isIdCol ? "font-semibold text-slate-950" : "text-slate-700";
+    return `<td class="px-4 py-3 whitespace-nowrap ${cellClass}">${escapeHtml(val)}</td>`;
+  }).join("");
+}
+
+// Fitur pembantu untuk toggle accordion baris Gudang
+window.toggleGroupRow = function(groupId) {
+    const rows = document.querySelectorAll('.group-item-' + groupId);
+    const icon = document.getElementById('icon-' + groupId);
+    rows.forEach(r => r.classList.toggle('hidden'));
+    if (icon) icon.classList.toggle('rotate-90');
+};
 
 /* ============================================================
  * ASYNC NETWORK INTEGRITY
@@ -663,12 +725,16 @@ function enterDashboard(){
 
   const sppBtn = document.querySelector('[data-tab="spp"]');
   const lkpBtn = document.querySelector('[data-tab="lkp"]');
+  const gudangBtn = document.querySelector('[data-tab="gudang"]');
 
   if(SPP_ROLE_CONFIG[currentRole]?.canSee) sppBtn.classList.remove("hidden");
   else sppBtn.classList.add("hidden");
 
   if(LKP_ROLE_CONFIG[currentRole]?.canSee) lkpBtn.classList.remove("hidden");
   else lkpBtn.classList.add("hidden");
+
+  if(GUDANG_ROLE_CONFIG[currentRole]?.canSee) gudangBtn.classList.remove("hidden");
+  else gudangBtn.classList.add("hidden");
 
   const karyawanCfg = KARYAWAN_ROLE_CONFIG[currentRole];
   if(!karyawanCfg?.canSee){
@@ -677,6 +743,8 @@ function enterDashboard(){
         switchTab("spp");
     } else if (LKP_ROLE_CONFIG[currentRole]?.canSee) {
         switchTab("lkp");
+    } else if (GUDANG_ROLE_CONFIG[currentRole]?.canSee) {
+        switchTab("gudang");
     }
   } else {
     switchTab("karyawan");
@@ -736,10 +804,13 @@ async function loadData(showLoader=false){
     const sheetsToLoad = ["Karyawan"];
     if(SPP_ROLE_CONFIG[currentRole]?.canSee) sheetsToLoad.push("SPP");
     if(LKP_ROLE_CONFIG[currentRole]?.canSee) sheetsToLoad.push("LKP"); 
+    if(GUDANG_ROLE_CONFIG[currentRole]?.canSee) sheetsToLoad.push("Permintaan Gudang"); 
 
     for(const s of sheetsToLoad){
       const r = await apiGet({ action:"getData", sheet:s });
-      dataCache[s.toLowerCase()] = { headers:r.headers || [], rows:r.rows || [] };
+      let cacheKey = s.toLowerCase();
+      if(s === "Permintaan Gudang") cacheKey = "gudang";
+      dataCache[cacheKey] = { headers:r.headers || [], rows:r.rows || [] };
     }
     
     const now = new Date();
@@ -771,6 +842,7 @@ function getPendingCount(tabName) {
   if(tabName === "karyawan") cfg = KARYAWAN_ROLE_CONFIG[currentRole];
   else if(tabName === "spp") cfg = SPP_ROLE_CONFIG[currentRole];
   else if(tabName === "lkp") cfg = LKP_ROLE_CONFIG[currentRole];
+  else if(tabName === "gudang") cfg = GUDANG_ROLE_CONFIG[currentRole];
   
   if(!cfg || !cfg.canSee) return 0;
   
@@ -800,7 +872,7 @@ function getPendingCount(tabName) {
 }
 
 function updateTabBadges() {
-  const tabs = ["karyawan", "spp", "lkp"];
+  const tabs = ["karyawan", "spp", "lkp", "gudang"];
   tabs.forEach(tab => {
     const count = getPendingCount(tab);
     const badge = $("badge-" + tab);
@@ -823,6 +895,8 @@ function getActiveConfig(){
     return SPP_ROLE_CONFIG[currentRole] || null;
   } else if (activeTab === "lkp") {
     return LKP_ROLE_CONFIG[currentRole] || null;
+  } else if (activeTab === "gudang") {
+    return GUDANG_ROLE_CONFIG[currentRole] || null;
   }
   return null;
 }
@@ -833,7 +907,6 @@ function getFilteredRows(){
   const cfg = getActiveConfig();
   if(!cfg) return [];
 
-  // Gunakan spread operator agar data.rows original tidak termutasi
   let rows = [...data.rows];
   
   const deptFilter = activeTab === "karyawan" ? cfg.dept : cfg.deptFilter;
@@ -859,17 +932,15 @@ function getFilteredRows(){
     rows = rows.filter(r => r.some(c => String(c ?? "").toLowerCase().includes(q)));
   }
 
-  // Reverse urutan agar item yang paling baru ditambahkan (terbawah di sheet) berada paling atas
   rows.reverse();
 
-  // Memindahkan data yang sudah "Approved" ke baris bagian paling bawah.
   if (idx !== -1) {
     rows.sort((a, b) => {
       const statA = classifyStatus(a[idx], cfg.approvalCol);
       const statB = classifyStatus(b[idx], cfg.approvalCol);
       if (statA === 'approved' && statB !== 'approved') return 1;
       if (statA !== 'approved' && statB === 'approved') return -1;
-      return 0; // Maintain urutan untuk status yang sama
+      return 0; 
     });
   }
 
@@ -903,31 +974,20 @@ function renderTable(){
     return;
   }
 
-  /* LOGIKA AKSES EDIT EKSKLUSIF */
   let showEdit = false; 
   if (activeTab === "karyawan" && currentRole === "HR Staff") showEdit = true;
   if (activeTab === "spp" && currentRole === "Procurement") showEdit = true;
   if (activeTab === "lkp" && currentRole === "Production Manager") showEdit = true; 
+  if (activeTab === "gudang" && currentRole === "Warehouse Staff") showEdit = true; 
 
   const addBtn = $("addRowBtn");
-  if (showEdit) {
-      addBtn.classList.remove("hidden");
-      addBtn.classList.add("flex");
-  } else {
-      addBtn.classList.add("hidden");
-      addBtn.classList.remove("flex");
-  }
+  if (showEdit) { addBtn.classList.remove("hidden"); addBtn.classList.add("flex"); } 
+  else { addBtn.classList.add("hidden"); addBtn.classList.remove("flex"); }
 
-  /* LOGIKA TOMBOL SPP DETAIL */
   const sppDetailBtn = $("sppDetailBtn");
   if (sppDetailBtn) {
-      if (activeTab === "spp") {
-          sppDetailBtn.classList.remove("hidden");
-          sppDetailBtn.classList.add("flex");
-      } else {
-          sppDetailBtn.classList.add("hidden");
-          sppDetailBtn.classList.remove("flex");
-      }
+      if (activeTab === "spp") { sppDetailBtn.classList.remove("hidden"); sppDetailBtn.classList.add("flex"); } 
+      else { sppDetailBtn.classList.add("hidden"); sppDetailBtn.classList.remove("flex"); }
   }
 
   const rows = getFilteredRows();
@@ -947,72 +1007,110 @@ function renderTable(){
     $("emptyState").classList.remove("hidden");
   } else {
     $("emptyState").classList.add("hidden");
-    $("tableBody").innerHTML = rows.map((row, index) => {
-      const realIdx = data.rows.indexOf(row); 
-      
-      const cells = headers.map((h, i) => {
-        const isApprovalCol = (i === approvalIdx);
-        const val = row[i];
-        const valStr = String(val ?? "").trim();
-        const isIdCol = i === 0 || h.toLowerCase().includes('nik') || h.toLowerCase().includes('id');
-        
-        const isImageField = h.toLowerCase().includes('foto') || h.toLowerCase().includes('gambar') || h.toLowerCase().includes('image') || h.toLowerCase().includes('lampiran') || valStr.toLowerCase().endsWith('.jpg') || valStr.toLowerCase().endsWith('.jpeg') || valStr.toLowerCase().endsWith('.png');
+    
+    // Cari index kolom "Nomor Permintaan"
+    const groupColCandidates = ["no permintaan", "nomor permintaan", "no. permintaan", "no dokumen", "id permintaan"];
+    const groupIdx = activeTab === "gudang" ? findHeaderIndex(headers, groupColCandidates) : -1;
 
-        if(isApprovalCol){
-          return `<td class="px-4 py-3 whitespace-nowrap">${statusBadge(val, cfg.approvalCol)}</td>`;
+    // LOGIKA GROUPING UNTUK TAB GUDANG
+    if (activeTab === "gudang" && groupIdx !== -1) {
+        const groups = {};
+        rows.forEach((row, index) => {
+            const realIdx = data.rows.indexOf(row);
+            const groupVal = row[groupIdx] || "Tanpa Nomor Dokumen";
+            if(!groups[groupVal]) groups[groupVal] = [];
+            groups[groupVal].push({ row, realIdx, index });
+        });
+
+        let groupedHtml = "";
+        let groupCounter = 0;
+
+        for (const [groupVal, groupItems] of Object.entries(groups)) {
+            groupCounter++;
+            const groupId = 'g' + groupCounter;
+            const realIndices = groupItems.map(item => item.realIdx);
+            const indicesJson = JSON.stringify(realIndices); // Array of target rows
+
+            // Cek status keseluruhan grup untuk menampilkan Action Button
+            let allApproved = true, allPending = true, allRejected = true;
+            groupItems.forEach(item => {
+                if (approvalIdx !== -1) {
+                    const s = classifyStatus(item.row[approvalIdx], headers[approvalIdx]);
+                    if (s !== 'approved') allApproved = false;
+                    if (s !== 'pending' && s !== 'empty') allPending = false;
+                    if (s !== 'rejected') allRejected = false;
+                }
+            });
+
+            let actionBtns = "";
+            if (approvalIdx !== -1) {
+                if (!allApproved) actionBtns += `<button onclick='openAction(${indicesJson},"approve")' class="text-[11px] px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white font-bold transition flex items-center gap-1 border border-emerald-200 shadow-sm">Approve All</button>`;
+                if (!allPending)  actionBtns += `<button onclick='openAction(${indicesJson},"pending")' class="text-[11px] px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-500 text-amber-800 hover:text-white font-bold transition flex items-center gap-1 border border-amber-200 shadow-sm">Pending All</button>`;
+                if (!allRejected) actionBtns += `<button onclick='openAction(${indicesJson},"reject")'  class="text-[11px] px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-600 text-red-700 hover:text-white font-bold transition flex items-center gap-1 border border-red-200 shadow-sm">Reject All</button>`;
+            }
+
+            // Render Header Grup
+            groupedHtml += `
+            <tr class="bg-sky-50/70 cursor-pointer border-t-2 border-b border-sky-100 hover:bg-sky-100/80 transition-colors group" onclick="toggleGroupRow('${groupId}')">
+                <td colspan="${headers.length}" class="px-4 py-4 font-bold text-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 rounded-md bg-white border border-sky-200 flex items-center justify-center shadow-sm">
+                            <svg id="icon-${groupId}" class="w-4 h-4 transition-transform duration-300 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                        </div>
+                        <span class="text-sky-800 font-extrabold uppercase tracking-widest text-xs">NO. PERMINTAAN : ${escapeHtml(groupVal)}</span>
+                        <span class="bg-white text-sky-600 border border-sky-200 text-[10px] px-2.5 py-1 rounded-full font-bold shadow-sm">${groupItems.length} Komponen</span>
+                    </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap sticky-right z-10Row bg-sky-50/95 backdrop-blur-xs border-t-2 border-b border-sky-100" onclick="event.stopPropagation()">
+                    <div class="flex gap-1.5 justify-center">${actionBtns}</div>
+                </td>
+            </tr>`;
+
+            // Render Baris Detail (Tersembunyi secara default)
+            groupedHtml += groupItems.map(item => {
+                const cells = renderRowCells(item.row, headers, approvalIdx, cfg);
+                let editBtnHtml = "";
+                if (showEdit) {
+                    editBtnHtml = `<button onclick="openEdit(${item.realIdx})" class="text-[11px] px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-800 text-slate-700 hover:text-white font-bold transition flex items-center gap-1 border border-slate-200 hover:border-slate-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit</button>`;
+                }
+                const rowAnimDelay = isMobile ? 0 : (item.index % 10) * 30;
+
+                return `<tr class="fade-in group hidden group-item-${groupId} bg-white/40 border-b border-slate-50" style="animation-delay: ${rowAnimDelay}ms">
+                    ${cells}
+                    <td class="px-4 py-3 whitespace-nowrap sticky-right z-10Row bg-white/95 backdrop-blur-xs">
+                        <div class="flex gap-1.5 justify-center">${editBtnHtml}</div>
+                    </td>
+                </tr>`;
+            }).join("");
         }
-        
-        if(isImageField && valStr){
-          const currentSheetName = activeTab === "karyawan" ? "Karyawan" : activeTab === "spp" ? "SPP" : "LKP";
-          
-          let appNameForImage = APPSHEET_APP_NAME;
-          if (activeTab === "lkp") {
-              appNameForImage = "QCPassMurindaSentraBaja-40996000";
-          }
-          
-          const appSheetImgUrl = `https://www.appsheet.com/template/gettablefileurl?appName=${encodeURIComponent(appNameForImage)}&tableName=${encodeURIComponent(currentSheetName)}&fileName=${encodeURIComponent(valStr)}`;
-          
-          return `<td class="px-4 py-3 whitespace-nowrap">
-            <div class="relative group/img w-12 h-12 rounded-xl overflow-hidden border border-slate-200/80 shadow-xs cursor-pointer hover:scale-105 transition-all duration-200 bg-slate-50 flex items-center justify-center" onclick="viewImage('${appSheetImgUrl}', '${escapeHtml(h)}: ${escapeHtml(valStr)}')">
-              <img src="${appSheetImgUrl}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/16/16410.png'; this.className='w-5 h-5 opacity-30';">
-              <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-              </div>
-            </div>
-          </td>`;
-        }
+        $("tableBody").innerHTML = groupedHtml;
+    } 
+    // LOGIKA STANDARD UNTUK TAB LAIN
+    else {
+        $("tableBody").innerHTML = rows.map((row, index) => {
+            const realIdx = data.rows.indexOf(row); 
+            const cells = renderRowCells(row, headers, approvalIdx, cfg);
+            
+            let actionBtns = "";
+            if(approvalIdx !== -1){
+                const s = classifyStatus(row[approvalIdx], headers[approvalIdx]);
+                if(s !== 'approved') actionBtns += `<button onclick="openAction(${realIdx},'approve')" class="text-[11px] px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white font-bold transition flex items-center gap-1 border border-emerald-200">Approve</button>`;
+                if(s !== 'pending')  actionBtns += `<button onclick="openAction(${realIdx},'pending')" class="text-[11px] px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-500 text-amber-800 hover:text-white font-bold transition flex items-center gap-1 border border-amber-200">Pending</button>`;
+                if(s !== 'rejected') actionBtns += `<button onclick="openAction(${realIdx},'reject')"  class="text-[11px] px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-600 text-red-700 hover:text-white font-bold transition flex items-center gap-1 border border-red-200">Reject</button>`;
+            }
 
-        const cellClass = isIdCol ? "font-semibold text-slate-950" : "text-slate-700";
-        return `<td class="px-4 py-3 whitespace-nowrap ${cellClass}">${escapeHtml(val)}</td>`;
-      }).join("");
+            let editBtnHtml = "";
+            if (showEdit) {
+                editBtnHtml = `<button onclick="openEdit(${realIdx})" class="text-[11px] px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-800 text-slate-700 hover:text-white font-bold transition flex items-center gap-1 border border-slate-200 hover:border-slate-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit</button>`;
+            }
 
-      let actionBtns = "";
-      if(approvalIdx !== -1){
-          const targetColName = headers[approvalIdx];
-          const s = classifyStatus(row[approvalIdx], targetColName);
-          if(s !== 'approved') actionBtns += `<button onclick="openAction(${realIdx},'approve')" class="text-[11px] px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white font-bold transition flex items-center gap-1 border border-emerald-200">Approve</button>`;
-          if(s !== 'pending')  actionBtns += `<button onclick="openAction(${realIdx},'pending')" class="text-[11px] px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-500 text-amber-800 hover:text-white font-bold transition flex items-center gap-1 border border-amber-200">Pending</button>`;
-          if(s !== 'rejected') actionBtns += `<button onclick="openAction(${realIdx},'reject')"  class="text-[11px] px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-600 text-red-700 hover:text-white font-bold transition flex items-center gap-1 border border-red-200">Reject</button>`;
-      }
-
-      let editBtnHtml = "";
-      if (showEdit) {
-          editBtnHtml = `<button onclick="openEdit(${realIdx})" class="text-[11px] px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-800 text-slate-700 hover:text-white font-bold transition flex items-center gap-1 border border-slate-200 hover:border-slate-800">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-              Edit
-          </button>`;
-      }
-
-      const rowAnimDelay = isMobile ? 0 : (index % 10) * 30;
-
-      return `<tr class="fade-in group" style="animation-delay: ${rowAnimDelay}ms">${cells}
-        <td class="px-4 py-3 whitespace-nowrap sticky-right z-10Row bg-white/95 backdrop-blur-xs">
-          <div class="flex gap-1.5 justify-center">
-            ${actionBtns}
-            ${editBtnHtml}
-          </div>
-        </td></tr>`;
-    }).join("");
+            const rowAnimDelay = isMobile ? 0 : (index % 10) * 30;
+            return `<tr class="fade-in group" style="animation-delay: ${rowAnimDelay}ms">${cells}
+                <td class="px-4 py-3 whitespace-nowrap sticky-right z-10Row bg-white/95 backdrop-blur-xs">
+                <div class="flex gap-1.5 justify-center">${actionBtns}${editBtnHtml}</div>
+                </td></tr>`;
+        }).join("");
+    }
   }
 
   renderStats(rows, approvalIdx, approvalIdx !== -1 ? headers[approvalIdx] : null);
@@ -1063,7 +1161,9 @@ $("filterStatus").addEventListener("change", renderTable);
  * GLASSMORPHISM VERIFICATION ACTION MODAL
  * ============================================================ */
 let pendingAction = null;
-function openAction(rowIdx, type){
+
+function openAction(rowIdxOrArray, type){
+  const isBatch = Array.isArray(rowIdxOrArray);
   const data = dataCache[activeTab];
   const headers = data.headers;
   const cfg = getActiveConfig();
@@ -1083,27 +1183,42 @@ function openAction(rowIdx, type){
   const iconReject  = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
 
   if(type === "approve"){
-    newValue = currentRole; // Mengisi nama jabatan
-    label = "Approve"; btnColor = "bg-emerald-600 hover:bg-emerald-700"; 
+    newValue = currentRole; 
+    label = isBatch ? "Approve All" : "Approve"; 
+    btnColor = "bg-emerald-600 hover:bg-emerald-700"; 
     iconHtml = iconApprove; winBg = "bg-emerald-100"; iconColor = "text-emerald-700";
   } else if(type === "pending"){
-    newValue = "Pending"; label = "Flag Pending"; btnColor = "bg-amber-500 hover:bg-amber-600";
+    newValue = "Pending"; 
+    label = isBatch ? "Flag Pending All" : "Flag Pending"; 
+    btnColor = "bg-amber-500 hover:bg-amber-600";
     iconHtml = iconPending; winBg = "bg-amber-100"; iconColor = "text-amber-800";
   } else {
-    newValue = "Ditolak"; label = "Reject"; btnColor = "bg-red-600 hover:bg-red-700";
+    newValue = "Ditolak"; 
+    label = isBatch ? "Reject All" : "Reject"; 
+    btnColor = "bg-red-600 hover:bg-red-700";
     iconHtml = iconReject; winBg = "bg-red-100"; iconColor = "text-red-700";
   }
 
-  const sheetParamName = activeTab === "spp" ? "SPP" : activeTab === "lkp" ? "LKP" : "Karyawan";
-  pendingAction = { rowIdx, newValue, sheet: sheetParamName, column: realColName };
+  const sheetParamName = activeTab === "spp" ? "SPP" : activeTab === "lkp" ? "LKP" : activeTab === "gudang" ? "Permintaan Gudang" : "Karyawan";
   
+  pendingAction = { 
+      isBatch, 
+      rowIdx: isBatch ? null : rowIdxOrArray, 
+      rowIndices: isBatch ? rowIdxOrArray : null,
+      newValue, 
+      sheet: sheetParamName, 
+      column: realColName 
+  };
+  
+  const targetText = isBatch ? `${rowIdxOrArray.length} Selected Components in Group` : escapeHtml(realColName);
+
   $("actionTitle").textContent = "Confirm " + label;
   $("actionIconWin").className = `w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner ${winBg} ${iconColor} border border-white/50`;
   $("actionIconWin").innerHTML = iconHtml;
   
   $("actionBody").innerHTML = `
     <div class="flex justify-between"><span>Active Component:</span><span class="font-bold text-slate-950">${pendingAction.sheet}</span></div>
-    <div class="flex justify-between"><span>Column Key:</span><span class="font-bold text-slate-950">${escapeHtml(realColName)}</span></div>
+    <div class="flex justify-between mt-1"><span>Target Node:</span><span class="font-bold text-slate-950">${targetText}</span></div>
     <div class="flex justify-between pt-2 border-t border-slate-200 mt-2"><span>Target Value:</span><span class="font-bold ${iconColor} text-base">${escapeHtml(newValue)}</span></div>
   `;
   
@@ -1122,15 +1237,32 @@ $("actionConfirm").onclick = async () => {
   $("actionConfirm").innerText = "Processing Transaction...";
   
   try {
-    await apiPost({
-      action: "updateCell",
-      sheet:  pendingAction.sheet,
-      rowIndex: pendingAction.rowIdx,
-      column: pendingAction.column,
-      value: pendingAction.newValue,
-      actor: currentRole
-    });
-    showToast(`Successfully transformed row structural parameter to ${pendingAction.newValue}.`);
+    if (pendingAction.isBatch) {
+        // Melakukan push secara parallel menggunakan Promise.all untuk kecepatan pemrosesan data
+        const updatePromises = pendingAction.rowIndices.map(idx => 
+            apiPost({
+                action: "updateCell",
+                sheet:  pendingAction.sheet,
+                rowIndex: idx,
+                column: pendingAction.column,
+                value: pendingAction.newValue,
+                actor: currentRole
+            })
+        );
+        await Promise.all(updatePromises);
+        showToast(`Successfully transformed ${pendingAction.rowIndices.length} records to ${pendingAction.newValue}.`);
+    } else {
+        await apiPost({
+            action: "updateCell",
+            sheet:  pendingAction.sheet,
+            rowIndex: pendingAction.rowIdx,
+            column: pendingAction.column,
+            value: pendingAction.newValue,
+            actor: currentRole
+        });
+        showToast(`Successfully transformed row structural parameter to ${pendingAction.newValue}.`);
+    }
+    
     toggleModal("actionModal", false);
     await loadData(false); 
   } catch(e){
@@ -1248,7 +1380,7 @@ $("saveModalBtn").onclick = async () => {
   $("saveModalBtn").innerText = "Processing Transaction Registry...";
   
   try {
-    const sheetName = activeTab === "spp" ? "SPP" : activeTab === "lkp" ? "LKP" : "Karyawan";
+    const sheetName = activeTab === "spp" ? "SPP" : activeTab === "lkp" ? "LKP" : activeTab === "gudang" ? "Permintaan Gudang" : "Karyawan";
     if(editingRowIdx === null){
       await apiPost({ action:"addRow", sheet: sheetName, values, actor: currentRole });
       showToast("Record successfully written to remote core master data rows.");
