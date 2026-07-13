@@ -1,1414 +1,969 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MSB Secure System - Digital Approval Portal</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  * { font-family: 'Plus Jakarta Sans', sans-serif; cursor: default; }
-  a, button, select, input, [onclick] { cursor: pointer; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advanced ERP System - PT Murinda Sentra Baja | Enterprise Resource Planning with Real-time Analytics">
+    <meta name="keywords" content="ERP, Manufacturing, Steel, Industry 4.0, Business Intelligence, Dashboard">
+    <meta name="author" content="Aspuro Amarulloh Khoiri">
+    <meta name="theme-color" content="#0a0e27">
+    <title>ERP SYSTEM | PT MURINDA SENTRA BAJA - Advanced Dashboard</title>
+    
+    <!-- Favicon ditambahkan -->
+    <link rel="icon" type="image/png" href="Gemini_Generated_Image_l6ftldl6ftldl6ft.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <style>
+        :root {
+            --primary-blue: #0275d8;
+            --primary-blue-hover: #025aa5;
+            --primary-green: #10b981;
+            --primary-orange: #f59e0b;
+            --primary-purple: #8b5cf6;
+            --primary-cyan: #06b6d4;
+            --primary-red: #ef4444;
+            
+            --bg-body: #0a0e27;
+            --bg-body-light: #eef2f6;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-glass: rgba(255, 255, 255, 0.08);
+            
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --text-light: #e2e8f0;
+            --text-white: #ffffff;
+            
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
+            --shadow-glass: 0 8px 32px rgba(31, 38, 135, 0.15);
+            
+            --transition-smooth: 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-  body {
-    background: linear-gradient(-45deg, #e6fffa, #e0f2fe, #fff7ed, #faf5ff);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-    position: relative;
-    overflow-x: hidden;
-  }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
 
-  @keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+        body {
+            background-color: var(--bg-body);
+            background-image: linear-gradient(135deg, rgba(10, 14, 39, 0.90) 0%, rgba(10, 14, 39, 0.95) 100%), url('https://images.unsplash.com/photo-1587843329241-7b00302b1fbb?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: var(--text-light);
+            font-family: 'Inter', 'Nunito', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            transition: all 0.5s ease;
+        }
 
-  .blob {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.5;
-    z-index: -1;
-    animation: blobFloat 20s infinite alternate;
-  }
-  .blob-1 { width: 400px; height: 400px; background: #0ea5e9; top: -100px; right: -100px; animation-delay: 0s; }
-  .blob-2 { width: 350px; height: 350px; background: #22c55e; bottom: -50px; left: -100px; animation-delay: -5s; }
-  .blob-3 { width: 300px; height: 300px; background: #f97316; top: 40%; left: 30%; animation-delay: -10s; }
+        /* ==================== LIGHT THEME OPTIMIZATION ==================== */
+        body.light-theme { 
+            background-color: var(--bg-body-light); 
+            background-image: linear-gradient(135deg, rgba(238, 242, 246, 0.85) 0%, rgba(238, 242, 246, 0.95) 100%), url('https://images.unsplash.com/photo-1587843329241-7b00302b1fbb?q=80&w=1920&auto=format&fit=crop');
+            color: var(--text-dark); 
+        }
+        body.light-theme .top-info-bar, body.light-theme header, body.light-theme footer { background: rgba(255, 255, 255, 0.85); border-color: rgba(0, 0, 0, 0.1); color: #1e293b; }
+        body.light-theme .stat-card, body.light-theme .chart-card, body.light-theme .module-card, body.light-theme .notification { background: rgba(255, 255, 255, 0.9); border-color: rgba(0, 0, 0, 0.1); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); }
+        body.light-theme .stat-value, body.light-theme .chart-title, body.light-theme .module-info h3, body.light-theme .section-title { color: #0f172a; }
+        body.light-theme .stat-label, body.light-theme .chart-subtitle, body.light-theme .module-info p, body.light-theme .footer-address, body.light-theme .footer-copy { color: #475569; }
+        body.light-theme .footer-address strong, body.light-theme .footer-copy span:first-child { color: #0f172a; }
+        body.light-theme .user-profile, body.light-theme .theme-toggle { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
+        body.light-theme .header-divider { background: #cbd5e1; }
+        body.light-theme .datetime { color: #1e293b; }
+        h1, h2, h3, h4, h5, button { font-family: 'Poppins', sans-serif; }
 
-  @keyframes blobFloat {
-    0% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(50px, 20px) scale(1.1); }
-    100% { transform: translate(-20px, 50px) scale(0.9); }
-  }
+        /* --- PERBAIKAN POIN 1: UKURAN & WARNA LOGO --- */
+        header img.logo-small {
+            height: 45px;
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
 
-  .glass {
-    background: rgba(255, 255, 255, 0.55);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-  }
+        body:not(.light-theme) header img.logo-small {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+            /* Filter ini akan mengubah logo menjadi putih di dark mode */
+            filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(255, 255, 255, 0.2));
+        }
 
-  .glass-dark {
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+        body.light-theme header img.logo-small {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+        }
 
-  .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
-  .scrollbar-thin::-webkit-scrollbar-thumb { 
-    background: linear-gradient(to bottom, #0ea5e9, #22c55e);
-    border-radius: 6px; 
-  }
-  .scrollbar-thin::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 6px; }
+        /* ==================== GRADIENT BLOBS ==================== */
+        .bg-glow { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.2; z-index: -1; animation: float 15s infinite alternate ease-in-out; pointer-events: none; will-change: transform; }
+        .blob-1 { background: linear-gradient(135deg, #0275d8, #06b6d4); width: 600px; height: 600px; top: -15%; left: -10%; }
+        .blob-2 { background: linear-gradient(135deg, #10b981, #059669); width: 500px; height: 500px; bottom: -10%; right: -10%; animation-delay: 3s; }
+        .blob-3 { background: linear-gradient(135deg, #f59e0b, #dc2626); width: 550px; height: 550px; top: 35%; right: -5%; animation-delay: 6s; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1) rotate(0deg); } 50% { transform: translate(30px, -30px) scale(1.1) rotate(180deg); } 100% { transform: translate(-20px, 20px) scale(0.9) rotate(360deg); } }
 
-  .badge {
-    font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px;
-    display: inline-flex; align-items: center; gap: 4px;
-    box-shadow: inset 0 1px 1px rgba(255,255,255,0.5);
-  }
-  .badge-approved { background: rgba(34, 197, 94, 0.15); color: #15803d; border: 1px solid rgba(34, 197, 94, 0.3); }
-  .badge-pending  { background: rgba(245, 158, 11, 0.15); color: #a16207; border: 1px solid rgba(245, 158, 11, 0.3); }
-  .badge-rejected { background: rgba(239, 68, 68, 0.15); color: #b91c1c; border: 1px solid rgba(239, 68, 68, 0.3); }
-  .badge-empty    { background: rgba(148, 163, 184, 0.15); color: #475569; border: 1px solid rgba(148, 163, 184, 0.3); }
+        /* ==================== LOADING SCREEN ==================== */
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0e27; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s, visibility 0.5s; }
+        #loading-screen.hidden { opacity: 0; visibility: hidden; }
+        
+        /* Modifikasi Loader untuk menampilkan logo di dalam lingkaran */
+        .loader-container { position: relative; width: 100px; height: 100px; display: flex; justify-content: center; align-items: center; }
+        .loader { position: absolute; width: 100%; height: 100%; border: 6px solid rgba(2, 117, 216, 0.2); border-top: 6px solid #0275d8; border-radius: 50%; animation: spin 1s linear infinite; }
+        .loader-logo { width: 55px; height: 55px; object-fit: contain; z-index: 10; animation: pulse-logo 2s infinite alternate; filter: brightness(0) invert(1); }
+        
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse-logo { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
+        
+        .loading-text { margin-top: 25px; font-size: 1.2rem; font-weight: 600; color: var(--text-light); letter-spacing: 2px; }
+        .loading-progress { margin-top: 15px; font-size: 0.9rem; color: var(--primary-cyan); }
 
-  .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
-  @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform:none; } }
+        /* ==================== LOGIN OVERLAY ==================== */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: flex; justify-content: center; align-items: center; z-index: 9998; transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out; }
+        
+        .login-wrapper { 
+            transform: scale(1); transition: transform 0.3s ease; 
+            animation: float-smooth 6s ease-in-out infinite;
+        }
+        @keyframes float-smooth {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .login-card { position: relative; width: 850px; min-height: 490px; display: flex; align-items: center; justify-content: flex-start; padding-left: 50px; background: transparent; border-radius: 20px; font-family: 'Poppins', sans-serif; cursor: pointer; outline: none; }
+        
+        .login-card .circle { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1; pointer-events: none; transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .login-card .circle::before { 
+            content: ''; position: absolute; width: 250px; height: 250px; background: transparent; 
+            border: 4px solid #124388; border-radius: 50%; transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            animation: pulse-glow 3s infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(18, 67, 136, 0.3), inset 0 0 10px rgba(18, 67, 136, 0.2); }
+            100% { box-shadow: 0 0 45px rgba(18, 67, 136, 0.8), inset 0 0 25px rgba(18, 67, 136, 0.5); }
+        }
+        
+        .login-card .logo-wrapper { z-index: 12; text-align: center; transition: 0.5s ease-in-out; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .login-card .logo-wrapper .logo_img { 
+            max-width: 180px; 
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+            animation: logo-breath 4s ease-in-out infinite;
+        }
+        @keyframes logo-breath {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .login-card:hover .circle::before, .login-card:focus-within .circle::before { 
+            width: 100%; height: 100%; border-radius: 20px; 
+            background: linear-gradient(135deg, #0a1930, #124388); 
+            box-shadow: 0 20px 60px rgba(18, 67, 136, 0.5); border: 0px solid transparent; 
+            animation: none;
+        }
+        .login-card:hover .logo-wrapper, .login-card:focus-within .logo-wrapper { opacity: 0; transform: scale(0.3); pointer-events: none; }
+        
+        .login-card .content { position: relative; z-index: 10; width: 100%; max-width: 380px; opacity: 0; visibility: hidden; transform: translateX(-50px); transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: default; }
+        .login-card:hover .content, .login-card:focus-within .content { opacity: 1; visibility: visible; transform: translateX(0); transition-delay: 0.3s; }
+        
+        .login-card .content h2 { 
+            color: #fff; font-size: 2rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 12px; white-space: nowrap;
+            animation: text-glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes text-glow {
+            0% { text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+            100% { text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 30px rgba(6, 182, 212, 0.6); }
+        }
 
-  /* Interactive Table Rows */
-  tbody tr { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
-  tbody tr:hover { 
-    background-color: rgba(255, 255, 255, 0.95) !important; 
-    transform: scale(1.01) translateY(-3px);
-    box-shadow: 0 15px 30px -5px rgba(14, 165, 233, 0.15), 0 8px 15px -5px rgba(14, 165, 233, 0.1);
-    border-radius: 12px;
-    z-index: 10; position: relative;
-  }
-  tbody tr:active {
-    transform: scale(0.995) translateY(0);
-    box-shadow: 0 4px 10px rgba(14, 165, 233, 0.1);
-  }
-  tbody tr:hover td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
-  tbody tr:hover td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
-  td { transition: color 0.3s ease; }
-  tr:hover td { color: #0f172a; }
+        .login-address-block {
+            display: block;
+            text-decoration: none;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 3px solid var(--primary-cyan);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .login-address-block:hover {
+            transform: translateX(8px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+            border-left-color: var(--primary-orange);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
 
-  /* Dynamic Stat Cards */
-  .stat-card {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative; overflow: hidden; cursor: pointer;
-  }
-  .stat-card::after {
-    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
-    transform: skewX(-25deg); transition: all 0.7s ease; z-index: 1; pointer-events: none;
-  }
-  .stat-card:hover::after { left: 200%; }
-  .stat-card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1), 0 10px 15px -5px rgba(0, 0, 0, 0.05);
-    border-color: rgba(255, 255, 255, 1);
-    background: rgba(255, 255, 255, 0.85);
-  }
-  .stat-card:active { transform: translateY(-2px) scale(0.98); }
+        .login-address-block .company-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 600; color: #ffffff; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .login-address-block .address-text { font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 300; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px; }
+        .login-address-block .contact-info { display: flex; flex-direction: column; gap: 6px; font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 500; color: var(--primary-cyan); }
+        .login-address-block .contact-info span { display: flex; align-items: center; gap: 8px; transition: color 0.3s; }
+        .login-address-block:hover .contact-info span { color: #fff; }
+        .login-address-block .contact-info i { width: 14px; text-align: center; color: var(--primary-orange); }
+        
+        .action-container { position: relative; margin-top: 10px; }
+        
+        .luxury-btn { 
+            display: flex; justify-content: center; align-items: center; gap: 15px; width: 100%; 
+            padding: 16px 25px; background: linear-gradient(45deg, #b92025, #e53935, #b92025); background-size: 200% auto;
+            color: #fff; font-weight: 800; font-size: 1.1rem; border: none; cursor: pointer; 
+            border-radius: 50px; text-transform: uppercase; letter-spacing: 2px; 
+            box-shadow: 0 10px 30px rgba(185, 32, 37, 0.4); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            position: relative; overflow: hidden;
+            animation: gradient-shift 3s ease infinite;
+        }
+        @keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        .luxury-btn::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transform: skewX(-20deg); transition: 0.7s;
+        }
+        
+        .luxury-btn:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 15px 40px rgba(185, 32, 37, 0.6); }
+        .luxury-btn:hover::after { left: 150%; }
+        .luxury-btn i { font-size: 1.3rem; }
+        
+        .login-card .factory_img { position: absolute; top: 50%; left: 50%; width: 350px; height: 230px; object-fit: cover; border-radius: 15px; border: 4px solid #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transform: translate(-50%, -50%) scale(0) rotate(-10deg); z-index: 11; transition: 0.7s cubic-bezier(0.25, 1, 0.5, 1.2); pointer-events: none; opacity: 0; }
+        .login-card:hover .factory_img, .login-card:focus-within .factory_img { top: 50%; left: 75%; transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; transition-delay: 0.2s; }
 
-  /* Buttons */
-  button, a.btn-link { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-  button:not(.tab-btn):hover, a.btn-link:hover { 
-      transform: translateY(-3px); 
-      box-shadow: 0 10px 20px -5px rgba(0,0,0,0.15); 
-      filter: brightness(1.05); 
-  }
-  button:not(.tab-btn):active, a.btn-link:active { 
-      transform: translateY(1px) scale(0.95); 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-      filter: brightness(0.95); 
-  }
+        /* ==================== MAIN DASHBOARD ==================== */
+        #main-dashboard { display: none; flex-direction: column; min-height: 100vh; transition: transform var(--transition-smooth), opacity var(--transition-smooth), filter var(--transition-smooth); transform-origin: top center; animation: fadeIn 1s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.97) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .dashboard-dimmed { transform: scale(0.97) translateY(-10px); opacity: 0.5; filter: blur(6px); pointer-events: none; }
 
-  /* Primary Gradient Button */
-  .btn-primary {
-    background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 50%, #f97316 100%);
-    background-size: 200% auto;
-    color: white;
-  }
-  .btn-primary:hover {
-    background-position: right center;
-    box-shadow: 0 12px 25px -5px rgba(22, 163, 74, 0.3), 0 8px 10px -6px rgba(14, 165, 233, 0.2);
-    transform: translateY(-3px) scale(1.02);
-  }
-  .btn-primary:active { transform: translateY(1px) scale(0.98); }
+        /* ==================== TOP INFO BAR ==================== */
+        .top-info-bar { background: rgba(10, 14, 39, 0.6); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600; color: var(--text-light); z-index: 101; }
+        .datetime { display: flex; align-items: center; gap: 15px; } .datetime i { color: var(--primary-cyan); }
+        .hse-ticker-wrap { flex: 1; max-width: 60%; overflow: hidden; white-space: nowrap; position: relative; display: flex; align-items: center; background: rgba(245, 158, 11, 0.1); padding: 8px 20px; border-radius: 15px; border: 1px solid rgba(245, 158, 11, 0.2); margin-left: 30px; }
+        
+        /* Ticker Animation Diperlambat untuk teks yang lebih panjang */
+        .hse-ticker { display: inline-block; padding-left: 100%; animation: ticker 40s linear infinite; font-weight: 700; color: #fbbf24; }
+        .hse-ticker i { margin-right: 10px; color: var(--primary-orange); }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-  /* Inputs & Selects */
-  input, select { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0; }
-  input:hover, select:hover { 
-      border-color: #94a3b8; 
-      background: rgba(255, 255, 255, 0.95); 
-      transform: translateY(-1px); 
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  }
-  input:focus, select:focus {
-    border-color: #0ea5e9;
-    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-    background: #ffffff;
-  }
+        /* ==================== HEADER ==================== */
+        header { min-height: 85px; background: rgba(10, 14, 39, 0.6); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; z-index: 100; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15); position: sticky; top: 0; }
+        .header-left { display: flex; align-items: center; gap: 30px; }
+        .header-divider { width: 2px; height: 40px; background: rgba(255, 255, 255, 0.1); }
+        .system-status { display: flex; align-items: center; gap: 10px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.9rem; color: var(--primary-green); background: rgba(16, 185, 129, 0.1); padding: 10px 20px; border-radius: 25px; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-dot { width: 10px; height: 10px; background: var(--primary-green); border-radius: 50%; box-shadow: 0 0 15px var(--primary-green); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px var(--primary-green); } 50% { opacity: 0.6; transform: scale(1.3); box-shadow: 0 0 25px var(--primary-green); } }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .theme-toggle { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 15px; border-radius: 12px; cursor: pointer; color: var(--text-light); font-size: 1.1rem; transition: all 0.3s; }
+        .theme-toggle:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
+        .user-profile { display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.05); padding: 10px 20px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.1); font-weight: 700; color: var(--text-light); }
+        .user-profile i { font-size: 1.3rem; color: var(--primary-cyan); }
+        .btn-logout { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-logout:hover { background: #ef4444; color: white; transform: translateY(-2px); }
 
-  /* Navigation Tabs */
-  .tab-btn { position: relative; overflow: hidden; transition: all 0.3s ease; }
-  .tab-btn::before {
-    content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 3px;
-    background: #0284c7; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); transform: translateX(-50%);
-    border-top-left-radius: 3px; border-top-right-radius: 3px;
-  }
-  .tab-btn:hover::before { width: 80%; }
-  .tab-btn:active { transform: scale(0.95); }
-  .tab-btn.font-bold::before { width: 100%; }
+        /* ==================== DASHBOARD STATS ==================== */
+        .dashboard-stats { padding: 30px 40px 15px 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+        .stat-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15); transition: all 0.4s; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; transition: width 0.4s; }
+        .stat-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.06); }
+        .stat-card:hover::before { width: 100%; opacity: 0.05; }
+        .stat-card.blue::before { background: var(--primary-blue); } .stat-card.green::before { background: var(--primary-green); } .stat-card.orange::before { background: var(--primary-orange); } .stat-card.purple::before { background: var(--primary-purple); } .stat-card.red::before { background: var(--primary-red); }
+        .stat-icon { width: 55px; height: 55px; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; flex-shrink: 0; }
+        .stat-card.blue .stat-icon { background: rgba(2, 117, 216, 0.1); color: var(--primary-blue); }
+        .stat-card.green .stat-icon { background: rgba(16, 185, 129, 0.1); color: var(--primary-green); }
+        .stat-card.orange .stat-icon { background: rgba(245, 158, 11, 0.1); color: var(--primary-orange); }
+        .stat-card.purple .stat-icon { background: rgba(139, 92, 246, 0.1); color: var(--primary-purple); }
+        .stat-card.red .stat-icon { background: rgba(239, 68, 68, 0.1); color: var(--primary-red); }
+        .stat-info { flex: 1; min-width: 0; }
+        .stat-label { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .stat-value { font-size: 1.6rem; font-weight: 800; color: var(--text-white); line-height: 1; }
 
-  /* Images / Thumbnails */
-  .group\/img img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-  .group\/img:hover img { transform: scale(1.15) rotate(3deg); }
-  
-  /* Login Box Hover */
-  #loginScreen > div { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-  #loginScreen > div:hover {
-    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.15), 0 20px 30px -10px rgba(0, 0, 0, 0.1);
-    transform: translateY(-5px);
-  }
+        /* ==================== CHARTS SECTION ==================== */
+        .charts-section { padding: 0 40px 25px 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .chart-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 25px; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); position: relative; z-index: 1; }
+        .chart-card:hover { transform: translateY(-8px) scale(1.01); background: rgba(255, 255, 255, 0.05); z-index: 10; }
+        .chart-card canvas:hover { cursor: crosshair; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .chart-title { font-size: 1rem; font-weight: 700; color: var(--text-white); }
+        .chart-subtitle { font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: 1px; }
+        .chart-card canvas { max-height: 220px; width: 100% !important; }
 
-  .spinner { 
-    border: 3px solid rgba(14, 165, 233, 0.1); 
-    border-top-color: #0ea5e9; 
-    background: linear-gradient(to right, #0ea5e9, #22c55e, #f97316);
-    -webkit-background-clip: text;
-    border-radius: 50%; width: 40px; height: 40px; 
-    animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; 
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+        /* ==================== MODULE CARDS ==================== */
+        .content-area { padding: 0 40px 40px 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; align-content: start; position: relative; z-index: 10; }
+        .section-title { grid-column: 1 / -1; font-size: 1.4rem; font-weight: 800; color: var(--text-white); margin-top: 15px; margin-bottom: 5px; display: flex; align-items: center; gap: 15px; }
+        .section-title::before { content: ''; width: 5px; height: 32px; background: linear-gradient(180deg, var(--primary-cyan), var(--primary-blue)); border-radius: 10px; }
+        .module-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 22px; padding: 30px; cursor: pointer; display: flex; flex-direction: column; gap: 18px; position: relative; overflow: hidden; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .module-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent); transform: skewX(-20deg); transition: 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+        .module-card:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.06); }
+        .module-card:hover::before { left: 150%; }
+        .module-card.blue:hover { border-color: rgba(2, 117, 216, 0.4); }
+        .module-card.green:hover { border-color: rgba(16, 185, 129, 0.4); }
+        .module-card.orange:hover { border-color: rgba(245, 158, 11, 0.4); }
+        .module-icon { width: 70px; height: 70px; border-radius: 18px; display: flex; justify-content: center; align-items: center; font-size: 2rem; transition: all 0.4s; }
+        .module-card:hover .module-icon { transform: scale(1.1) rotate(5deg); }
+        .blue .module-icon { background: rgba(2, 117, 216, 0.1); color: #2196f3; }
+        .green .module-icon { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .orange .module-icon { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
+        .module-info h3 { font-size: 1.25rem; margin-bottom: 8px; color: var(--text-white); font-weight: 700; }
+        .module-info p { font-size: 0.95rem; color: rgba(255, 255, 255, 0.6); line-height: 1.6; }
+        .explore-btn { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; margin-top: auto; transition: all 0.3s; }
+        .module-card:hover .explore-btn { letter-spacing: 1px; }
+        .module-card:hover .explore-btn i { transform: translateX(8px); }
+        .blue .explore-btn { color: #2196f3; } .green .explore-btn { color: #10b981; } .orange .explore-btn { color: #fbbf24; }
 
-  .sticky-right {
-    position: sticky; right: 0; background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(5px);
-    box-shadow: -4px 0 8px rgba(0,0,0,0.02);
-  }
-  tr:hover .sticky-right { background: rgb(255, 255, 255); }
-</style>
+        /* ==================== NOTIFICATIONS ==================== */
+        .notification-container { position: fixed; top: 20px; right: 20px; z-index: 9998; display: flex; flex-direction: column; gap: 15px; }
+        .notification { background: rgba(10, 14, 39, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); padding: 18px 25px; border-radius: 15px; min-width: 320px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); display: flex; align-items: center; gap: 15px; animation: slideInRight 0.5s ease-out; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(400px); } to { opacity: 1; transform: translateX(0); } }
+        .notification i { font-size: 1.5rem; }
+        .notification.success { border-left: 4px solid var(--primary-green); } .notification.success i { color: var(--primary-green); }
+        .notification.warning { border-left: 4px solid var(--primary-orange); } .notification.warning i { color: var(--primary-orange); }
+        .notification-content { flex: 1; }
+        .notification-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+        .notification-message { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); }
+
+        /* --- PERBAIKAN POIN 5: UKURAN VIEWPORT ERP LEBIH LUAS KE ATAS --- */
+        #viewport-container { display: none; position: fixed; top: 70px; left: 0; width: 100%; height: calc(100vh - 70px); background: #ffffff; z-index: 500; opacity: 0; transform: translateY(40px) scale(0.98); transition: transform var(--transition-smooth), opacity var(--transition-smooth); will-change: transform, opacity; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -15px 60px rgba(0, 0, 0, 0.4); overflow: hidden; }
+        #viewport-container.active { opacity: 1; transform: translateY(0) scale(1); }
+        #erp-frame { width: 100%; height: 100%; border: none; background: #fff; }
+        
+        /* --- PERBAIKAN POIN 4: TOMBOL KEMBALI DIPERKECIL --- */
+        .back-nav { position: fixed; bottom: 20px; right: 20px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); color: #fff; padding: 10px 20px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.2); font-weight: 600; cursor: pointer; z-index: 1000; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4); font-size: 0.85rem; display: none; align-items: center; gap: 8px; opacity: 0; transform: translateY(20px); transition: all var(--transition-smooth); }
+        .back-nav.active { opacity: 1; transform: translateY(0); }
+        .back-nav:hover { background: #000; transform: translateY(-3px) scale(1.05); border-color: var(--primary-cyan); }
+        .back-nav i { font-size: 1rem; }
+
+        /* ==================== FOOTER (Diperbarui) ==================== */
+        footer { 
+            background: rgba(10, 14, 39, 0.7); 
+            backdrop-filter: blur(15px); 
+            border-top: 1px solid rgba(255, 255, 255, 0.05); 
+            padding: 15px 40px; /* Padding vertikal dikurangi */
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            color: rgba(255, 255, 255, 0.6); 
+            z-index: 100; 
+        }
+        .footer-address { font-size: 0.85rem; line-height: 1.5; } /* Font dan tinggi baris dirapatkan */
+        .footer-address strong { color: var(--text-white); font-size: 0.95rem; display: block; margin-bottom: 3px; }
+        .footer-contact { margin-top: 8px; display: flex; gap: 15px; font-weight: 600; color: var(--primary-cyan); }
+        .footer-copy { text-align: right; font-size: 0.8rem; font-weight: 600; }
+        .footer-copy span:first-child { color: var(--text-white); display: block; margin-bottom: 3px; }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(2, 117, 216, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-cyan); }
+
+        /* --- PERBAIKAN POIN 6: RESPONSIVE DESIGN UNTUK HP/MOBILE DITINGKATKAN --- */
+        @media (max-width: 1200px) { .charts-section { grid-template-columns: 1fr; } }
+        @media (max-width: 992px) { .content-area { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } .dashboard-stats { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } }
+        
+        /* Modifikasi Form Login Agar Rapih di HP */
+        @media (max-width: 900px) {
+            .login-card {
+                width: 90%; max-width: 450px; height: auto; min-height: 70vh;
+                padding: 40px 25px; display: flex; flex-direction: column; justify-content: center;
+                align-items: center; text-align: center; background: rgba(10, 25, 48, 0.9);
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+            }
+            .login-card .circle { position: relative; height: auto; margin-bottom: 25px; }
+            .login-card .circle::before { display: none; }
+            .login-card .content { opacity: 1; visibility: visible; transform: translateX(0); width: 100%; max-width: 100%; padding-left: 0; }
+            .login-card .content h2 { font-size: 1.6rem; white-space: normal; }
+            .login-card .logo-wrapper { position: relative; opacity: 1; transform: scale(1); pointer-events: auto; }
+            .login-card:hover .logo-wrapper, .login-card:focus-within .logo-wrapper { opacity: 1; transform: scale(1); }
+            .login-card .factory_img { display: none; }
+            .login-address-block .contact-info span { justify-content: center; }
+            .login-wrapper { animation: float-smooth-mobile 6s ease-in-out infinite !important; transform: scale(1) !important; width: 100%; display: flex; justify-content: center;}
+            @keyframes float-smooth-mobile { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        }
+
+        /* Modifikasi Dashboard untuk Mobile */
+        @media (max-width: 768px) { 
+            .top-info-bar { flex-direction: column; align-items: center; gap: 8px; padding: 12px 15px; font-size: 0.75rem; text-align: center; } 
+            .datetime { justify-content: center; width: 100%; }
+            .hse-ticker-wrap { max-width: 100%; width: 100%; margin-left: 0; border-radius: 8px; } 
+            header { padding: 12px 15px; flex-direction: column; gap: 12px; } 
+            .header-left { width: 100%; justify-content: space-between; gap: 10px; }
+            .header-divider { display: none; } 
+            .system-status { font-size: 0.75rem; padding: 6px 12px; }
+            .nav-right { width: 100%; justify-content: space-between; }
+            .user-profile span { display: none; }
+            .user-profile { padding: 8px 15px; }
+            .dashboard-stats, .charts-section, .content-area { padding: 15px; } 
+            .content-area { grid-template-columns: 1fr; } 
+            #viewport-container { top: 60px; height: calc(100vh - 60px); border-radius: 15px 15px 0 0; } 
+            /* Jarak dan Padding Footer versi Mobile dirapatkan */
+            footer { flex-direction: column; text-align: center; padding: 15px 20px; gap: 12px; } 
+            .footer-contact { flex-direction: column; gap: 10px; align-items: center; } 
+            .footer-copy { text-align: center; } 
+            .back-nav { bottom: 15px; right: 15px; padding: 10px 15px; }
+            .back-nav span { display: none; }
+            .back-nav::after { content: "Kembali"; }
+        }
+        @media (max-width: 480px) { 
+            header img.logo-small { height: 35px; } 
+            .dashboard-stats { grid-template-columns: 1fr; }
+            .login-card { padding: 30px 20px; }
+            .login-address-block .company-name { font-size: 1rem; }
+        }
+
+        .ripple { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.3); transform: scale(0); animation: ripple-animation 0.6s ease-out; pointer-events: none; }
+        @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
+    </style>
 </head>
-<body class="min-h-screen text-slate-800">
-
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-<div class="blob blob-3"></div>
-
-<script>
-  // Google Apps Script Web App Deployment URL
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxt-h08L84cqrk8tW8gdqfJM2gUrFC8IfCgDXgbzqYsdKudZOLihPVw_hz3apW-xbM/exec";
-  const AUTO_REFRESH_SECONDS = 60; 
-  const APPSHEET_APP_NAME = "MSBHumanResource-310640119";
-</script>
-
-<div id="loginScreen" class="min-h-screen flex flex-col items-center justify-center px-4 relative">
-  <div class="w-full max-w-md glass rounded-3xl p-10 fade-in shadow-2xl border border-white/50">
-    <div class="flex flex-col items-center text-center mb-8">
-      <img src="Murinda Logo.png" alt="Murinda Logo" class="w-40 h-auto mb-5">
-      <h1 class="text-2xl font-extrabold text-slate-950 tracking-tight">PT Murinda Sentra Baja</h1>
-      <p class="text-sm text-slate-600 mt-1">Digital Approval Portal</p>
+<body>
+    <div id="loading-screen" aria-live="polite">
+        <div class="loader-container">
+            <div class="loader"></div>
+            <img src="MSB Logo.png" class="loader-logo" alt="Logo PT Murinda" onerror="this.src='https://via.placeholder.com/60x60?text=MSB'">
+        </div>
+        <div class="loading-text">MSB ERP System</div>
+        <div class="loading-progress">Memuat Modul Utama...</div>
     </div>
 
-    <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-1.5 ml-1">Login As</label>
-        <select id="loginRole" class="w-full rounded-xl px-4 py-3 text-sm bg-white/80">
-          <option value="">-- Select Your Role --</option>
-          <optgroup label="Management">
-            <option>Engineering Manager</option>
-            <option>Equipment & Tools Manager</option>
-            <option>HR&GA Manager</option>
-            <option>HSE Manager</option>
-            <option>Maintenance Manager</option>
-            <option>Production Manager</option>
-            <option>Quality Control Manager</option>
-            <option>General Manager</option>
-          </optgroup>
-          <optgroup label="Staff & Operational">
-            <option>Warehouse Supervisor/Coordinator</option>
-            <option>Warehouse Staff</option>
-            <option>HR Staff</option>
-            <option>Security</option>
-            <option>Procurement</option>
-          </optgroup>
-        </select>
-      </div>
+    <div class="bg-glow blob-1" aria-hidden="true"></div>
+    <div class="bg-glow blob-2" aria-hidden="true"></div>
+    <div class="bg-glow blob-3" aria-hidden="true"></div>
 
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-1.5 ml-1">Password</label>
-        <input id="loginPass" type="password" placeholder="•••••" class="w-full rounded-xl px-4 py-3 text-sm bg-white/80" />
-      </div>
+    <div class="notification-container" id="notification-container" aria-live="assertive"></div>
+
+    <div id="login-overlay">
+        <div class="login-wrapper">
+            <div class="login-card" tabindex="0">
+                <div class="circle">
+                    <div class="logo-wrapper">
+                        <img src="MSB Logo.png" class="logo_img" alt="Logo PT Murinda" onerror="this.src='https://via.placeholder.com/180x60?text=MSB+Logo'">
+                    </div>
+                </div>
+                
+                <div class="content">
+                    <h2>MSB ERP SYSTEM</h2>
+                    
+                    <a href="https://maps.app.goo.gl/3DbQMsey9Bh2TC6S8" target="_blank" class="login-address-block">
+                        <div class="company-name">PT Murinda Sentra Baja</div>
+                        <div class="address-text">
+                            Jl. Raya Kalijati Purwadadi No. 123A RT 006/02<br>
+                            Desa Kalijati Barat, Kecamatan Kalijati<br>
+                            Kabupaten Subang, West Java 41271 (Exit Toll Gate Kalijati)
+                        </div>
+                        <div class="contact-info">
+                            <span><i class="fa-solid fa-phone"></i> (+62260) 7495467</span>
+                            <span><i class="fa-solid fa-fax"></i> (+62260) 7495222</span>
+                            <span><i class="fa-solid fa-envelope"></i> plant@murinda.com</span>
+                        </div>
+                    </a>
+
+                    <div class="action-container">
+                        <button class="luxury-btn" onclick="enterSystem(event)" id="enterBtn">
+                            <i class="fa-solid fa-fingerprint"></i> MASUK SISTEM
+                        </button>
+                    </div>
+                </div>
+
+                <img src="Plant MSB.jpg" class="factory_img" alt="Plant PT Murinda" onerror="this.src='https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600&auto=format&fit=crop'">
+            </div>
+        </div>
     </div>
 
-    <p id="loginError" class="text-xs text-red-600 mt-3 text-center bg-red-50 py-2 rounded-lg hidden border border-red-200"></p>
+    <main id="main-dashboard" style="display: none;">
+        <div class="top-info-bar">
+            <div class="datetime">
+                <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> <span id="current-date">Memuat...</span></span>
+                <span><i class="fa-regular fa-clock" aria-hidden="true"></i> <span id="current-time">Memuat...</span></span>
+            </div>
+            <div class="hse-ticker-wrap" aria-label="HSE & Motivation Ticker">
+                <div class="hse-ticker">
+                    <i class="fa-solid fa-bullhorn" aria-hidden="true"></i>
+                    <strong>MSB INFO:</strong> Utamakan Keselamatan (K3) & Gunakan APD Lengkap! | Semangat Bekerja: Setiap keringat hari ini adalah langkah menuju kesuksesan! | Merasa Lelah/Ngantuk? Lakukan peregangan ringan, minum air putih, atau cuci muka sejenak. | Bosan? Tarik napas dalam dan ingat kembali tujuan besar Anda. | Zero Accident & Produktivitas Tinggi adalah Komitmen Bersama!
+                </div>
+            </div>
+        </div>
 
-    <button id="loginBtn" class="mt-6 w-full btn-primary font-bold py-3.5 rounded-xl">
-      Secure Login
+        <header>
+            <div class="header-left">
+                <img src="MSB Logo.png" alt="Logo" class="logo-small" onerror="this.style.display='none'">
+                <div class="header-divider"></div>
+                <div class="system-status" aria-label="System Status">
+                    <div class="status-dot"></div>
+                    <span>Online MSB ERP System</span>
+                </div>
+            </div>
+            <nav class="nav-right" aria-label="User Navigation">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Dark or Light Theme" title="Toggle Theme">
+                    <i class="fa-solid fa-moon" aria-hidden="true"></i>
+                </button>
+                <div class="user-profile">
+                    <i class="fa-solid fa-circle-user" aria-hidden="true"></i>
+                    <span id="display-user">Kalijati Plant</span>
+                </div>
+                <button class="btn-logout" onclick="doLogout()" aria-label="Logout from System">
+                    <i class="fa-solid fa-power-off" aria-hidden="true"></i> Keluar
+                </button>
+            </nav>
+        </header>
+
+        <section class="dashboard-stats" aria-label="Key Performance Indicators">
+            <div class="stat-card blue">
+                <div class="stat-icon" aria-hidden="true"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-info"><div class="stat-label">Karyawan</div><div class="stat-value" id="stat-karyawan">0</div></div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon" aria-hidden="true"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                <div class="stat-info"><div class="stat-label">Purchase Order</div><div class="stat-value" id="stat-po">0</div></div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-icon" aria-hidden="true"><i class="fa-solid fa-truck"></i></div>
+                <div class="stat-info"><div class="stat-label">Pengiriman</div><div class="stat-value" id="stat-pengiriman">0</div></div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-icon" aria-hidden="true"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div class="stat-info"><div class="stat-label">Stok Produksi</div><div class="stat-value" id="stat-stok">0</div></div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-icon" aria-hidden="true"><i class="fa-solid fa-clipboard-check"></i></div>
+                <div class="stat-info"><div class="stat-label">Jumlah LKP</div><div class="stat-value" id="stat-lkp">0</div></div>
+            </div>
+            <div class="stat-card red">
+                <div class="stat-icon" aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="stat-info"><div class="stat-label">Total Insiden</div><div class="stat-value" id="stat-insiden">0</div></div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon" aria-hidden="true"><i class="fa-solid fa-clock"></i></div>
+                <div class="stat-info"><div class="stat-label">SPP Kurang</div><div class="stat-value" id="stat-spp">0</div></div>
+            </div>
+        </section>
+
+        <section class="charts-section" aria-label="Data Analytics Charts">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3 class="chart-title">Trend PO Bulanan</h3>
+                        <p class="chart-subtitle">Data Rekapitulasi Purchase Order per Bulan</p>
+                    </div>
+                </div>
+                <canvas id="clientProcessChart" aria-label="Line Chart Trend PO" role="img"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3 class="chart-title">Distribusi Karyawan</h3>
+                        <p class="chart-subtitle">Perbandingan per Departemen</p>
+                    </div>
+                </div>
+                <canvas id="karyawanDeptChart" aria-label="Doughnut Chart Distribusi Karyawan" role="img"></canvas>
+            </div>
+        </section>
+
+        <section class="content-area" aria-label="ERP Modules Application Navigation">
+            <h2 class="section-title"><span>Modul ERP System</span></h2>
+            <div class="module-card blue" onclick="launch('https://murindasentrabaja.github.io/HR-System/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-people-group"></i></div>
+                <div class="module-info"><h3>Human Resource</h3><p>Otomatisasi seluruh proses SDM termasuk Penilaian Kinerja. Sinkronisasi data real-time.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="module-card green" onclick="launch('https://murindasentrabaja.github.io/General-Affairs/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-building-circle-check"></i></div>
+                <div class="module-info"><h3>General Affairs</h3><p>Kelola fasilitas dan operasional kantor secara digital. Tingkatkan produktivitas alur kerja.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+            </div>
+
+            <div class="module-card orange" onclick="launch('https://murindasentrabaja.github.io/HSE/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-helmet-safety"></i></div>
+                <div class="module-info"><h3>HSE System</h3><p>Kendali penuh kepatuhan K3. Pastikan standar keselamatan dan pelaporan lingkungan akurat.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="module-card blue" onclick="launch('https://murindasentrabaja.github.io/Maintenance/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-gears"></i></div>
+                <div class="module-info"><h3>Maintenance</h3><p>Prediksi kebutuhan perawatan mesin secara otomatis. Minimalkan downtime.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+            </div>
+
+            <div class="module-card green" onclick="launch('https://murindasentrabaja.github.io/Purchase-Order/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                <div class="module-info"><h3>Purchase Order</h3><p>Pengadaan cerdas terintegrasi. Persetujuan multi-level yang ringkas dengan kendali vendor.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="module-card orange" onclick="launch('https://murindasentrabaja.github.io/Warehouse-System/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div class="module-info"><h3>Warehouse</h3><p>Visibilitas stok dan logistik real-time. Eliminasi kesalahan inventaris.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="module-card blue" onclick="launch('https://murindasentrabaja.github.io/Production-Tracking/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-industry"></i></div>
+                <div class="module-info"><h3>Produksi</h3><p>Monitoring lini manufaktur secara digital. Percepat output harian dengan data efisiensi akurat.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="module-card green" onclick="launch('https://murindasentrabaja.github.io/QC-Inspection/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-microscope"></i></div>
+                <div class="module-info"><h3>Quality Control</h3><p>Standardisasi mutu yang presisi. Inspeksi cepat berbasis data untuk menjaga integritas.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="module-card orange" onclick="launch('https://murindasentrabaja.github.io/SPP/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-file-invoice"></i></div>
+                <div class="module-info"><h3>SPP System</h3><p>Manajemen Surat Permintaan Pembelian. Kelola dan pantau pengajuan kebutuhan material.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="module-card blue" onclick="launch('https://murindasentrabaja.github.io/Master-Schedule/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></div>
+                <div class="module-info"><h3>Master Schedule</h3><p>Pantau timeline dan alokasi waktu secara komprehensif.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="module-card blue" onclick="launch('https://murindasentrabaja.github.io/MSB-Approval/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-file-signature"></i></div>
+                <div class="module-info"><h3>MSB Approval</h3><p>Portal persetujuan digital lintas fungsi departemen dengan sinkronisasi database live.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="module-card green" onclick="launch('https://murindasentrabaja.github.io/Administration-System/')" tabindex="0" role="button">
+                <div class="module-icon" aria-hidden="true"><i class="fa-solid fa-folder-tree"></i></div>
+                <div class="module-info"><h3>Administration System</h3><p>Manajemen alur kerja administratif dan pelacakan kontrol internal terpadu.</p></div>
+                <div class="explore-btn">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+            
+        </section>
+
+        <footer>
+            <address class="footer-address">
+                <strong>PT MURINDA SENTRA BAJA</strong>
+                Jl. Raya Kalijati Purwadadi No. 123A RT 006/02<br>
+                Desa Kalijati Barat, Kecamatan Kalijati<br>
+                Kabupaten Subang, West Java 41271 (Exit Toll Gate Kalijati)
+                <div class="footer-contact">
+                    <span><i class="fa-solid fa-phone" aria-hidden="true"></i> (+62260) 7495467</span>
+                    <span><i class="fa-solid fa-fax" aria-hidden="true"></i> (+62260) 7495222</span>
+                    <span><i class="fa-solid fa-envelope" aria-hidden="true"></i> plant@murinda.com</span>
+                </div>
+            </address>
+            <div class="footer-copy">
+                <span>PT Murinda Sentra Baja. Hak Cipta Dilindungi Undang-Undang.</span>
+                <span style="opacity: 0.7;">Developed by Aspuro Amarulloh Khoiri | Version 070695 Premium Enhanced</span>
+            </div>
+        </footer>
+    </main>
+
+    <div id="viewport-container" aria-hidden="true">
+        <iframe id="erp-frame" title="Embedded ERP Module Viewport"></iframe>
+    </div>
+
+    <button class="back-nav" id="back-btn" onclick="closeViewport()" aria-label="Kembali ke Dashboard">
+        <i class="fa-solid fa-house" aria-hidden="true"></i> <span>Kembali</span>
     </button>
 
-    <div class="mt-8 pt-6 border-t border-slate-200/50 text-center">
-      <p class="text-xs text-slate-500">MSB ERP System</p>
-      <div id="connStatus" class="inline-flex items-center gap-2 mt-1.5 text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600">
-        <span class="relative flex h-2 w-2">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
-        </span>
-        Checking Connection...
-      </div>
-    </div>
-  </div>
-  
-  <footer class="absolute bottom-4 text-center w-full text-[10px] text-slate-400">
-    Licensed to PT Murinda Sentra Baja<br>
-    Developed by Aspuro Amarulloh Khoiri
-  </footer>
-</div>
-
-<div id="dashboard" class="hidden fade-in relative pb-16">
-  <header class="glass sticky top-0 z-30 border-b border-white/50">
-    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3.5">
-        <img src="Murinda Logo.png" alt="Murinda Logo" class="h-10 w-auto">
-        <div>
-          <h1 class="text-lg font-extrabold text-slate-950 tracking-tight">MSB Approval System</h1>
-          <div class="flex items-center gap-2 text-xs text-slate-500">
-            <span class="relative flex h-1.5 w-1.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-            </span>
-            <span id="lastSyncText">Live</span>
-          </div>
-        </div>
-      </div>
-      <div class="flex items-center gap-2.5">
-        <div class="hidden sm:flex items-center gap-2 glass-dark text-white text-xs px-4 py-2 rounded-full font-medium shadow-inner">
-            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            <span id="roleBadge"></span>
-        </div>
-        <button id="refreshBtn" class="text-xs px-4 py-2 rounded-xl bg-white hover:bg-sky-50 text-sky-700 font-semibold transition border border-sky-100 shadow-sm flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 003.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            Refresh Data
-        </button>
-        <button id="logoutBtn" class="text-xs px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-semibold transition border border-red-100 flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            Logout
-        </button>
-      </div>
-    </div>
-
-    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 flex gap-6 border-t border-slate-100">
-      <button data-tab="karyawan" class="tab-btn px-1 py-4 text-sm font-bold border-b-2 border-sky-600 text-sky-700 relative flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-        Izin Terpadu Karyawan
-        <span id="badge-karyawan" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
-      </button>
-      <button data-tab="spp" class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-sky-600 hidden flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        Surat Permintaan Pengadaan (SPP)
-        <span id="badge-spp" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
-      </button>
-      <button data-tab="lkp" class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-sky-600 hidden flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-        Laporan Ketidaksesuaian (LKP)
-        <span id="badge-lkp" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
-      </button>
-      <button data-tab="gudang" class="tab-btn px-1 py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-sky-600 hidden flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-        Permintaan Gudang
-        <span id="badge-gudang" class="hidden bg-red-500 text-white text-[10px] leading-none font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse"></span>
-      </button>
-    </div>
-  </header>
-
-  <main class="max-w-[90rem] mx-auto px-4 sm:px-6 py-6">
-    <div id="statsBar" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"></div>
-
-    <div class="glass rounded-2xl p-4 mb-4 flex flex-col md:flex-row gap-3 shadow-sm border border-white/50">
-      <div class="relative flex-1">
-        <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-        <input id="searchBox" type="text" placeholder="Cari sesuatu sobat MSB..." class="w-full bg-white/70 border border-slate-200 rounded-xl pl-11 pr-4 py-2.5 text-sm" />
-      </div>
-      <div class="flex gap-3">
-        <select id="filterStatus" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white/70 focus:ring-sky-500">
-          <option value="">All Verification Status</option>
-          <option value="approved">✅ Approved</option>
-          <option value="pending">🟡 Pending</option>
-          <option value="rejected">❌ Rejected</option>
-          <option value="empty">⚪ Unfilled</option>
-        </select>
-        
-        <a id="sppDetailBtn" href="https://murindasentrabaja.github.io/SPP-Form/" target="_blank" class="btn-link bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl hidden items-center gap-2 shrink-0 transition-all shadow-md">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-          SPP Detail
-        </a>
-
-        <button id="addRowBtn" class="btn-primary text-sm font-bold px-5 py-2.5 rounded-xl hidden items-center gap-2 shrink-0">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-          Add Record Row
-        </button>
-      </div>
-    </div>
-
-    <div id="loadingBox" class="glass rounded-2xl flex flex-col items-center justify-center py-20 my-10 hidden shadow-inner border border-white/50">
-      <div class="spinner mb-5"></div>
-      <p class="text-base font-semibold bg-gradient-to-r from-sky-600 to-green-600 bg-clip-text text-transparent animate-pulse">Synchronizing with Secure MSB Databases...</p>
-      <p class="text-xs text-slate-400 mt-1">Please wait a moment while we process the records.</p>
-    </div>
-
-    <div id="errorBox" class="hidden bg-red-50 border-l-4 border-red-500 text-red-900 rounded-xl p-5 text-sm font-medium shadow-md fade-in my-6">
-        <div class="flex items-center gap-3">
-            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-            <span id="errorText"></span>
-        </div>
-    </div>
-
-    <div id="tableWrap" class="bg-white/60 backdrop-blur-sm border border-white rounded-2xl overflow-hidden shadow-xl transition-all duration-300">
-      <div class="overflow-x-auto scrollbar-thin">
-        <table class="w-full text-sm">
-          <thead class="bg-slate-100/70 border-b border-slate-200">
-            <tr id="tableHead" class="text-slate-900"></tr>
-          </thead>
-          <tbody id="tableBody" class="divide-y divide-slate-100 bg-white/40"></tbody>
-        </table>
-      </div>
-      
-      <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16 text-center text-sm text-slate-500 bg-white/50">
-        <svg class="w-16 h-16 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-        <span class="font-medium text-slate-600 text-base">No Data Records Found</span>
-        <p class="mt-1">The requested structural metrics do not match the current filters.</p>
-      </div>
-    </div>
-  </main>
-
-  <footer class="absolute bottom-0 w-full py-4 text-center text-[10px] text-slate-400 bg-white/30 backdrop-blur-xs border-t border-slate-100">
-    PT Murinda Sentra Baja | Developed by Aspuro Amarulloh khoiri <a href="#" class="text-sky-600 hover:underline">Privacy Policy</a>.
-  </footer>
-</div>
-
-<div id="rowModal" class="hidden fixed inset-0 bg-slate-950/40 z-50 flex items-center justify-center px-4 backdrop-blur-sm transition-all duration-300 opacity-0">
-  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col transform scale-95 transition-all duration-300 border border-slate-100 overflow-hidden">
-    <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/50">
-      <div class="flex items-center gap-3">
-        <div id="modalIcon" class="w-10 h-10 rounded-xl btn-primary flex items-center justify-center text-white">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 00-2 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-        </div>
-        <h3 id="modalTitle" class="text-lg font-extrabold text-slate-950 tracking-tight">Data Parameters Form</h3>
-      </div>
-      <button id="closeModalBtn" class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all text-2xl leading-none">&times;</button>
-    </div>
-    <div id="modalBody" class="p-6 overflow-y-auto space-y-4 grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4 scrollbar-thin bg-white"></div>
-    <div class="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
-      <button id="cancelModalBtn" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white border border-slate-200 hover:bg-slate-100 shadow-sm">Cancel</button>
-      <button id="saveModalBtn" class="px-5 py-2.5 rounded-xl text-sm font-bold btn-primary flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-        Save System Data
-      </button>
-    </div>
-  </div>
-</div>
-
-<div id="actionModal" class="hidden fixed inset-0 bg-slate-950/40 z-[60] flex items-center justify-center px-4 backdrop-blur-sm transition-all duration-300 opacity-0">
-  <div class="glass rounded-3xl shadow-2xl w-full max-w-md transform scale-95 transition-all duration-300 border border-white/60 p-7">
-    <div class="flex items-center gap-4 mb-5">
-        <div id="actionIconWin" class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner"></div>
-        <h3 id="actionTitle" class="text-xl font-extrabold text-slate-950 tracking-tight">Confirm Status Update</h3>
-    </div>
-    <div class="p-4 rounded-xl bg-white/50 border border-white/80 text-sm text-slate-700 space-y-2 mb-6 shadow-inner" id="actionBody"></div>
-    <div class="flex justify-end gap-3">
-      <button id="actionCancel" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white/80 border border-slate-200 hover:bg-white">Dismiss</button>
-      <button id="actionConfirm" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white shadow-md flex items-center gap-2"></button>
-    </div>
-  </div>
-</div>
-
-<div id="lightboxModal" class="hidden fixed inset-0 bg-slate-950/85 z-[100] flex flex-col items-center justify-center p-4 backdrop-blur-md transition-all duration-300 opacity-0" onclick="closeLightbox()">
-  <button class="absolute top-6 right-6 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white text-3xl font-light" onclick="closeLightbox()">&times;</button>
-  <img id="lightboxImg" class="max-w-full max-h-[80vh] rounded-2xl shadow-2xl border border-white/10 transform scale-95 transition-all duration-300 object-contain">
-  <p id="lightboxTitle" class="text-white font-semibold mt-4 tracking-wide text-sm bg-slate-900/60 px-5 py-2 rounded-full backdrop-blur-xs border border-white/10 shadow-lg"></p>
-</div>
-
-<div id="toast" class="fixed bottom-6 right-6 z-[100] hidden transform translate-y-10 opacity-0 transition-all duration-300 ease-out flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl border border-white/20 text-white text-sm font-medium">
-    <div id="toastIcon"></div>
-    <div id="toastMsg"></div>
-</div>
-
-<script>
-/* ============================================================
- * ROLE CONFIGURED ENHANCED UNIQUE PASSWORDS
- * ============================================================ */
-const ROLE_PASSWORDS = {
-  "Engineering Manager":              "111111",
-  "Equipment & Tools Manager":        "111112",
-  "HR&GA Manager":                    "111113",
-  "HSE Manager":                      "111114",
-  "Maintenance Manager":              "111115",
-  "Production Manager":               "111116",
-  "Quality Control Manager":          "111117",
-  "General Manager":                  "111118",
-  "HR Staff":                         "111119",
-  "Security":                         "111120",
-  "Procurement":                      "111121",
-  "Warehouse Supervisor/Coordinator": "111122",
-  "Warehouse Staff":                  "111123"
-};
-
-const KARYAWAN_ROLE_CONFIG = {
-  "Engineering Manager":              { sheet:"Karyawan", approvalCol:"Manager", dept:"Engineering",         canSee:true },
-  "Equipment & Tools Manager":        { sheet:"Karyawan", approvalCol:"Manager", dept:"Equipment & Tools",   canSee:true },
-  "HR&GA Manager":                    { sheet:"Karyawan", approvalCol:"Manager", dept:"HR&GA",               canSee:true },
-  "HSE Manager":                      { sheet:"Karyawan", approvalCol:"Manager", dept:"HSE",                 canSee:true },
-  "Maintenance Manager":              { sheet:"Karyawan", approvalCol:"Manager", dept:"Maintenance",         canSee:true },
-  "Production Manager":               { sheet:"Karyawan", approvalCol:"Manager", dept:"Production",          canSee:true },
-  "Quality Control Manager":          { sheet:"Karyawan", approvalCol:"Manager", dept:"Quality Control",     canSee:true },
-  "HR Staff":                         { sheet:"Karyawan", approvalCol:"HRD",     dept:null,                  canSee:true },
-  "Security":                         { sheet:"Karyawan", approvalCol:"Security",dept:null,                  canSee:true },
-  "General Manager":                  { sheet:"Karyawan", approvalCol:null,      dept:null,                  canSee:false },
-  "Procurement":                      { sheet:"Karyawan", approvalCol:null,      dept:null,                  canSee:false },
-  "Warehouse Supervisor/Coordinator": { sheet:"Karyawan", approvalCol:null,      dept:null,                  canSee:false },
-  "Warehouse Staff":                  { sheet:"Karyawan", approvalCol:null,      dept:null,                  canSee:false }
-};
-
-const SPP_ROLE_CONFIG = {
-  "Warehouse Staff":                  { canSee:true,  approvalCol:"Dibuat Oleh",                          deptFilter:null },
-  "Warehouse Supervisor/Coordinator": { canSee:true,  approvalCol:"Diperiksa Supervisor/Coordinator",     deptFilter:null },
-  "General Manager":                  { canSee:true,  approvalCol:"Disetujui Oleh General Manager",       deptFilter:null },
-  "Production Manager":               { canSee:true,  approvalCol:"Diketahui Oleh Manager",               deptFilter:"Production" },
-  "Procurement":                      { canSee:true,  approvalCol:"Diperiksa Supervisor/Coordinator",     deptFilter:null }
-};
-
-const LKP_ROLE_CONFIG = {
-  "Quality Control Manager":          { canSee: true, approvalCol: "Diketahui Oleh", deptFilter: null },
-  "Production Manager":               { canSee: true, approvalCol: "Disetujui Oleh", deptFilter: null },
-  "General Manager":                  { canSee: true, approvalCol: null,             deptFilter: null }
-};
-
-/* KONFIGURASI ROLE PERMINTAAN GUDANG */
-const GUDANG_ROLE_CONFIG = {
-  "Engineering Manager":              { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"Engineering" },
-  "Equipment & Tools Manager":        { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"Equipment & Tools" },
-  "HR&GA Manager":                    { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"HR&GA" },
-  "HSE Manager":                      { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"HSE" },
-  "Maintenance Manager":              { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"Maintenance" },
-  "Production Manager":               { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"Production" },
-  "Quality Control Manager":          { canSee:true,  approvalCol:"Disetujui Oleh", deptFilter:"Quality Control" },
-  "General Manager":                  { canSee:true,  approvalCol:null,             deptFilter:null },
-  "Warehouse Supervisor/Coordinator": { canSee:true,  approvalCol:"Diketahui Oleh", deptFilter:null },
-  "Warehouse Staff":                  { canSee:true,  approvalCol:null,             deptFilter:null }
-};
-
-/* ============================================================
- * STATE REPOSITORIES
- * ============================================================ */
-let currentRole = null;
-let activeTab   = "karyawan"; 
-let dataCache   = { karyawan:{headers:[], rows:[]}, spp:{headers:[], rows:[]}, lkp:{headers:[], rows:[]}, gudang:{headers:[], rows:[]} };
-let refreshTimer = null;
-let isMobile = window.innerWidth < 768;
-
-/* ============================================================
- * UTILITIES FUNCTIONS
- * ============================================================ */
-function $(id){ return document.getElementById(id); }
-
-function showToast(msg, type='success'){
-  const t = $("toast");
-  const icon = $("toastIcon");
-  $("toastMsg").textContent = msg;
-  
-  t.className = "fixed bottom-6 right-6 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl border border-white/20 text-white text-sm font-semibold transition-all duration-300 backdrop-blur-sm";
-  
-  if(type === 'success'){
-    t.classList.add("bg-emerald-600/90");
-    icon.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
-  } else if (type === 'error') {
-    t.classList.add("bg-red-600/90");
-    icon.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
-  } else {
-    t.classList.add("bg-slate-800/90");
-    icon.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
-  }
-
-  t.classList.remove("hidden");
-  setTimeout(() => { t.classList.remove("translate-y-10", "opacity-0"); }, 10);
-
-  setTimeout(()=>{
-    t.classList.add("translate-y-10", "opacity-0");
-    setTimeout(() => t.classList.add("hidden"), 300);
-  }, 4000);
-}
-
-function toggleModal(id, show) {
-    const m = $(id);
-    const body = m.querySelector('div') || m.querySelector('img');
-    if (show) {
-        m.classList.remove('hidden');
-        setTimeout(() => {
-            m.classList.remove('opacity-0');
-            if(body) body.classList.remove('scale-95');
-        }, 10);
-    } else {
-        m.classList.add('opacity-0');
-        if(body) body.classList.add('scale-95');
-        setTimeout(() => m.classList.add('hidden'), 300);
-    }
-}
-
-function escapeHtml(s){
-  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
-}
-
-function classifyStatus(value, approvalCol){
-  const v = String(value ?? "").trim().toLowerCase();
-  if(!v) return "empty";
-  if(v === "pending") return "pending";
-  if(["ditolak","reject","rejected","tolak"].includes(v)) return "rejected";
-  return "approved";
-}
-
-function statusBadge(value, approvalCol){
-  const s = classifyStatus(value, approvalCol);
-  const icon = {
-      approved: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>',
-      pending: '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>',
-      rejected: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>',
-      empty: '<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>'
-  }[s];
-  const label = {approved:(value||"Approved"), pending:"Pending", rejected:"Rejected", empty:"Unfilled"}[s];
-  const cls   = {approved:"badge-approved", pending:"badge-pending", rejected:"badge-rejected", empty:"badge-empty"}[s];
-  return `<span class="badge ${cls}">${icon}${escapeHtml(label)}</span>`;
-}
-
-function viewImage(url, title) {
-  $("lightboxImg").src = url;
-  $("lightboxTitle").textContent = title;
-  toggleModal("lightboxModal", true);
-}
-
-function closeLightbox() {
-  toggleModal("lightboxModal", false);
-}
-
-// Fitur pembantu untuk merender sel
-function renderRowCells(row, headers, approvalIdx, cfg) {
-  return headers.map((h, i) => {
-    const isApprovalCol = (i === approvalIdx);
-    const val = row[i];
-    const valStr = String(val ?? "").trim();
-    const isIdCol = i === 0 || h.toLowerCase().includes('nik') || h.toLowerCase().includes('id');
-    const isImageField = h.toLowerCase().includes('foto') || h.toLowerCase().includes('gambar') || h.toLowerCase().includes('image') || h.toLowerCase().includes('lampiran') || valStr.toLowerCase().endsWith('.jpg') || valStr.toLowerCase().endsWith('.jpeg') || valStr.toLowerCase().endsWith('.png');
-
-    if(isApprovalCol){
-      return `<td class="px-4 py-3 whitespace-nowrap">${statusBadge(val, cfg.approvalCol)}</td>`;
-    }
-    
-    if(isImageField && valStr){
-      const currentSheetName = activeTab === "karyawan" ? "Karyawan" : activeTab === "spp" ? "SPP" : activeTab === "lkp" ? "LKP" : "Permintaan Gudang";
-      let appNameForImage = APPSHEET_APP_NAME;
-      if (activeTab === "lkp") appNameForImage = "QCPassMurindaSentraBaja-40996000";
-      
-      const appSheetImgUrl = `https://www.appsheet.com/template/gettablefileurl?appName=${encodeURIComponent(appNameForImage)}&tableName=${encodeURIComponent(currentSheetName)}&fileName=${encodeURIComponent(valStr)}`;
-      
-      return `<td class="px-4 py-3 whitespace-nowrap">
-        <div class="relative group/img w-12 h-12 rounded-xl overflow-hidden border border-slate-200/80 shadow-xs cursor-pointer hover:scale-105 transition-all duration-200 bg-slate-50 flex items-center justify-center" onclick="viewImage('${appSheetImgUrl}', '${escapeHtml(h)}: ${escapeHtml(valStr)}')">
-          <img src="${appSheetImgUrl}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/16/16410.png'; this.className='w-5 h-5 opacity-30';">
-          <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/img:opacity-100 transition flex items-center justify-center">
-            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-          </div>
-        </div>
-      </td>`;
-    }
-
-    const cellClass = isIdCol ? "font-semibold text-slate-950" : "text-slate-700";
-    return `<td class="px-4 py-3 whitespace-nowrap ${cellClass}">${escapeHtml(val)}</td>`;
-  }).join("");
-}
-
-// Fitur pembantu untuk toggle accordion baris Gudang
-window.toggleGroupRow = function(groupId) {
-    const rows = document.querySelectorAll('.group-item-' + groupId);
-    const icon = document.getElementById('icon-' + groupId);
-    rows.forEach(r => r.classList.toggle('hidden'));
-    if (icon) icon.classList.toggle('rotate-90');
-};
-
-/* ============================================================
- * ASYNC NETWORK INTEGRITY
- * ============================================================ */
-async function apiGet(params){
-  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_URL")){
-    throw new Error("Apps Script URL structure is unconfigured.");
-  }
-  const url = APPS_SCRIPT_URL + "?" + new URLSearchParams(params).toString();
-  const res = await fetch(url, { method:"GET" });
-  if(!res.ok) throw new Error("HTTP Status Flag " + res.status);
-  const j = await res.json();
-  if(j.error) throw new Error(j.error);
-  return j;
-}
-async function apiPost(body){
-  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_URL")){
-    throw new Error("Apps Script URL structure is unconfigured.");
-  }
-  const res = await fetch(APPS_SCRIPT_URL, {
-    method:"POST",
-    headers:{ "Content-Type":"text/plain;charset=utf-8" },
-    body: JSON.stringify(body)
-  });
-  if(!res.ok) throw new Error("HTTP Status Flag " + res.status);
-  const j = await res.json();
-  if(j.error) throw new Error(j.error);
-  return j;
-}
-
-/* ============================================================
- * INTERACTIVE LOGIC PIPELINES
- * ============================================================ */
-async function checkConnection(){
-  try {
-    await apiGet({ action:"ping" });
-    $("connStatus").innerHTML = '<span class="relative flex h-2 w-2"><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span><span class="text-emerald-700">Connected</span>';
-    $("connStatus").className = "inline-flex items-center gap-2 mt-1.5 text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 shadow-inner";
-  } catch(e){
-    $("connStatus").innerHTML = '<span class="relative flex h-2 w-2"><span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span></span><span class="text-red-700">Connection Failed</span>';
-    $("connStatus").className = "inline-flex items-center gap-2 mt-1.5 text-xs font-bold px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-700 shadow-inner";
-    console.error(e);
-  }
-}
-
-$("loginBtn").onclick = () => {
-  const role = $("loginRole").value;
-  const pass = $("loginPass").value;
-  const err  = $("loginError");
-  err.classList.add("hidden");
-  
-  if(!role){ 
-      err.textContent = "Please select your system role."; 
-      err.classList.remove("hidden"); 
-      $("loginRole").focus();
-      return; 
-  }
-  
-  if(pass !== ROLE_PASSWORDS[role]){ 
-      err.textContent = "Incorrect password parameters. Access denied."; 
-      err.classList.remove("hidden"); 
-      $("loginPass").value = "";
-      $("loginPass").focus();
-      return; 
-  }
-  
-  $("loginBtn").innerText = "Authenticating Gateway...";
-  $("loginBtn").disabled = true;
-  
-  setTimeout(() => { 
-      currentRole = role;
-      enterDashboard();
-      $("loginBtn").innerText = "Secure Login";
-      $("loginBtn").disabled = false;
-  }, 800);
-};
-$("loginPass").addEventListener("keypress", e => { if(e.key==="Enter") $("loginBtn").click(); });
-
-function enterDashboard(){
-  toggleModal("loginScreen", false);
-  setTimeout(() => {
-      $("dashboard").classList.remove("hidden");
-      document.body.classList.remove('justify-center'); 
-  }, 300);
-  
-  $("roleBadge").textContent = currentRole;
-
-  const sppBtn = document.querySelector('[data-tab="spp"]');
-  const lkpBtn = document.querySelector('[data-tab="lkp"]');
-  const gudangBtn = document.querySelector('[data-tab="gudang"]');
-
-  if(SPP_ROLE_CONFIG[currentRole]?.canSee) sppBtn.classList.remove("hidden");
-  else sppBtn.classList.add("hidden");
-
-  if(LKP_ROLE_CONFIG[currentRole]?.canSee) lkpBtn.classList.remove("hidden");
-  else lkpBtn.classList.add("hidden");
-
-  if(GUDANG_ROLE_CONFIG[currentRole]?.canSee) gudangBtn.classList.remove("hidden");
-  else gudangBtn.classList.add("hidden");
-
-  const karyawanCfg = KARYAWAN_ROLE_CONFIG[currentRole];
-  if(!karyawanCfg?.canSee){
-    document.querySelector('[data-tab="karyawan"]').classList.add("hidden");
-    if(SPP_ROLE_CONFIG[currentRole]?.canSee) {
-        switchTab("spp");
-    } else if (LKP_ROLE_CONFIG[currentRole]?.canSee) {
-        switchTab("lkp");
-    } else if (GUDANG_ROLE_CONFIG[currentRole]?.canSee) {
-        switchTab("gudang");
-    }
-  } else {
-    switchTab("karyawan");
-  }
-
-  loadData(true);
-  if(refreshTimer) clearInterval(refreshTimer);
-  refreshTimer = setInterval(() => loadData(false), AUTO_REFRESH_SECONDS*1000);
-}
-
-$("logoutBtn").onclick = () => {
-  currentRole = null;
-  if(refreshTimer) clearInterval(refreshTimer);
-  
-  $("dashboard").classList.add("hidden");
-  $("loginScreen").classList.remove("hidden");
-  $("loginPass").value = "";
-  $("loginRole").value = "";
-  document.querySelector('[data-tab="karyawan"]').classList.remove("hidden");
-  showToast("You have been securely logged out of the portal system.");
-};
-
-$("refreshBtn").onclick = () => loadData(true);
-document.querySelectorAll(".tab-btn").forEach(b => {
-  b.onclick = () => switchTab(b.dataset.tab);
-});
-
-function switchTab(tab){
-  activeTab = tab;
-  document.querySelectorAll(".tab-btn").forEach(b => {
-    if(b.dataset.tab === tab){
-      b.classList.add("border-sky-600","text-sky-700");
-      b.classList.remove("border-transparent","text-slate-500","font-medium");
-      b.classList.add("font-bold");
-    } else {
-      b.classList.remove("border-sky-600","text-sky-700","font-bold");
-      b.classList.add("border-transparent","text-slate-500","font-medium");
-    }
-  });
-  $("searchBox").value = "";
-  $("filterStatus").value = "";
-  renderTable();
-}
-
-async function loadData(showLoader=false){
-  if(showLoader){ 
-      $("loadingBox").classList.remove("hidden"); 
-      $("tableWrap").classList.add("hidden"); 
-      $("statsBar").classList.add("opacity-50");
-  }
-  $("errorBox").classList.add("hidden");
-  
-  const syncIcon = '<svg class="w-3 h-3 animate-spin text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 003.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>';
-  $("lastSyncText").innerHTML = syncIcon + " Synchronizing MSB ERP System...";
-
-  try {
-    const sheetsToLoad = ["Karyawan"];
-    if(SPP_ROLE_CONFIG[currentRole]?.canSee) sheetsToLoad.push("SPP");
-    if(LKP_ROLE_CONFIG[currentRole]?.canSee) sheetsToLoad.push("LKP"); 
-    if(GUDANG_ROLE_CONFIG[currentRole]?.canSee) sheetsToLoad.push("Permintaan Gudang"); 
-
-    for(const s of sheetsToLoad){
-      const r = await apiGet({ action:"getData", sheet:s });
-      let cacheKey = s.toLowerCase();
-      if(s === "Permintaan Gudang") cacheKey = "gudang";
-      dataCache[cacheKey] = { headers:r.headers || [], rows:r.rows || [] };
-    }
-    
-    const now = new Date();
-    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-    $("lastSyncText").innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Updated: ' + timeStr;
-    
-    renderTable();
-    updateTabBadges(); 
-  } catch(e){
-    $("errorText").textContent = "Synchronization Interrupted: " + e.message;
-    $("errorBox").classList.remove("hidden");
-    $("lastSyncText").innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Sync Failed';
-    showToast("Failed to pull updated entries.", "error");
-  } finally {
-    $("loadingBox").classList.add("hidden");
-    $("tableWrap").classList.remove("hidden");
-    $("statsBar").classList.remove("opacity-50");
-  }
-}
-
-/* ============================================================
- * BADGE NOTIFICATION LOGIC
- * ============================================================ */
-function getPendingCount(tabName) {
-  const data = dataCache[tabName];
-  if(!data || !data.headers.length) return 0;
-  
-  let cfg;
-  if(tabName === "karyawan") cfg = KARYAWAN_ROLE_CONFIG[currentRole];
-  else if(tabName === "spp") cfg = SPP_ROLE_CONFIG[currentRole];
-  else if(tabName === "lkp") cfg = LKP_ROLE_CONFIG[currentRole];
-  else if(tabName === "gudang") cfg = GUDANG_ROLE_CONFIG[currentRole];
-  
-  if(!cfg || !cfg.canSee) return 0;
-  
-  let rows = data.rows;
-  const deptFilter = tabName === "karyawan" ? cfg.dept : cfg.deptFilter;
-  if(deptFilter){
-    const deptColIdx = findHeaderIndex(data.headers, ["Departemen","Department","Dept","Departement"]);
-    if(deptColIdx !== -1){
-      rows = rows.filter(r => String(r[deptColIdx] ?? "").trim().toLowerCase() === deptFilter.toLowerCase());
-    }
-  }
-  
-  if(cfg.approvalCol) {
-    const approvalCandidates = cfg.approvalCol 
-        ? [cfg.approvalCol, cfg.approvalCol.split(' ')[0], "Status Approval", "Status"] 
-        : ["Status Approval", "Status"];
-        
-    const approvalIdx = findHeaderIndex(data.headers, approvalCandidates);
-    if(approvalIdx !== -1){
-      return rows.filter(r => {
-        const stat = classifyStatus(r[approvalIdx], cfg.approvalCol);
-        return stat === 'pending' || stat === 'empty';
-      }).length;
-    }
-  }
-  return 0;
-}
-
-function updateTabBadges() {
-  const tabs = ["karyawan", "spp", "lkp", "gudang"];
-  tabs.forEach(tab => {
-    const count = getPendingCount(tab);
-    const badge = $("badge-" + tab);
-    if(badge) {
-      if(count > 0) {
-        badge.textContent = count;
-        badge.classList.remove("hidden");
-      } else {
-        badge.classList.add("hidden");
-      }
-    }
-  });
-}
-
-function getActiveConfig(){
-  if(activeTab === "karyawan"){
-    const c = KARYAWAN_ROLE_CONFIG[currentRole];
-    return c?.canSee ? c : null;
-  } else if(activeTab === "spp") {
-    return SPP_ROLE_CONFIG[currentRole] || null;
-  } else if (activeTab === "lkp") {
-    return LKP_ROLE_CONFIG[currentRole] || null;
-  } else if (activeTab === "gudang") {
-    return GUDANG_ROLE_CONFIG[currentRole] || null;
-  }
-  return null;
-}
-
-function getFilteredRows(){
-  const data = dataCache[activeTab];
-  if(!data) return [];
-  const cfg = getActiveConfig();
-  if(!cfg) return [];
-
-  let rows = [...data.rows];
-  
-  const deptFilter = activeTab === "karyawan" ? cfg.dept : cfg.deptFilter;
-  if(deptFilter){
-    const deptColIdx = findHeaderIndex(data.headers, ["Departemen","Department","Dept","Departement"]);
-    if(deptColIdx !== -1){
-      rows = rows.filter(r => String(r[deptColIdx] ?? "").trim().toLowerCase() === deptFilter.toLowerCase());
-    }
-  }
-
-  const approvalCandidates = cfg.approvalCol 
-      ? [cfg.approvalCol, cfg.approvalCol.split(' ')[0], "Status Approval", "Status"] 
-      : ["Status Approval", "Status"];
-  const idx = findHeaderIndex(data.headers, approvalCandidates);
-
-  const sf = $("filterStatus").value;
-  if(sf && cfg.approvalCol && idx !== -1){
-    rows = rows.filter(r => classifyStatus(r[idx], cfg.approvalCol) === sf);
-  }
-
-  const q = $("searchBox").value.trim().toLowerCase();
-  if(q){
-    rows = rows.filter(r => r.some(c => String(c ?? "").toLowerCase().includes(q)));
-  }
-
-  rows.reverse();
-
-  if (idx !== -1) {
-    rows.sort((a, b) => {
-      const statA = classifyStatus(a[idx], cfg.approvalCol);
-      const statB = classifyStatus(b[idx], cfg.approvalCol);
-      if (statA === 'approved' && statB !== 'approved') return 1;
-      if (statA !== 'approved' && statB === 'approved') return -1;
-      return 0; 
-    });
-  }
-
-  return rows;
-}
-
-function findHeaderIndex(headers, candidates){
-  for(const cand of candidates){
-    if(!cand) continue;
-    const i = headers.findIndex(h => String(h).trim().toLowerCase() === cand.toLowerCase());
-    if(i !== -1) return i;
-  }
-  return -1;
-}
-
-function renderTable(){
-  const data = dataCache[activeTab];
-  if(!data || !data.headers.length){
-    $("tableHead").innerHTML = ""; $("tableBody").innerHTML = "";
-    $("emptyState").classList.remove("hidden");
-    $("emptyState").querySelector('p').textContent = "Active sheet headers map is currently empty.";
-    renderStats([]);
-    return;
-  }
-  const cfg = getActiveConfig();
-  if(!cfg){
-    $("tableHead").innerHTML = ""; $("tableBody").innerHTML = "";
-    $("emptyState").classList.remove("hidden");
-    $("emptyState").querySelector('p').textContent = "Access authorization layout denied for this sheet.";
-    renderStats([]);
-    return;
-  }
-
-  let showEdit = false; 
-  if (activeTab === "karyawan" && currentRole === "HR Staff") showEdit = true;
-  if (activeTab === "spp" && currentRole === "Procurement") showEdit = true;
-  if (activeTab === "lkp" && currentRole === "Production Manager") showEdit = true; 
-  if (activeTab === "gudang" && currentRole === "Warehouse Staff") showEdit = true; 
-
-  const addBtn = $("addRowBtn");
-  if (showEdit) { addBtn.classList.remove("hidden"); addBtn.classList.add("flex"); } 
-  else { addBtn.classList.add("hidden"); addBtn.classList.remove("flex"); }
-
-  const sppDetailBtn = $("sppDetailBtn");
-  if (sppDetailBtn) {
-      if (activeTab === "spp") { sppDetailBtn.classList.remove("hidden"); sppDetailBtn.classList.add("flex"); } 
-      else { sppDetailBtn.classList.add("hidden"); sppDetailBtn.classList.remove("flex"); }
-  }
-
-  const rows = getFilteredRows();
-  const headers = data.headers;
-
-  let theadHtml = headers.map(h => `<th class="px-4 py-4 text-left font-bold text-slate-950 whitespace-nowrap tracking-tight">${escapeHtml(h)}</th>`).join("");
-  theadHtml += `<th class="px-4 py-4 text-center font-bold text-slate-950 whitespace-nowrap tracking-tight sticky-right z-10Header">Action Gate</th>`;
-  $("tableHead").innerHTML = theadHtml;
-
-  const approvalCandidates = cfg.approvalCol 
-        ? [cfg.approvalCol, cfg.approvalCol.split(' ')[0], "Status Approval", "Status"] 
-        : ["Status Approval", "Status"];
-  const approvalIdx = findHeaderIndex(headers, approvalCandidates);
-
-  if(rows.length === 0){
-    $("tableBody").innerHTML = "";
-    $("emptyState").classList.remove("hidden");
-  } else {
-    $("emptyState").classList.add("hidden");
-    
-    // Cari index kolom "Nomor Permintaan"
-    const groupColCandidates = ["no permintaan", "nomor permintaan", "no. permintaan", "no dokumen", "id permintaan"];
-    const groupIdx = activeTab === "gudang" ? findHeaderIndex(headers, groupColCandidates) : -1;
-
-    // LOGIKA GROUPING UNTUK TAB GUDANG
-    if (activeTab === "gudang" && groupIdx !== -1) {
-        const groups = {};
-        rows.forEach((row, index) => {
-            const realIdx = data.rows.indexOf(row);
-            const groupVal = row[groupIdx] || "Tanpa Nomor Dokumen";
-            if(!groups[groupVal]) groups[groupVal] = [];
-            groups[groupVal].push({ row, realIdx, index });
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyu96U5qQHgEarOmSdH2wSDGITeV8-67b_5B39t95gLXf5ONy9AA32gxPGYpDQkdww9xw/exec";
+
+        let myCharts = [];
+        let clientChartInstance = null;
+        let deptChartInstance = null;
+        let syncInterval;
+
+        window.addEventListener('load', function() {
+            setTimeout(function() { document.getElementById('loading-screen').classList.add('hidden'); }, 1500);
         });
 
-        let groupedHtml = "";
-        let groupCounter = 0;
+        function updateDateTime() {
+            const now = new Date();
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            document.getElementById('current-date').innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+            document.getElementById('current-time').innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} WIB`;
+        }
+        setInterval(updateDateTime, 1000); updateDateTime();
 
-        for (const [groupVal, groupItems] of Object.entries(groups)) {
-            groupCounter++;
-            const groupId = 'g' + groupCounter;
-            const realIndices = groupItems.map(item => item.realIdx);
-            const indicesJson = JSON.stringify(realIndices); // Array of target rows
+        async function fetchDashboardData() {
+            if (WEB_APP_URL.includes("MASUKKAN_LINK_DEPLOY")) return;
 
-            // Cek status keseluruhan grup untuk menampilkan Action Button
-            let allApproved = true, allPending = true, allRejected = true;
-            groupItems.forEach(item => {
-                if (approvalIdx !== -1) {
-                    const s = classifyStatus(item.row[approvalIdx], headers[approvalIdx]);
-                    if (s !== 'approved') allApproved = false;
-                    if (s !== 'pending' && s !== 'empty') allPending = false;
-                    if (s !== 'rejected') allRejected = false;
+            try {
+                const response = await fetch(WEB_APP_URL);
+                const data = await response.json();
+                
+                let sheetMap = {};
+                if (data.summary && data.summary.length > 0) {
+                    let isHorizontal = data.summary[0].length > 2; 
+                    
+                    if (isHorizontal && data.summary.length > 1) {
+                        data.summary[0].forEach((header, index) => {
+                            if (header) sheetMap[String(header).trim().toLowerCase()] = data.summary[1][index];
+                        });
+                    } else { 
+                        data.summary.forEach(row => {
+                            if (row.length >= 2 && row[0] != null && row[0] !== '') {
+                                sheetMap[String(row[0]).trim().toLowerCase()] = row[1];
+                            }
+                        });
+                    }
                 }
+
+                const parseTarget = (label) => {
+                    let match = sheetMap[label.toLowerCase().trim()];
+                    if (match === undefined || match === null || match === '') return 0;
+                    if (typeof match === 'string') return parseFloat(match.replace(/[^0-9.-]/g, '')) || 0;
+                    return match;
+                };
+
+                animateValue('stat-karyawan', parseTarget('Karyawan'), 1200);
+                animateValue('stat-po', parseTarget('Purchase Order'), 1200);
+                animateValue('stat-pengiriman', parseTarget('Pengiriman'), 1200);
+                animateValue('stat-stok', parseTarget('Stok Produksi'), 1200);
+                animateValue('stat-lkp', parseTarget('Jumlah LKP'), 1200);
+                animateValue('stat-insiden', parseTarget('Total Insiden'), 1200);
+                animateValue('stat-spp', parseTarget('SPP Belum Datang'), 1200);
+
+                updateDynamicCharts(data.trendPO, data.karyawan);
+
+            } catch (error) {
+                console.error("Gagal sinkronisasi data real-time Web App:", error);
+            }
+        }
+
+        function updateDynamicCharts(poData, karData) {
+            let textColor = document.body.classList.contains('light-theme') ? '#475569' : '#e2e8f0';
+            let gridColor = document.body.classList.contains('light-theme') ? 'rgba(0,0,0,0.05)' : 'rgba(255, 255, 255, 0.05)';
+
+            if (poData && poData.length > 1) {
+                const labels = poData.slice(1).map(row => String(row[0] || ''));
+                const datasets = [];
+                
+                const colorPalette = [
+                    { border: '#06b6d4', bg: 'rgba(6, 182, 212, 0.1)' },
+                    { border: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
+                    { border: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+                    { border: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' }
+                ];
+
+                for (let i = 1; i < poData[0].length; i++) {
+                    let clientName = poData[0][i];
+                    if (!clientName) continue;
+                    
+                    let dataValues = poData.slice(1).map(row => parseFloat(row[i]) || 0);
+                    let theme = colorPalette[(i - 1) % colorPalette.length];
+
+                    datasets.push({
+                        label: clientName,
+                        data: dataValues,
+                        backgroundColor: theme.bg,
+                        borderColor: theme.border,
+                        borderWidth: 3,
+                        pointBackgroundColor: document.body.classList.contains('light-theme') ? '#fff' : '#0a0e27',
+                        pointBorderColor: theme.border,
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: theme.border,
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    });
+                }
+
+                if (clientChartInstance) clientChartInstance.destroy();
+                const ctxPO = document.getElementById('clientProcessChart').getContext('2d');
+                
+                clientChartInstance = new Chart(ctxPO, {
+                    type: 'line',
+                    data: { labels: labels, datasets: datasets },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: { 
+                            legend: { labels: { color: textColor, font: { family: 'Inter', size: 12 }, usePointStyle: true, boxWidth: 8 } },
+                            tooltip: {
+                                backgroundColor: document.body.classList.contains('light-theme') ? 'rgba(255, 255, 255, 0.9)' : 'rgba(10, 14, 39, 0.9)',
+                                titleColor: document.body.classList.contains('light-theme') ? '#0f172a' : '#fff',
+                                bodyColor: document.body.classList.contains('light-theme') ? '#475569' : '#cbd5e1',
+                                borderColor: 'rgba(6, 182, 212, 0.3)',
+                                borderWidth: 1,
+                                padding: 12,
+                                usePointStyle: true,
+                                titleFont: { size: 13, family: 'Poppins', weight: 'bold' },
+                                bodyFont: { size: 12, family: 'Inter', weight: '500' },
+                                cornerRadius: 8,
+                                displayColors: true
+                            }
+                        }, 
+                        scales: { 
+                            x: { ticks: { color: textColor, font: {size: 11, family: 'Inter'} }, grid: { display: false } }, 
+                            y: { ticks: { color: textColor, font: {size: 11, family: 'Inter'} }, grid: { color: gridColor, borderDash: [5, 5] }, beginAtZero: true } 
+                        }
+                    }
+                });
+            }
+
+            if (karData && karData.length > 1) {
+                let labels = [], values = [];
+                let deptColIdx = -1;
+                const headers = karData[0].map(h => String(h).toLowerCase());
+                for (let i = 0; i < headers.length; i++) {
+                    if (headers[i].includes('departemen') || headers[i].includes('dept') || headers[i].includes('bagian')) { deptColIdx = i; break; }
+                }
+
+                if (deptColIdx !== -1 && karData[0].length > 2) {
+                    let deptCounts = {};
+                    for (let i = 1; i < karData.length; i++) {
+                        let deptName = String(karData[i][deptColIdx]).trim();
+                        if (deptName) deptCounts[deptName] = (deptCounts[deptName] || 0) + 1;
+                    }
+                    labels = Object.keys(deptCounts); values = Object.values(deptCounts);
+                } else {
+                    labels = karData.slice(1).map(row => String(row[0] || ''));
+                    values = karData.slice(1).map(row => parseFloat(row[1]) || 0);
+                }
+
+                const bgColors = ['rgba(2,117,216,0.85)', 'rgba(16,185,129,0.85)', 'rgba(245,158,11,0.85)', 'rgba(139,92,246,0.85)', 'rgba(236,72,153,0.85)', 'rgba(239,68,68,0.85)', '#0ea5e9', '#84cc16'];
+                const hoverBgColors = ['#0275d8', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#ef4444', '#0284c7', '#65a30d'];
+
+                if (deptChartInstance) deptChartInstance.destroy();
+                const ctxDept = document.getElementById('karyawanDeptChart').getContext('2d');
+                deptChartInstance = new Chart(ctxDept, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{ 
+                            data: values, 
+                            backgroundColor: bgColors.slice(0, Math.max(labels.length, bgColors.length)),
+                            hoverBackgroundColor: hoverBgColors.slice(0, Math.max(labels.length, hoverBgColors.length)),
+                            borderWidth: 2,
+                            borderColor: document.body.classList.contains('light-theme') ? '#ffffff' : '#0a0e27',
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: { 
+                        responsive: true, maintainAspectRatio: false, cutout: '70%',
+                        plugins: { 
+                            legend: { position: 'right', labels: { color: textColor, font: { size: 11, family: 'Inter' }, padding: 15, usePointStyle: true } },
+                            tooltip: {
+                                backgroundColor: document.body.classList.contains('light-theme') ? 'rgba(255, 255, 255, 0.9)' : 'rgba(10, 14, 39, 0.9)',
+                                titleColor: document.body.classList.contains('light-theme') ? '#0f172a' : '#fff',
+                                bodyColor: document.body.classList.contains('light-theme') ? '#475569' : '#cbd5e1',
+                                borderColor: 'rgba(2, 117, 216, 0.3)', borderWidth: 1, padding: 12, cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        let percentage = Math.round((context.parsed / total) * 100);
+                                        return ` ${context.label}: ${context.parsed} Orang (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        } 
+                    }
+                });
+            }
+
+            myCharts = [clientChartInstance, deptChartInstance].filter(Boolean);
+        }
+
+        function animateValue(id, end, duration) {
+            const el = document.getElementById(id); if (!el) return;
+            const start = parseInt(el.textContent) || 0; if (start === end) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                el.textContent = Math.floor(progress * (end - start) + start);
+                if (progress < 1) window.requestAnimationFrame(step); else el.textContent = end;
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function showNotification(title, message, type = 'success') {
+            const container = document.getElementById('notification-container');
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.setAttribute('role', 'alert');
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+            notif.innerHTML = `<i class="fa-solid ${icon}"></i><div class="notification-content"><div class="notification-title">${title}</div><div class="notification-message">${message}</div></div>`;
+            container.appendChild(notif);
+            setTimeout(() => { notif.style.animation = 'slideInRight 0.5s ease-out reverse'; setTimeout(() => notif.remove(), 500); }, 5000);
+        }
+
+        function enterSystem(e) {
+            e.preventDefault();
+            const btn = document.getElementById('enterBtn');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> MEMUAT SISTEM...';
+            btn.style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                const overlay = document.getElementById('login-overlay');
+                overlay.style.opacity = "0";
+                overlay.style.visibility = "hidden";
+                
+                setTimeout(() => {
+                    overlay.style.display = "none";
+                    document.getElementById('main-dashboard').style.display = "flex";
+                    
+                    fetchDashboardData(); 
+                    syncInterval = setInterval(fetchDashboardData, 30000); 
+
+                    showNotification('Akses Diberikan', 'Selamat datang di MSB ERP System', 'success');
+                }, 800); 
+            }, 1200);
+        }
+
+        function doLogout() {
+            showNotification('Logout', 'Anda telah keluar dari sistem', 'warning');
+            clearInterval(syncInterval);
+            setTimeout(() => location.reload(), 1000);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const icon = document.querySelector('.theme-toggle i');
+            let isLight = document.body.classList.contains('light-theme');
+            icon.className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+            let textColor = isLight ? '#475569' : '#e2e8f0';
+            let gridColor = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
+
+            myCharts.forEach(chart => {
+                if(chart.options.plugins.legend.labels) chart.options.plugins.legend.labels.color = textColor;
+                if(chart.options.scales.x) { chart.options.scales.x.ticks.color = textColor; if(chart.options.scales.x.grid) chart.options.scales.x.grid.color = gridColor; }
+                if(chart.options.scales.y) { chart.options.scales.y.ticks.color = textColor; if(chart.options.scales.y.grid) chart.options.scales.y.grid.color = gridColor; }
+                chart.update();
             });
-
-            let actionBtns = "";
-            if (approvalIdx !== -1) {
-                if (!allApproved) actionBtns += `<button onclick='openAction(${indicesJson},"approve")' class="text-[11px] px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white font-bold transition flex items-center gap-1 border border-emerald-200 shadow-sm">Approve All</button>`;
-                if (!allPending)  actionBtns += `<button onclick='openAction(${indicesJson},"pending")' class="text-[11px] px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-500 text-amber-800 hover:text-white font-bold transition flex items-center gap-1 border border-amber-200 shadow-sm">Pending All</button>`;
-                if (!allRejected) actionBtns += `<button onclick='openAction(${indicesJson},"reject")'  class="text-[11px] px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-600 text-red-700 hover:text-white font-bold transition flex items-center gap-1 border border-red-200 shadow-sm">Reject All</button>`;
-            }
-
-            // Render Header Grup
-            groupedHtml += `
-            <tr class="bg-sky-50/70 cursor-pointer border-t-2 border-b border-sky-100 hover:bg-sky-100/80 transition-colors group" onclick="toggleGroupRow('${groupId}')">
-                <td colspan="${headers.length}" class="px-4 py-4 font-bold text-slate-800">
-                    <div class="flex items-center gap-3">
-                        <div class="w-6 h-6 rounded-md bg-white border border-sky-200 flex items-center justify-center shadow-sm">
-                            <svg id="icon-${groupId}" class="w-4 h-4 transition-transform duration-300 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
-                        </div>
-                        <span class="text-sky-800 font-extrabold uppercase tracking-widest text-xs">NO. PERMINTAAN : ${escapeHtml(groupVal)}</span>
-                        <span class="bg-white text-sky-600 border border-sky-200 text-[10px] px-2.5 py-1 rounded-full font-bold shadow-sm">${groupItems.length} Komponen</span>
-                    </div>
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap sticky-right z-10Row bg-sky-50/95 backdrop-blur-xs border-t-2 border-b border-sky-100" onclick="event.stopPropagation()">
-                    <div class="flex gap-1.5 justify-center">${actionBtns}</div>
-                </td>
-            </tr>`;
-
-            // Render Baris Detail (Tersembunyi secara default)
-            groupedHtml += groupItems.map(item => {
-                const cells = renderRowCells(item.row, headers, approvalIdx, cfg);
-                let editBtnHtml = "";
-                if (showEdit) {
-                    editBtnHtml = `<button onclick="openEdit(${item.realIdx})" class="text-[11px] px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-800 text-slate-700 hover:text-white font-bold transition flex items-center gap-1 border border-slate-200 hover:border-slate-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit</button>`;
-                }
-                const rowAnimDelay = isMobile ? 0 : (item.index % 10) * 30;
-
-                return `<tr class="fade-in group hidden group-item-${groupId} bg-white/40 border-b border-slate-50" style="animation-delay: ${rowAnimDelay}ms">
-                    ${cells}
-                    <td class="px-4 py-3 whitespace-nowrap sticky-right z-10Row bg-white/95 backdrop-blur-xs">
-                        <div class="flex gap-1.5 justify-center">${editBtnHtml}</div>
-                    </td>
-                </tr>`;
-            }).join("");
         }
-        $("tableBody").innerHTML = groupedHtml;
-    } 
-    // LOGIKA STANDARD UNTUK TAB LAIN
-    else {
-        $("tableBody").innerHTML = rows.map((row, index) => {
-            const realIdx = data.rows.indexOf(row); 
-            const cells = renderRowCells(row, headers, approvalIdx, cfg);
-            
-            let actionBtns = "";
-            if(approvalIdx !== -1){
-                const s = classifyStatus(row[approvalIdx], headers[approvalIdx]);
-                if(s !== 'approved') actionBtns += `<button onclick="openAction(${realIdx},'approve')" class="text-[11px] px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white font-bold transition flex items-center gap-1 border border-emerald-200">Approve</button>`;
-                if(s !== 'pending')  actionBtns += `<button onclick="openAction(${realIdx},'pending')" class="text-[11px] px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-500 text-amber-800 hover:text-white font-bold transition flex items-center gap-1 border border-amber-200">Pending</button>`;
-                if(s !== 'rejected') actionBtns += `<button onclick="openAction(${realIdx},'reject')"  class="text-[11px] px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-600 text-red-700 hover:text-white font-bold transition flex items-center gap-1 border border-red-200">Reject</button>`;
+
+        function launch(url) {
+            if (url.includes("script.google.com")) { window.open(url, '_blank'); return; }
+            const vp = document.getElementById('viewport-container'), fr = document.getElementById('erp-frame'), b = document.getElementById('back-btn'), db = document.getElementById('main-dashboard');
+            vp.style.display = "block"; b.style.display = "flex"; fr.src = url;
+            void vp.offsetWidth;
+            vp.classList.add('active'); vp.setAttribute('aria-hidden', 'false'); b.classList.add('active'); db.classList.add('dashboard-dimmed');
+        }
+
+        function closeViewport() {
+            const vp = document.getElementById('viewport-container'), b = document.getElementById('back-btn'), fr = document.getElementById('erp-frame'), db = document.getElementById('main-dashboard');
+            vp.classList.remove('active'); vp.setAttribute('aria-hidden', 'true'); b.classList.remove('active'); db.classList.remove('dashboard-dimmed');
+            setTimeout(() => { vp.style.display = "none"; b.style.display = "none"; fr.src = ""; }, 700);
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('module-card') || e.target.closest('.module-card')) {
+                const card = e.target.classList.contains('module-card') ? e.target : e.target.closest('.module-card');
+                const ripple = document.createElement('span'); ripple.classList.add('ripple');
+                const rect = card.getBoundingClientRect(); const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2, y = e.clientY - rect.top - size / 2;
+                ripple.style.width = ripple.style.height = size + 'px'; ripple.style.left = x + 'px'; ripple.style.top = y + 'px';
+                card.appendChild(ripple); setTimeout(() => ripple.remove(), 600);
             }
-
-            let editBtnHtml = "";
-            if (showEdit) {
-                editBtnHtml = `<button onclick="openEdit(${realIdx})" class="text-[11px] px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-800 text-slate-700 hover:text-white font-bold transition flex items-center gap-1 border border-slate-200 hover:border-slate-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit</button>`;
-            }
-
-            const rowAnimDelay = isMobile ? 0 : (index % 10) * 30;
-            return `<tr class="fade-in group" style="animation-delay: ${rowAnimDelay}ms">${cells}
-                <td class="px-4 py-3 whitespace-nowrap sticky-right z-10Row bg-white/95 backdrop-blur-xs">
-                <div class="flex gap-1.5 justify-center">${actionBtns}${editBtnHtml}</div>
-                </td></tr>`;
-        }).join("");
-    }
-  }
-
-  renderStats(rows, approvalIdx, approvalIdx !== -1 ? headers[approvalIdx] : null);
-}
-
-/* ============================================================
- * LUXURIOUS NUMERICAL STATS BLOCK
- * ============================================================ */
-function renderStats(rows, approvalIdx, approvalCol){
-  const container = $("statsBar");
-  
-  if(approvalIdx === undefined || approvalIdx === -1){
-    container.innerHTML = `
-      <div class="stat-card glass rounded-2xl p-5 border border-white/50 shadow-sm col-span-2 lg:col-span-1">
-        <div class="text-xs font-semibold text-slate-500 tracking-wider uppercase">Filtered Records Totals</div>
-        <div class="text-3xl font-extrabold text-slate-950 mt-1">${rows.length}</div>
-        <p class="text-xs text-slate-400 mt-1">Rows Active</p>
-      </div>
-    `;
-    return;
-  }
-  
-  const counts = { approved:0, pending:0, rejected:0, empty:0 };
-  rows.forEach(r => counts[classifyStatus(r[approvalIdx], approvalCol)]++);
-  
-  const statsDef = [
-      { label: "Approved Records", value: counts.approved, color: "emerald", icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' },
-      { label: "Pending Items",   value: counts.pending,  color: "amber",   icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' },
-      { label: "Rejected Items",  value: counts.rejected, color: "red",     icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' },
-      { label: "Unfilled Parameters",value: counts.empty,   color: "slate",   icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>' }
-  ];
-
-  container.innerHTML = statsDef.map(s => `
-    <div class="stat-card glass rounded-2xl p-5 border border-white/50 shadow-sm flex items-start gap-4">
-      <div class="w-10 h-10 rounded-xl bg-${s.color}-100 text-${s.color}-600 flex items-center justify-center shrink-0 mt-1 border border-${s.color}-200">${s.icon}</div>
-      <div>
-        <div class="text-xs font-semibold text-slate-500 tracking-wider uppercase">${s.label}</div>
-        <div class="text-3xl font-extrabold text-${s.color}-700 mt-1">${s.value}</div>
-      </div>
-    </div>
-  `).join("");
-}
-
-$("searchBox").addEventListener("input", renderTable);
-$("filterStatus").addEventListener("change", renderTable);
-
-/* ============================================================
- * GLASSMORPHISM VERIFICATION ACTION MODAL
- * ============================================================ */
-let pendingAction = null;
-
-function openAction(rowIdxOrArray, type){
-  const isBatch = Array.isArray(rowIdxOrArray);
-  const data = dataCache[activeTab];
-  const headers = data.headers;
-  const cfg = getActiveConfig();
-  
-  const approvalCandidates = cfg.approvalCol 
-        ? [cfg.approvalCol, cfg.approvalCol.split(' ')[0], "Status Approval", "Status"] 
-        : ["Status Approval", "Status"];
-  const approvalIdx = findHeaderIndex(headers, approvalCandidates);
-  
-  if(approvalIdx === -1){ showToast("Approval target column schema missing.", "error"); return; }
-  const realColName = headers[approvalIdx];
-
-  let newValue, label, btnColor, iconHtml, winBg, iconColor;
-  
-  const iconApprove = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
-  const iconPending = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
-  const iconReject  = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
-
-  if(type === "approve"){
-    newValue = currentRole; 
-    label = isBatch ? "Approve All" : "Approve"; 
-    btnColor = "bg-emerald-600 hover:bg-emerald-700"; 
-    iconHtml = iconApprove; winBg = "bg-emerald-100"; iconColor = "text-emerald-700";
-  } else if(type === "pending"){
-    newValue = "Pending"; 
-    label = isBatch ? "Flag Pending All" : "Flag Pending"; 
-    btnColor = "bg-amber-500 hover:bg-amber-600";
-    iconHtml = iconPending; winBg = "bg-amber-100"; iconColor = "text-amber-800";
-  } else {
-    newValue = "Ditolak"; 
-    label = isBatch ? "Reject All" : "Reject"; 
-    btnColor = "bg-red-600 hover:bg-red-700";
-    iconHtml = iconReject; winBg = "bg-red-100"; iconColor = "text-red-700";
-  }
-
-  const sheetParamName = activeTab === "spp" ? "SPP" : activeTab === "lkp" ? "LKP" : activeTab === "gudang" ? "Permintaan Gudang" : "Karyawan";
-  
-  pendingAction = { 
-      isBatch, 
-      rowIdx: isBatch ? null : rowIdxOrArray, 
-      rowIndices: isBatch ? rowIdxOrArray : null,
-      newValue, 
-      sheet: sheetParamName, 
-      column: realColName 
-  };
-  
-  const targetText = isBatch ? `${rowIdxOrArray.length} Selected Components in Group` : escapeHtml(realColName);
-
-  $("actionTitle").textContent = "Confirm " + label;
-  $("actionIconWin").className = `w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner ${winBg} ${iconColor} border border-white/50`;
-  $("actionIconWin").innerHTML = iconHtml;
-  
-  $("actionBody").innerHTML = `
-    <div class="flex justify-between"><span>Active Component:</span><span class="font-bold text-slate-950">${pendingAction.sheet}</span></div>
-    <div class="flex justify-between mt-1"><span>Target Node:</span><span class="font-bold text-slate-950">${targetText}</span></div>
-    <div class="flex justify-between pt-2 border-t border-slate-200 mt-2"><span>Target Value:</span><span class="font-bold ${iconColor} text-base">${escapeHtml(newValue)}</span></div>
-  `;
-  
-  const confirmBtn = $("actionConfirm");
-  confirmBtn.className = "px-5 py-2.5 rounded-xl text-sm font-bold text-white shadow-md flex items-center gap-2 " + btnColor;
-  confirmBtn.innerHTML = iconHtml.replace('w-6 h-6','w-4 h-4') + " Confirm " + label;
-  
-  toggleModal("actionModal", true);
-}
-
-$("actionCancel").onclick = () => toggleModal("actionModal", false);
-
-$("actionConfirm").onclick = async () => {
-  if(!pendingAction) return;
-  $("actionConfirm").disabled = true;
-  $("actionConfirm").innerText = "Processing Transaction...";
-  
-  try {
-    if (pendingAction.isBatch) {
-        // Melakukan push secara parallel menggunakan Promise.all untuk kecepatan pemrosesan data
-        const updatePromises = pendingAction.rowIndices.map(idx => 
-            apiPost({
-                action: "updateCell",
-                sheet:  pendingAction.sheet,
-                rowIndex: idx,
-                column: pendingAction.column,
-                value: pendingAction.newValue,
-                actor: currentRole
-            })
-        );
-        await Promise.all(updatePromises);
-        showToast(`Successfully transformed ${pendingAction.rowIndices.length} records to ${pendingAction.newValue}.`);
-    } else {
-        await apiPost({
-            action: "updateCell",
-            sheet:  pendingAction.sheet,
-            rowIndex: pendingAction.rowIdx,
-            column: pendingAction.column,
-            value: pendingAction.newValue,
-            actor: currentRole
         });
-        showToast(`Successfully transformed row structural parameter to ${pendingAction.newValue}.`);
-    }
-    
-    toggleModal("actionModal", false);
-    await loadData(false); 
-  } catch(e){
-    showToast("Transaction failed: " + e.message, "error");
-  } finally {
-    $("actionConfirm").disabled = false;
-    pendingAction = null;
-  }
-};
-
-/* ============================================================
- * PARAMETRIC ENTRY EDIT / ADD ROW MANAGEMENT
- * ============================================================ */
-let editingRowIdx = null;
-
-function openEdit(rowIdx){
-  editingRowIdx = rowIdx;
-  const data = dataCache[activeTab];
-  const row  = data.rows[rowIdx] || [];
-  
-  $("modalTitle").textContent = "Modify Transaction Node #" + (rowIdx + 1);
-  $("modalIcon").className = "w-10 h-10 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center border border-sky-200";
-  $("modalIcon").innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 00-2 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>';
-  $("saveModalBtn").innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Commit Updates';
-
-  generateModalFields(data.headers, row);
-  toggleModal("rowModal", true);
-}
-
-$("addRowBtn").onclick = () => {
-  editingRowIdx = null;
-  const data = dataCache[activeTab];
-  if(!data || !data.headers.length){ showToast("Database arrays are not yet fully mapped.", "error"); return; }
-  
-  $("modalTitle").textContent = "Insert New Entry Row Matrix";
-  $("modalIcon").className = "w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center border border-green-200";
-  $("modalIcon").innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>';
-  $("saveModalBtn").innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Append Database Node';
-
-  generateModalFields(data.headers, []);
-  toggleModal("rowModal", true);
-};
-
-function generateModalFields(headers, row) {
-    $("modalBody").innerHTML = headers.map((h,i) => {
-        if(editingRowIdx === null && (h.toLowerCase().includes('id') || h.toLowerCase().includes('timestamp'))){
-            return `<input type="hidden" data-col="${i}" value="" />`;
-        }
-        
-        let isDisable = editingRowIdx !== null && i === 0 ? 'disabled bg-slate-100 text-slate-500' : '';
-        const colLower = h.toLowerCase().trim();
-        const val = escapeHtml(row[i] ?? "");
-        
-        if (activeTab === "lkp") {
-            const pmCols = [
-                "correction mutu (perbaikan segera)", "target selesai", "estimasi biaya perbaikan", 
-                "kategori", "analisa penyebab", "tindakan perbaikan", "target penyelesaian", "catatan"
-            ];
-            
-            const isPmCol = pmCols.includes(colLower);
-            
-            if (currentRole === "Production Manager") {
-                if (!isPmCol) {
-                    isDisable = 'disabled bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed';
-                }
-            } else if (currentRole === "Quality Control Manager") {
-                isDisable = 'disabled bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed';
-            }
-
-            if (colLower === "correction mutu (perbaikan segera)") {
-                const opts = ["", "Reject", "Rework", "Downgrade", "Repair", "use as is"];
-                const optHtml = opts.map(o => `<option value="${o}" ${o.toLowerCase()===val.toLowerCase()?'selected':''}>${o || '-- Pilih Tindakan --'}</option>`).join('');
-                const selectCls = `w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-sky-500 transition-all ${isDisable ? 'bg-slate-100' : 'bg-white/70'}`;
-                return `<div class="${editingRowIdx === null && h.toLowerCase().includes('id') ? 'hidden' : ''}">
-                    <label class="block text-xs font-bold text-slate-600 mb-1 ml-1 tracking-wide uppercase">${escapeHtml(h)}</label>
-                    <select data-col="${i}" ${isDisable} class="${selectCls}">${optHtml}</select>
-                </div>`;
-            }
-
-            if (colLower === "kategori") {
-                const opts = ["", "Metode", "Mesin", "Material", "SDM", "Manajemen"];
-                const optHtml = opts.map(o => `<option value="${o}" ${o.toLowerCase()===val.toLowerCase()?'selected':''}>${o || '-- Pilih Kategori --'}</option>`).join('');
-                const selectCls = `w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-sky-500 transition-all ${isDisable ? 'bg-slate-100' : 'bg-white/70'}`;
-                return `<div class="${editingRowIdx === null && h.toLowerCase().includes('id') ? 'hidden' : ''}">
-                    <label class="block text-xs font-bold text-slate-600 mb-1 ml-1 tracking-wide uppercase">${escapeHtml(h)}</label>
-                    <select data-col="${i}" ${isDisable} class="${selectCls}">${optHtml}</select>
-                </div>`;
-            }
-        }
-
-        const inputType = colLower.includes('tgl') || colLower.includes('tanggal') || colLower.includes('date') ? 'date' : 'text';
-
-        return `
-            <div class="${editingRowIdx === null && (h.toLowerCase().includes('id') || h.toLowerCase().includes('timestamp')) ? 'hidden' : ''}">
-            <label class="block text-xs font-bold text-slate-600 mb-1 ml-1 tracking-wide uppercase">${escapeHtml(h)}</label>
-            <input type="${inputType}" data-col="${i}" value="${val}" ${isDisable} class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-sky-500 transition-all ${isDisable ? 'bg-slate-100' : 'bg-white/70'}" placeholder="Type key parameters for ${escapeHtml(h)}..." />
-            </div>
-        `;
-    }).join("");
-}
-
-$("closeModalBtn").onclick = $("cancelModalBtn").onclick = () => toggleModal("rowModal", false);
-
-$("saveModalBtn").onclick = async () => {
-  const inputs = document.querySelectorAll("#modalBody input[data-col], #modalBody select[data-col]");
-  const values = Array.from(inputs).map(i => i.value);
-  
-  if(values.length > 0 && String(values[0]).trim() === "" && editingRowIdx === null){
-      showToast("Primary metric parameters (column 1) cannot be left blank.", "error");
-      inputs[0].focus();
-      return;
-  }
-
-  $("saveModalBtn").disabled = true;
-  $("saveModalBtn").innerText = "Processing Transaction Registry...";
-  
-  try {
-    const sheetName = activeTab === "spp" ? "SPP" : activeTab === "lkp" ? "LKP" : activeTab === "gudang" ? "Permintaan Gudang" : "Karyawan";
-    if(editingRowIdx === null){
-      await apiPost({ action:"addRow", sheet: sheetName, values, actor: currentRole });
-      showToast("Record successfully written to remote core master data rows.");
-    } else {
-      await apiPost({ action:"updateRow", sheet: sheetName, rowIndex: editingRowIdx, values, actor: currentRole });
-      showToast("Remote master records updated successfully.");
-    }
-    toggleModal("rowModal", false);
-    await loadData(false); 
-  } catch(e){
-    showToast("Commit failed: " + e.message, "error");
-  } finally {
-    $("saveModalBtn").disabled = false;
-  }
-};
-
-/* ============================================================
- * GATEWAY CONTEXT INITIALIZATION
- * ============================================================ */
-checkConnection();
-
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-        if (!$("rowModal").classList.contains('hidden')) toggleModal("rowModal", false);
-        if (!$("actionModal").classList.contains('hidden')) toggleModal("actionModal", false);
-        if (!$("lightboxModal").classList.contains('hidden')) closeLightbox();
-    }
-});
-</script>
+    </script>
 </body>
 </html>
