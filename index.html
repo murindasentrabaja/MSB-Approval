@@ -264,6 +264,9 @@
     font-size:14.5px; color:var(--ink); outline:none;
     transition:border-color .15s, box-shadow .15s, background .15s, opacity .15s;
   }
+  .field-box select{ display:block; width:100%; padding:13px 14px; border-radius:var(--radius-sm); border:1px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.7); font:inherit; font-size:14.5px; color:var(--ink); outline:none; cursor:pointer; }
+  .field-box select:focus{ border-color:var(--blue); box-shadow:0 0 0 4px rgba(10,132,255,0.14); background:#fff; }
+  .field-box select:disabled{ opacity:.6; }
   .field-box input:focus{ border-color:var(--blue); box-shadow:0 0 0 4px rgba(10,132,255,0.14); background:#fff; }
   .field-box input:disabled{ opacity:.6; }
   .field-box.has-toggle input{ padding-right:78px; }
@@ -861,7 +864,7 @@
       <div class="field">
         <label for="loginUser">Username</label>
         <div class="field-box">
-          <input id="loginUser" type="text" placeholder="Nama Anda" autocomplete="username" required>
+          <select id="loginUser" required><option value="">Memuat daftar akun…</option></select>
         </div>
       </div>
       <div class="field">
@@ -876,7 +879,7 @@
       </button>
     </form>
     <div class="login-error" id="loginError"></div>
-    <div class="login-foot">Hubungi admin bila lupa username / password.</div>
+    <div class="login-foot"><a href="#" id="lnkForgot">Atur / lupa kata sandi</a> · <a href="#" id="lnkVerify">Cek validasi dokumen</a></div>
   </div>
 </div>
 
@@ -987,15 +990,17 @@
   <div class="settings-panel glass-solid">
     <div class="settings-head">
       <div style="flex:1;">
-        <h2>Pengaturan Hak Akses</h2>
-        <p>Atur data mana yang bisa dilihat &amp; diproses tiap tahap (Diketahui / Disetujui / Diterima) oleh tiap user. Hanya terlihat oleh admin (Aspuro).</p>
+        <h2>Pengaturan Developer</h2>
+        <p>Atur data mana yang bisa dilihat &amp; diproses tiap tahap (Diketahui / Disetujui / Diterima) oleh tiap user. Akun login, departemen, dan tanda tangan diatur di tab Akun Login. Hanya terlihat oleh developer.</p>
       </div>
       <button class="icon-btn" id="closeSettingsBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
     <div class="settings-body">
-      <div class="sheet-tabs" id="settingsSheetTabs"></div>
+      <div class="sheet-tabs" id="devTabs"><button class="sheet-tab active" data-dt="perm">Hak Akses</button><button class="sheet-tab" data-dt="acc">Akun Login</button></div>
+      <div id="accPane" style="display:none;"></div>
+      <div id="permPane"><div class="sheet-tabs" id="settingsSheetTabs"></div>
       <div class="perm-table-wrap">
         <table class="perm-table">
           <thead>
@@ -1009,7 +1014,7 @@
           </thead>
           <tbody id="permTableBody"></tbody>
         </table>
-      </div>
+      </div></div>
       <div class="settings-foot">
         <div class="hint" id="settingsHint">Centang tahap manapun otomatis mengaktifkan "Lihat". Perubahan baru tersimpan setelah klik Simpan.</div>
         <button class="btn btn-ghost btn-sm" id="cancelSettingsBtn">Batal</button>
@@ -1038,7 +1043,7 @@
 /* =====================================================================
    KONFIGURASI — GANTI URL DI BAWAH SETELAH DEPLOY GOOGLE APPS SCRIPT
 ===================================================================== */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmvBV5g3Uks7NNc5HKDVVkw6cojlFhaYy1KoZ3sVZV5WR_CnCwBD3VbyxuNSJ04mxI/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzA3zhM3i_Arz6wqFJRtvz-ljykDo6GpIunf0pOPFY_cde3nbi6Qy7-Ai57whxFCvfO/exec';
 
 const MODULE_COLORS = ['var(--blue)','var(--green)','var(--orange)','var(--pink)','var(--yellow)','var(--blue)','var(--green)'];
 
@@ -1250,31 +1255,16 @@ document.addEventListener('mousemove', (e)=>{
    TAHAP APPROVAL: kalkulasi status baris dari data mentah
 ===================================================================== */
 function getRowStageState(row){
-  const rejected = String(row[STATUS_HEADER]||'').trim().toLowerCase() === 'ditolak';
-  const stages = STAGE_DEFS.map(sd=>{
-    const c = stageColKeys(sd.label);
-    const name = row[c.oleh] || '';
-    return {
-      key: sd.key, label: sd.label, color: sd.color,
-      done: String(name).trim() !== '',
-      name: name, date: row[c.tanggal]||'', note: row[c.catatan]||'', sig: row[c.ttd]||''
-    };
-  });
+  const stages = (row._stages||[]).map(s=>Object.assign({}, s));
+  const rejected = !!row._rejected;
   const currentIndex = rejected ? -1 : stages.findIndex(s=>!s.done);
-  let rejectInfo = null;
-  if(rejected){
-    rejectInfo = {
-      oleh: row[REJECT_COLS.oleh]||'', tanggal: row[REJECT_COLS.tanggal]||'',
-      catatan: row[REJECT_COLS.catatan]||'', tahap: row[REJECT_COLS.tahap]||''
-    };
-  }
-  return { rejected, currentIndex, stages, rejectInfo };
+  return { rejected, currentIndex, stages, rejectInfo: rejected ? row._rej : null };
 }
 function overallStatusKey(st){
   if(st.rejected) return 'rejected';
   if(st.currentIndex === -1) return 'diterima';
   if(st.currentIndex === 0) return 'pending';
-  return STAGE_DEFS[st.currentIndex-1].key; // 'diketahui' atau 'disetujui' selesai, menunggu tahap berikutnya
+  return st.stages[st.currentIndex-1].key; // 'diketahui' atau 'disetujui' selesai, menunggu tahap berikutnya
 }
 function statusLabel(key){
   if(key==='diketahui') return 'Diketahui';
@@ -1284,10 +1274,10 @@ function statusLabel(key){
   return 'Pending';
 }
 function renderTimelineHtml(st){
-  const rejIdx = st.rejected ? STAGE_DEFS.findIndex(sd=>sd.label===st.rejectInfo.tahap) : -1;
+  const rejIdx = st.rejected ? st.stages.findIndex(sd=>sd.label===st.rejectInfo.tahap) : -1;
   let html = '<div class="timeline">';
-  STAGE_DEFS.forEach((sd, i)=>{
-    const s = st.stages[i];
+  st.stages.forEach((s, i)=>{
+    const sd = s;
     let cls = 'pending';
     if(st.rejected){
       cls = rejIdx===-1 ? (s.done?'done':'pending') : (i<rejIdx ? 'done' : (i===rejIdx ? 'rejected' : 'pending'));
@@ -1567,7 +1557,7 @@ function renderCards(){
     list.innerHTML = `<div class="empty-state">
       <div class="ic">🔒</div>
       <div class="t">Belum ada data yang bisa diakses</div>
-      <div class="s">Hubungi admin (Aspuro) untuk mendapatkan akses ke modul tertentu.</div>
+      <div class="s">Hubungi developer untuk mendapatkan akses ke modul tertentu.</div>
     </div>`;
     return;
   }
@@ -1617,7 +1607,7 @@ function renderCards(){
     const title = summaryCols[0] ? esc(row[summaryCols[0]]) : ('Baris ' + row._row);
     const sub = summaryCols[1] ? esc(row[summaryCols[1]]) : '';
 
-    const canActNow = !stageState.rejected && stageState.currentIndex !== -1 && sheet[STAGE_DEFS[stageState.currentIndex].permKey];
+    const canActNow = !stageState.rejected && stageState.currentIndex !== -1 && sheet[stageState.stages[stageState.currentIndex].permKey];
     const editableFields = sheet.editableFields || [];
     const canEditNow = !!sheet.canEditFields && canActNow && editableFields.length > 0;
     const editableFieldSet = new Set(editableFields.map(normField));
@@ -1652,7 +1642,7 @@ function renderCards(){
 
     let editFormHtml = '';
     let actionsHtml = '';
-    const sdNow = stageState.currentIndex !== -1 ? STAGE_DEFS[stageState.currentIndex] : null;
+    const sdNow = stageState.currentIndex !== -1 ? stageState.stages[stageState.currentIndex] : null;
 
     if(canEditNow){
       const TEXTAREA_FIELDS = new Set(['correction mutu (perbaikan segera)','analisa penyebab','tindakan perbaikan','catatan']);
@@ -1708,6 +1698,7 @@ function renderCards(){
           <div class="kv-grid">${kvHtml}</div>
           <div class="section-title"><span>Jalur Persetujuan</span><div class="ln"></div></div>
           ${timelineHtml}
+          <div class="ef-actions"><button class="btn btn-ghost btn-sm" type="button" data-vlink="${esc(row[headers[0]])}" data-vsheet="${esc(state.currentModule)}">🔗 Salin link validasi</button></div>
           ${editFormHtml}
           ${actionsHtml}
         </div>
@@ -1793,7 +1784,7 @@ function openApproveModal(sheetName, rowIndex, act, stageLabel){
   pendingAction = { sheetName, rowIndex, decision: act==='approve' ? 'OK' : 'Ditolak' };
   document.getElementById('approveModalTitle').textContent = act==='approve' ? ('Tandai "' + stageLabel + '"?') : 'Tolak Data Ini?';
   document.getElementById('approveModalDesc').textContent = act==='approve'
-    ? ('Tahap: ' + stageLabel + ' — perubahan langsung tersimpan ke spreadsheet.')
+    ? ('Tahap: ' + stageLabel + ' — tanda tangan digital akun Anda (sheet Login) otomatis disertakan.')
     : ('Data akan ditolak pada tahap "' + stageLabel + '" dan alur persetujuan dihentikan. Catatan wajib diisi.');
   document.getElementById('approveNote').value = '';
   document.getElementById('approveNote').placeholder = act==='approve' ? 'Catatan (opsional)...' : 'Alasan penolakan (wajib diisi)...';
@@ -1860,6 +1851,7 @@ async function openSettings(){
     state.settingsDirty = false;
     renderSettingsTabs();
     renderPermTable();
+    devTab('perm');
   }catch(err){
     toast('err', err.message || 'Tidak dapat terhubung ke server.');
   }
@@ -1897,11 +1889,11 @@ function renderPermTable(){
   };
 
   body.innerHTML = state.settings.users.map(u=>{
-    const isAdminRow = u.username.toLowerCase().indexOf('aspuro') !== -1;
+    const isAdminRow = !!u.isAdmin;
     const perm = (state.settings.matrix[u.username] && state.settings.matrix[u.username][sheetName]) || { view:false, diketahui:false, disetujui:false, diterima:false };
     return `<tr data-user="${esc(u.username)}">
       <td>
-        <div class="perm-user">${esc(u.username)} ${isAdminRow?'<span style="color:var(--blue);font-size:11px;">(admin)</span>':''}</div>
+        <div class="perm-user">${esc(u.username)} ${isAdminRow?'<span style="color:var(--blue);font-size:11px;">(developer)</span>':''}</div>
         <div class="dep">${esc(u.department||'')}${u.role?' · '+esc(u.role):''}</div>
       </td>
       ${cellHtml(u.username, isAdminRow, perm, 'view', 'chk-view')}
@@ -1958,6 +1950,123 @@ document.addEventListener('keydown', (e)=>{
     closeSidebarMobile();
     if(document.getElementById('settingsOverlay').classList.contains('show')) closeSettingsConfirm();
   }
+});
+
+/* =====================================================================
+   PUBLIK: cek validasi dokumen + atur kata sandi (tautan email)
+===================================================================== */
+function pubOpen(h){
+  let m = document.getElementById('pubModal');
+  if(!m){ m = document.createElement('div'); m.id='pubModal'; m.className='modal-overlay';
+    m.innerHTML = '<div class="modal glass-solid" style="max-width:480px;max-height:88vh;overflow:auto;"><div id="pubBody"></div></div>';
+    document.body.appendChild(m); m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('show'); }); }
+  document.getElementById('pubBody').innerHTML = h; m.classList.add('show');
+}
+const pfld = (id,l,t,ph)=>`<div class="field"><label for="${id}">${l}</label><div class="field-box"><input id="${id}" type="${t||'text'}" placeholder="${ph||''}"></div></div>`;
+function vHtml(r){
+  if(!r.found) return `<div class="login-error" style="display:block">${esc(r.message||'Dokumen tidak ditemukan.')}</div>`;
+  const ok = !r.rejected && r.stages.every(s=>s.done);
+  const st = r.rejected ? 'Ditolak oleh '+esc(r.rej.oleh)+' ('+esc(r.rej.tahap)+')' : ok ? 'Valid — semua tahap sudah ditandatangani' : 'Masih dalam proses persetujuan';
+  return `<div class="kv-grid"><div class="kv"><div class="k">Dokumen</div><div class="v">${esc(r.id)} · ${esc(r.sheet)}${r.departemen?' · '+esc(r.departemen):''}</div></div>
+    <div class="kv"><div class="k">Status</div><div class="v"><b>${st}</b></div></div>`
+    + r.stages.map(s=>`<div class="kv"><div class="k">${esc(s.label)}</div><div class="v">${s.done?'✓ '+esc(s.name)+' · '+esc(s.date)+(s.sigOk?' · tanda tangan tercatat':''):'Belum diproses'}</div></div>`).join('') + '</div>';
+}
+function openVerify(q){
+  pubOpen(`<h3>Cek Validasi Dokumen</h3><p class="desc">Masukkan nomor dokumen untuk melihat status persetujuan dan siapa yang menandatangani.</p>${pfld('vq','Nomor dokumen','text','mis. PK-0001')}<button class="btn btn-primary" id="vGo">Cek</button><div id="vRes" style="margin-top:14px;"></div>`);
+  const go = async ()=>{
+    const v = document.getElementById('vq').value.trim(); if(!v) return;
+    const b = document.getElementById('vGo'); b.disabled = true; b.innerHTML = '<span class="spinner"></span>';
+    try{ document.getElementById('vRes').innerHTML = vHtml(await api('verify', { q: v })); }
+    catch(err){ document.getElementById('vRes').innerHTML = vHtml({ found:false, message: err.message }); }
+    b.disabled = false; b.textContent = 'Cek';
+  };
+  document.getElementById('vGo').onclick = go;
+  document.getElementById('vq').addEventListener('keydown', e=>{ if(e.key==='Enter') go(); });
+  if(q){ document.getElementById('vq').value = String(q).split('|').pop(); go(); }
+}
+function openForgot(){
+  pubOpen(`<h3>Atur kata sandi</h3><p class="desc">Masukkan user login atau email. Tautan untuk membuat kata sandi dikirim ke email akun (berlaku 30 menit, sekali pakai).</p>${pfld('fgId','User login atau email')}<button class="btn btn-primary" id="fgGo">Kirim tautan</button>`);
+  document.getElementById('fgGo').onclick = async ()=>{
+    const id = document.getElementById('fgId').value.trim(); if(!id) return;
+    const r = await api('forgot', { id }); toast('ok', r.message || 'Permintaan dikirim.'); document.getElementById('pubModal').classList.remove('show');
+  };
+}
+async function openSetPw(tok){
+  const r = await api('resetInfo', { token: tok });
+  if(!r.success){ pubOpen(`<h3>Tautan tidak berlaku</h3><p class="desc">${esc(r.message)} Minta tautan baru lewat "Atur / lupa kata sandi".</p>`); return; }
+  pubOpen(`<h3>Buat kata sandi</h3><p class="desc">Akun <b>${esc(r.username)}</b> (${esc(r.nama)}). Minimal 8 karakter, berisi huruf dan angka.</p>${pfld('spP','Kata sandi baru','password')}${pfld('spP2','Ulangi kata sandi','password')}<button class="btn btn-primary" id="spGo">Simpan kata sandi</button>`);
+  document.getElementById('spGo').onclick = async ()=>{
+    const p = document.getElementById('spP').value;
+    if(p !== document.getElementById('spP2').value) return toast('err', 'Kata sandi tidak sama.');
+    const s = await api('setPassword', { token: tok, password: p });
+    toast(s.success ? 'ok' : 'err', s.message);
+    if(s.success){ history.replaceState(null, '', location.pathname); document.getElementById('pubModal').classList.remove('show'); }
+  };
+}
+async function loadLoginUsers(){
+  const sel = document.getElementById('loginUser');
+  try{
+    const r = await api('users', {});
+    if(!r.success) throw new Error(r.message || 'Gagal memuat daftar akun.');
+    sel.innerHTML = '<option value="">Pilih akun…</option>' + (r.users||[]).map(u=>`<option value="${esc(u.username)}">${esc(u.username)}${u.nama && u.nama!==u.username ? ' — '+esc(u.nama) : ''}</option>`).join('');
+  }catch(err){
+    sel.innerHTML = '<option value="">Gagal memuat akun — klik untuk coba lagi</option>';
+    const eb = document.getElementById('loginError'); eb.textContent = err.message; eb.style.display = 'block';
+  }
+}
+document.getElementById('loginUser').addEventListener('focus', e=>{ if(e.target.options.length < 2) loadLoginUsers(); });
+document.getElementById('loginUser').addEventListener('change', e=>{ if(e.target.value) document.getElementById('loginPass').focus(); });
+loadLoginUsers();
+document.getElementById('lnkForgot').addEventListener('click', e=>{ e.preventDefault(); openForgot(); });
+document.getElementById('lnkVerify').addEventListener('click', e=>{ e.preventDefault(); openVerify(); });
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-vlink]'); if(!b) return; e.stopPropagation();
+  const url = location.origin + location.pathname + '?cek=' + encodeURIComponent(b.dataset.vsheet + '|' + b.dataset.vlink);
+  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(()=>toast('ok','Link validasi disalin.')).catch(()=>prompt('Salin link validasi:', url));
+});
+(function(){ const p = new URLSearchParams(location.search); if(p.get('cek')) openVerify(p.get('cek')); else if(p.get('atur')) openSetPw(p.get('atur')); })();
+
+/* =====================================================================
+   PENGATURAN DEVELOPER: akun login (buat, ubah, undang lewat email)
+===================================================================== */
+function devTab(t){
+  document.querySelectorAll('#devTabs [data-dt]').forEach(b=>b.classList.toggle('active', b.dataset.dt===t));
+  document.getElementById('permPane').style.display = t==='perm' ? '' : 'none';
+  document.getElementById('accPane').style.display = t==='acc' ? '' : 'none';
+  document.querySelector('#settingsOverlay .settings-foot').style.display = t==='perm' ? '' : 'none';
+  if(t==='acc') renderAcc(state.accEdit);
+}
+document.getElementById('devTabs').addEventListener('click', e=>{ const b = e.target.closest('[data-dt]'); if(b) devTab(b.dataset.dt); });
+function renderAcc(a){
+  a = a || {};
+  const f = (id,l,v,ph)=>`<div class="ef-field"><label>${l}</label><input id="${id}" type="text" value="${esc(v||'')}" placeholder="${esc(ph||'')}"></div>`;
+  document.getElementById('accPane').innerHTML = '<div class="kv-grid">' + (state.settings.accounts||[]).map(u=>`<div class="kv" data-u="${esc(u.username)}">
+      <div class="k">${esc(u.username)} · ${esc(u.role)}${u.aktif?'':' · Nonaktif'}</div>
+      <div class="v">${esc(u.nama)} ${u.email?'· '+esc(u.email):'· <b style="color:var(--red)">email kosong</b>'}<br>Departemen: ${esc(u.department||'—')} · TTD: ${u.hasSig?'ada':'<b style="color:var(--red)">belum diisi</b>'}<br>
+      <button class="btn btn-ghost btn-sm" data-ac="edit">Ubah</button> <button class="btn btn-ghost btn-sm" data-ac="inv">Kirim tautan sandi</button></div></div>`).join('') + '</div>'
+    + `<div class="section-title"><span>${a.username?'Ubah akun':'Tambah akun'}</span><div class="ln"></div></div><div class="edit-form">
+      ${f('acU','User login (jabatan)',a.username)}${f('acN','Nama',a.nama)}${f('acE','Email',a.email)}${f('acD','Departemen (pisah koma; "Semua" = semua departemen)',a.department,'Production, Quality Control')}${f('acS','Link tanda tangan digital',a.sig,'https://...')}
+      <div class="ef-field"><label>Akses</label><select id="acR"><option>User</option><option>Viewer</option><option>Developer</option></select></div>
+      <div class="ef-actions"><button class="btn btn-primary btn-sm" id="acSave" style="width:auto;">${a.username?'Simpan perubahan':'Buat akun &amp; kirim undangan'}</button>${a.username?'<button class="btn btn-ghost btn-sm" id="acCancel">Batal</button>':''}
+      <span class="ef-hint">Pengguna membuat kata sandi sendiri lewat tautan email.</span></div></div>`;
+  if(a.role) document.getElementById('acR').value = a.role;
+}
+document.getElementById('accPane').addEventListener('click', async e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  const row = b.closest('[data-u]'), u = row && state.settings.accounts.find(x=>x.username===row.dataset.u);
+  const reload = async ()=>{ const r = await api('getSettings', { token: state.token }); if(r.success){ state.settings.accounts = r.accounts; state.settings.users = r.users; } state.accEdit = null; renderAcc(); };
+  try{
+    if(b.dataset.ac==='edit'){ state.accEdit = u; renderAcc(u); }
+    else if(b.dataset.ac==='inv'){ const r = await api('accountInvite', { token: state.token, username: u.username }); toast(r.success?'ok':'err', r.success ? 'Tautan dikirim ke '+u.email+'.' : r.message); }
+    else if(b.id==='acCancel'){ state.accEdit = null; renderAcc(); }
+    else if(b.id==='acSave'){
+      const v = id=>document.getElementById(id).value.trim();
+      const r = await api('accountSave', { token: state.token, original: state.accEdit ? state.accEdit.username : '',
+        account: { username:v('acU'), nama:v('acN'), email:v('acE'), department:v('acD'), sig:v('acS'), role:document.getElementById('acR').value, aktif: state.accEdit ? state.accEdit.aktif : true } });
+      toast(r.success?'ok':'err', r.success ? (r.sent ? 'Akun dibuat, undangan dikirim ke email.' : 'Akun tersimpan.') : r.message);
+      if(r.success) await reload();
+    }
+  }catch(err){ toast('err', err.message || 'Gagal terhubung ke server.'); }
 });
 </script>
 </body>
