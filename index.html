@@ -688,6 +688,49 @@
   .lightbox-close:hover{ background:#fff; }
 
   /* =====================================================================
+     KARTU KELOMPOK (SPL) — satu kartu per ID Lembur, personil di dalam dropdown
+  ===================================================================== */
+  .req-card.grp.open .req-body{ max-height:3400px; }
+  .grp-divider{ border-top:1px solid rgba(0,0,0,0.06); height:14px; }
+  .section-title.sp-top{ margin-top:18px; }
+  .people-list{
+    display:flex; flex-direction:column; gap:8px; max-height:min(52vh,430px); overflow-y:auto;
+    padding:2px 4px 2px 0; overscroll-behavior:contain;
+  }
+  .people-list::-webkit-scrollbar{ width:5px; }
+  .people-list::-webkit-scrollbar-thumb{ background:rgba(0,0,0,0.14); border-radius:10px; }
+  .p-row{
+    display:flex; align-items:flex-start; gap:12px; padding:11px 13px; border-radius:14px;
+    background:rgba(255,255,255,0.58); border:1px solid rgba(0,0,0,0.06);
+  }
+  .p-no{
+    width:26px; height:26px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    background:rgba(10,132,255,0.12); color:var(--blue-d); font-size:11.5px; font-weight:800;
+  }
+  .p-main{ flex:1; min-width:0; }
+  .p-name{ font-size:13.5px; font-weight:700; color:var(--ink); word-break:break-word; }
+  .p-meta{ font-size:12px; color:var(--ink-mute); font-weight:600; margin-top:1px; word-break:break-word; }
+  .p-task{ margin-top:7px; font-size:12.5px; color:var(--ink-soft); line-height:1.45; word-break:break-word; }
+  .p-task-k{
+    display:block; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--ink-mute); margin-bottom:1px;
+  }
+  .p-task-v{ font-weight:700; color:var(--ink); }
+  .p-extras{ display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+  .p-chip{ font-size:11px; padding:2px 8px; border-radius:100px; background:rgba(0,0,0,0.05); color:var(--ink-soft); font-weight:600; }
+  .p-chip b{ font-weight:800; color:var(--ink-mute); }
+  .p-side{ display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
+  .p-time{
+    font-family:var(--mono); font-size:11.5px; font-weight:600; color:var(--blue-d);
+    background:rgba(10,132,255,0.09); padding:4px 10px; border-radius:100px; white-space:nowrap;
+  }
+  .sap-desc{ font-size:12.5px; color:var(--ink-soft); margin:-2px 0 12px; line-height:1.5; }
+  @media (max-width:520px){
+    .p-row{ flex-wrap:wrap; }
+    .p-side{ width:100%; flex-direction:row; align-items:center; flex-wrap:wrap; padding-left:38px; }
+  }
+
+  /* =====================================================================
      MODAL
   ===================================================================== */
   .modal-overlay{
@@ -1157,13 +1200,13 @@ async function api(action, payload){
 /* =====================================================================
    UTIL
 ===================================================================== */
-function toast(type, msg){
+function toast(type, msg, ms){
   const wrap = document.getElementById('toastWrap');
   const el = document.createElement('div');
   el.className = 'toast ' + type;
   el.textContent = msg;
   wrap.appendChild(el);
-  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .25s'; setTimeout(()=>el.remove(),260); }, 3200);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .25s'; setTimeout(()=>el.remove(),260); }, ms || 3200);
 }
 function initials(name){
   if(!name) return '?';
@@ -1306,9 +1349,9 @@ function renderTimelineHtml(st){
       html += `<div class="who">${esc(st.rejectInfo.oleh)}</div><div class="when">${esc(st.rejectInfo.tanggal)}</div>`;
       if(st.rejectInfo.catatan) html += `<div class="note-bubble">${esc(st.rejectInfo.catatan)}</div>`;
     } else if(cls==='current'){
-      html += `<div class="tl-pending-label">Menunggu tindakan...</div>`;
+      html += `<div class="tl-pending-label">Menunggu tindakan...${s.partial ? ' · ' + esc(s.partial) : ''}</div>`;
     } else {
-      html += `<div class="tl-pending-label">Belum diproses</div>`;
+      html += `<div class="tl-pending-label">Belum diproses${s.partial ? ' · ' + esc(s.partial) : ''}</div>`;
     }
     html += `</div></div>`;
   });
@@ -1467,10 +1510,7 @@ function renderModuleNav(){
 
   nav.innerHTML = modules.map((name, i) => {
     const sheet = state.data[name];
-    const inProgress = sheet.rows.filter(r => {
-      const sk = overallStatusKey(getRowStageState(r));
-      return sk==='pending' || sk==='diketahui' || sk==='disetujui';
-    }).length;
+    const inProgress = countInProgress(sheet);
     const chipClass = CHIP_CLASSES[i % CHIP_CLASSES.length];
     const iconSvg = ICON_MODULE_SET[i % ICON_MODULE_SET.length];
     const active = name === state.currentModule;
@@ -1541,6 +1581,249 @@ document.getElementById('searchInput').addEventListener('input', (e)=>{
 /* =====================================================================
    RENDER CARDS
 ===================================================================== */
+/* tampilan nilai sebuah kolom (gambar / QR tanda tangan / tautan / teks) — dipakai kartu biasa & kartu kelompok */
+function renderValueHtml(h, val){
+  const rawStr = String(val===undefined||val===null?'':val).trim();
+  if(rawStr && isImagePath(rawStr)){
+    const imgUrl = resolveImageUrl(rawStr);
+    return `<div class="img-cell" data-full="${esc(imgUrl)}">
+      <img src="${esc(imgUrl)}" alt="${esc(h)}" loading="lazy" onerror="this.parentElement.classList.add('broken')">
+      <a class="img-fallback-link" href="${esc(imgUrl)}" target="_blank" rel="noopener">Buka gambar ↗</a>
+    </div>`;
+  }
+  if(rawStr && isUrl(rawStr) && isSignatureHeader(h)){
+    return `<div class="qr-cell">
+      <img src="${esc(qrCodeUrl(rawStr,100))}" alt="QR ${esc(h)}" loading="lazy">
+      <div class="qr-txt">
+        <a href="${esc(rawStr)}" target="_blank" rel="noopener">Lihat Tanda Tangan ↗</a>
+        <div class="qr-hint">Pindai untuk membuka</div>
+      </div>
+    </div>`;
+  }
+  if(rawStr && isUrl(rawStr)){
+    return `<a href="${esc(rawStr)}" target="_blank" rel="noopener">Buka tautan ↗</a>`;
+  }
+  return esc(rawStr) || '—';
+}
+
+/* =====================================================================
+   MODE KELOMPOK (SPL) — satu kartu per ID Lembur.
+   Sheet yang punya kolom "ID Lembur" otomatis dikelompokkan: di dropdown tampil
+   semua personil + tugas lemburnya, tetapi persetujuan / penolakan cukup SEKALI
+   dan berlaku untuk semua personil dalam ID Lembur tersebut.
+===================================================================== */
+const GROUP_HEADER_KEYS = ['id lembur'];
+// berapa personil diproses bersamaan saat approval massal (set 1 bila server sering bentrok / gagal sebagian)
+const BATCH_CONCURRENCY = 3;
+
+function pickHeader(headers, keys){
+  for(let i=0; i<keys.length; i++){
+    const h = findHeaderFor(headers, keys[i]);
+    if(h) return h;
+  }
+  return null;
+}
+function findGroupHeader(headers){ return pickHeader(headers, GROUP_HEADER_KEYS); }
+function cellStr(row, h){
+  if(!h) return '';
+  const v = row[h];
+  return String(v===undefined||v===null?'':v).trim();
+}
+
+function buildGroups(sheet, groupHeader){
+  const map = new Map();
+  sheet.rows.forEach(r=>{
+    const id = cellStr(r, groupHeader);
+    const key = id ? id : ('__baris_' + r._row); // baris tanpa ID Lembur tetap berdiri sendiri
+    let g = map.get(key);
+    if(!g){ g = { key:key, id:id, rows:[], maxRow:0 }; map.set(key, g); }
+    g.rows.push(r);
+    if(r._row > g.maxRow) g.maxRow = r._row;
+  });
+  const groups = Array.from(map.values());
+  groups.forEach(g=> g.rows.sort((a,b)=> a._row - b._row));
+  return groups;
+}
+
+/* status gabungan satu ID Lembur: sebuah tahap dianggap selesai bila SEMUA personil
+   (yang tidak ditolak) sudah menyelesaikannya. Ditolak hanya bila semua personil ditolak. */
+function getGroupState(rows){
+  const states = rows.map(r=>{
+    const st = getRowStageState(r);
+    return { row:r, st:st, sk: overallStatusKey(st) };
+  });
+  const live = states.filter(x=>!x.st.rejected);
+  if(live.length === 0){
+    return { state: states[0].st, live: [], states: states };
+  }
+  const base = live[0].st.stages;
+  const stages = base.map((s, i)=>{
+    const doneCount = live.filter(x=> x.st.stages[i] && x.st.stages[i].done).length;
+    const out = Object.assign({}, s, { done: doneCount === live.length });
+    if(!out.done && doneCount > 0) out.partial = doneCount + ' dari ' + live.length + ' personil sudah';
+    return out;
+  });
+  const currentIndex = stages.findIndex(s=>!s.done);
+  return {
+    state: { rejected:false, currentIndex:currentIndex, stages:stages, rejectInfo:null },
+    live: live,
+    states: states
+  };
+}
+
+function countInProgress(sheet){
+  const gh = findGroupHeader(sheet.headers);
+  const keys = gh
+    ? buildGroups(sheet, gh).map(g=> overallStatusKey(getGroupState(g.rows).state))
+    : sheet.rows.map(r=> overallStatusKey(getRowStageState(r)));
+  return keys.filter(sk=> sk==='pending' || sk==='diketahui' || sk==='disetujui').length;
+}
+
+function personRowHtml(r, i, ctx, perPerson, badgeSk){
+  const name = cellStr(r, ctx.hName) || ('Baris ' + r._row);
+  const meta = [cellStr(r, ctx.hEmp), cellStr(r, ctx.hRole)].filter(Boolean).join(' · ');
+  const task = cellStr(r, ctx.hTask);
+  const time = cellStr(r, ctx.hTime);
+  const extras = perPerson.map(h=>{
+    const v = cellStr(r, h);
+    return v ? `<span class="p-chip"><b>${esc(h)}:</b> ${esc(v)}</span>` : '';
+  }).join('');
+  return `<div class="p-row">
+    <div class="p-no">${i+1}</div>
+    <div class="p-main">
+      <div class="p-name">${esc(name)}</div>
+      ${meta ? `<div class="p-meta">${esc(meta)}</div>` : ''}
+      ${task ? `<div class="p-task"><span class="p-task-k">Tugas lembur</span><span class="p-task-v">${esc(task)}</span></div>` : ''}
+      ${extras ? `<div class="p-extras">${extras}</div>` : ''}
+    </div>
+    <div class="p-side">
+      ${time ? `<span class="p-time">${esc(time)}</span>` : ''}
+      ${badgeSk ? `<span class="badge st-${badgeSk}">${statusLabel(badgeSk)}</span>` : ''}
+    </div>
+  </div>`;
+}
+
+function groupCardHtml(g, idx, sheet, headers, ctx){
+  const rowKey = state.currentModule + '_G_' + g.key;
+  const isOpen = state.openRows.has(rowKey);
+  const n = g.rows.length;
+  const gs = g.gs;
+  const st = gs.state;
+  const title = g.id || ('Baris ' + g.rows[0]._row);
+
+  // kolom lain: bila nilainya sama di semua personil → ringkasan umum; bila beda → ikut baris personil
+  const commonHtml = [];
+  const perPerson = [];
+  headers.filter(h => !SKIP_COLS.includes(h.toLowerCase()) && !ctx.core.has(h)).forEach(h=>{
+    const vals = g.rows.map(r=> cellStr(r, h));
+    const same = vals.every(v=> v === vals[0]);
+    if(same){
+      if(vals[0]) commonHtml.push(`<div class="kv"><div class="k">${esc(h)}</div><div class="v">${renderValueHtml(h, g.rows[0][h])}</div></div>`);
+    } else {
+      perPerson.push(h);
+    }
+  });
+
+  const deptVals = ctx.hDept ? g.rows.map(r=> cellStr(r, ctx.hDept)) : [];
+  const dept = deptVals.length && deptVals.every(v=> v === deptVals[0]) ? deptVals[0] : '';
+  const sub = n + ' personil' + (dept ? ' · ' + dept : '');
+
+  const uniform = gs.states.every(x=> x.sk === gs.states[0].sk);
+  const skByRow = {};
+  gs.states.forEach(x=>{ skByRow[x.row._row] = x.sk; });
+  const peopleHtml = g.rows.map((r, i)=> personRowHtml(r, i, ctx, perPerson, uniform ? null : skByRow[r._row])).join('');
+
+  // tindakan massal: hanya personil yang sedang menunggu tahap berjalan milik grup
+  const cur = st.currentIndex;
+  const canActNow = !st.rejected && cur !== -1 && !!sheet[st.stages[cur].permKey];
+  const targetRows = canActNow ? gs.live.filter(x=> x.st.currentIndex === cur).map(x=> x.row._row) : [];
+  let actionsHtml = '';
+  if(targetRows.length > 0){
+    const sdNow = st.stages[cur];
+    const all = targetRows.length > 1 ? ' Semua' : '';
+    const scope = targetRows.length < n
+      ? 'untuk <b>' + targetRows.length + ' personil</b> yang menunggu tahap ini (dari ' + n + ' personil)'
+      : (n > 1 ? 'untuk <b>' + n + ' personil</b> dalam ID Lembur ini' : 'untuk personil ini');
+    actionsHtml = `<div class="stage-action-panel stage-${sdNow.color}">
+      <div class="sap-head">
+        <span class="icon-chip sm chip-${sdNow.color}">${ICON_CLOCK}</span>
+        <div><div class="sap-eyebrow">Tahap Anda</div><div class="sap-title">${esc(sdNow.label)}</div></div>
+      </div>
+      <div class="sap-desc">Satu kali tindakan berlaku ${scope}.</div>
+      <div class="req-actions">
+        <button class="btn btn-green btn-sm" data-act="approve" data-rows="${targetRows.join(',')}" data-stage="${esc(sdNow.label)}" data-group="${esc(title)}">✓ ${esc(sdNow.label)}${all}</button>
+        <button class="btn btn-red btn-sm" data-act="reject" data-rows="${targetRows.join(',')}" data-stage="${esc(sdNow.label)}" data-group="${esc(title)}">✕ Tolak${all}</button>
+      </div>
+    </div>`;
+  }
+
+  const vlink = g.id || cellStr(g.rows[0], headers[0]);
+
+  return `<div class="req-card grp glass ${isOpen?'open':''} st-${g.sk}" data-rowkey="${esc(rowKey)}" style="animation-delay:${Math.min(idx*30,240)}ms">
+    <div class="req-head" data-toggle="${esc(rowKey)}">
+      <div class="main">
+        <div class="title">${esc(title)}</div>
+        <div class="sub">${esc(sub)}</div>
+      </div>
+      <span class="badge st-${g.sk}">${statusLabel(g.sk)}</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </div>
+    <div class="req-body">
+      <div class="req-body-inner">
+        ${commonHtml.length ? `<div class="kv-grid">${commonHtml.join('')}</div>` : '<div class="grp-divider"></div>'}
+        <div class="section-title"><span>Personil &amp; Tugas Lembur (${n})</span><div class="ln"></div></div>
+        <div class="people-list">${peopleHtml}</div>
+        <div class="section-title sp-top"><span>Jalur Persetujuan</span><div class="ln"></div></div>
+        ${renderTimelineHtml(st)}
+        <div class="ef-actions"><button class="btn btn-ghost btn-sm" type="button" data-vlink="${esc(vlink)}" data-vsheet="${esc(state.currentModule)}">🔗 Salin link validasi</button></div>
+        ${actionsHtml}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderGroupedList(list, sheet, headers, groupHeader){
+  let groups = buildGroups(sheet, groupHeader).map(g=>{
+    const gs = getGroupState(g.rows);
+    return Object.assign(g, { gs:gs, sk: overallStatusKey(gs.state) });
+  });
+
+  // hitung per ID Lembur (bukan per baris personil)
+  const filterCounts = { all: groups.length, pending:0, diketahui:0, disetujui:0, diterima:0, rejected:0 };
+  groups.forEach(g => { if(filterCounts[g.sk] !== undefined) filterCounts[g.sk]++; });
+  updateFilterCounts(filterCounts);
+
+  if(state.statusFilterVal !== 'all'){
+    groups = groups.filter(g => g.sk === state.statusFilterVal);
+  }
+  if(state.search){
+    groups = groups.filter(g => g.rows.some(r => headers.some(h => String(r[h]||'').toLowerCase().includes(state.search))));
+  }
+
+  if(groups.length === 0){
+    list.innerHTML = `<div class="empty-state">
+      <div class="ic">📭</div>
+      <div class="t">Tidak ada data</div>
+      <div class="s">Coba ubah filter atau kata kunci pencarian.</div>
+    </div>`;
+    return;
+  }
+
+  const hName = pickHeader(headers, ['nama karyawan','nama personil','nama']);
+  const hEmp  = pickHeader(headers, ['id karyawan','nik','no. karyawan','no karyawan']);
+  const hRole = pickHeader(headers, ['jabatan']);
+  const hTask = pickHeader(headers, ['alasan pekerjaan','tugas lembur','tugas','uraian pekerjaan','pekerjaan']);
+  const hTime = pickHeader(headers, ['waktu lembur','jam lembur']);
+  const hNo   = pickHeader(headers, ['no.','no','nomor']);
+  const hDept = pickHeader(headers, ['departemen','department']);
+  const core = new Set([groupHeader, hName, hEmp, hRole, hTask, hTime, hNo].filter(Boolean));
+  const ctx = { hName:hName, hEmp:hEmp, hRole:hRole, hTask:hTask, hTime:hTime, hDept:hDept, core:core };
+
+  groups.sort((a,b)=> b.maxRow - a.maxRow); // terbaru dulu
+  list.innerHTML = groups.map((g, idx)=> groupCardHtml(g, idx, sheet, headers, ctx)).join('');
+  bindCardEvents(list);
+}
+
 function updateFilterCounts(counts){
   document.querySelectorAll('.sf-cnt').forEach(span=>{
     const key = span.dataset.cnt;
@@ -1570,6 +1853,15 @@ function renderCards(){
   }
 
   const headers = sheet.headers;
+
+  // sheet dengan kolom "ID Lembur" (SPL): satu kartu per ID Lembur, approval sekali untuk semua personil
+  // (catatan: form edit field per baris tidak dipakai pada mode kelompok)
+  const groupHeader = findGroupHeader(headers);
+  if(groupHeader){
+    renderGroupedList(list, sheet, headers, groupHeader);
+    return;
+  }
+
   let rows = sheet.rows.map(r => {
     const stageState = getRowStageState(r);
     return { row:r, stageState, sk: overallStatusKey(stageState) };
@@ -1613,28 +1905,7 @@ function renderCards(){
     const editableFieldSet = new Set(editableFields.map(normField));
 
     const kvHtml = headers.filter(h => !SKIP_COLS.includes(h.toLowerCase()) && !(canEditNow && editableFieldSet.has(normField(h)))).map(h=>{
-      const val = row[h];
-      const rawStr = String(val===undefined||val===null?'':val).trim();
-      let display;
-      if(rawStr && isImagePath(rawStr)){
-        const imgUrl = resolveImageUrl(rawStr);
-        display = `<div class="img-cell" data-full="${esc(imgUrl)}">
-          <img src="${esc(imgUrl)}" alt="${esc(h)}" loading="lazy" onerror="this.parentElement.classList.add('broken')">
-          <a class="img-fallback-link" href="${esc(imgUrl)}" target="_blank" rel="noopener">Buka gambar ↗</a>
-        </div>`;
-      } else if(rawStr && isUrl(rawStr) && isSignatureHeader(h)){
-        display = `<div class="qr-cell">
-          <img src="${esc(qrCodeUrl(rawStr,100))}" alt="QR ${esc(h)}" loading="lazy">
-          <div class="qr-txt">
-            <a href="${esc(rawStr)}" target="_blank" rel="noopener">Lihat Tanda Tangan ↗</a>
-            <div class="qr-hint">Pindai untuk membuka</div>
-          </div>
-        </div>`;
-      } else if(rawStr && isUrl(rawStr)){
-        display = `<a href="${esc(rawStr)}" target="_blank" rel="noopener">Buka tautan ↗</a>`;
-      } else {
-        display = esc(rawStr) || '—';
-      }
+      const display = renderValueHtml(h, row[h]);
       return `<div class="kv"><div class="k">${esc(h)}</div><div class="v">${display}</div></div>`;
     }).join('');
 
@@ -1706,6 +1977,12 @@ function renderCards(){
     </div>`;
   }).join('');
 
+  bindCardEvents(list);
+}
+
+/* pasang event pada kartu (buka/tutup dropdown, tombol approve/tolak, lightbox, simpan edit) —
+   dipakai bersama oleh kartu biasa dan kartu kelompok */
+function bindCardEvents(list){
   list.querySelectorAll('[data-toggle]').forEach(head=>{
     head.addEventListener('click', ()=>{
       const key = head.dataset.toggle;
@@ -1718,7 +1995,10 @@ function renderCards(){
   list.querySelectorAll('[data-act]').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
-      openApproveModal(state.currentModule, Number(btn.dataset.row), btn.dataset.act, btn.dataset.stage);
+      // kartu kelompok membawa banyak baris sekaligus (data-rows="19,18,17"); kartu biasa hanya data-row
+      const rowsAttr = btn.dataset.rows;
+      const rowIdx = rowsAttr ? rowsAttr.split(',').map(Number) : [Number(btn.dataset.row)];
+      openApproveModal(state.currentModule, rowIdx, btn.dataset.act, btn.dataset.stage, btn.dataset.group);
     });
   });
 
@@ -1780,52 +2060,116 @@ document.getElementById('lightboxOverlay').addEventListener('click', (e)=>{
    APPROVE / REJECT MODAL
 ===================================================================== */
 let pendingAction = null;
-function openApproveModal(sheetName, rowIndex, act, stageLabel){
-  pendingAction = { sheetName, rowIndex, decision: act==='approve' ? 'OK' : 'Ditolak' };
-  document.getElementById('approveModalTitle').textContent = act==='approve' ? ('Tandai "' + stageLabel + '"?') : 'Tolak Data Ini?';
-  document.getElementById('approveModalDesc').textContent = act==='approve'
-    ? ('Tahap: ' + stageLabel + ' — tanda tangan digital akun Anda (sheet Login) otomatis disertakan.')
-    : ('Data akan ditolak pada tahap "' + stageLabel + '" dan alur persetujuan dihentikan. Catatan wajib diisi.');
+let batchBusy = false; // true selama approval massal berjalan (modal tidak boleh ditutup)
+
+// rowIndexes: array nomor baris (kartu kelompok membawa semua personil dalam satu ID Lembur)
+function openApproveModal(sheetName, rowIndexes, act, stageLabel, groupLabel){
+  const rows = Array.isArray(rowIndexes) ? rowIndexes : [rowIndexes];
+  const n = rows.length;
+  const multi = n > 1;
+  const approve = act === 'approve';
+  pendingAction = { sheetName, rows, decision: approve ? 'OK' : 'Ditolak' };
+
+  document.getElementById('approveModalTitle').textContent = approve
+    ? (multi ? ('Tandai "' + stageLabel + '" untuk ' + n + ' personil?') : ('Tandai "' + stageLabel + '"?'))
+    : (multi ? ('Tolak ' + n + ' personil sekaligus?') : 'Tolak Data Ini?');
+  document.getElementById('approveModalDesc').textContent = approve
+    ? (multi
+        ? ((groupLabel ? groupLabel + ' — ' : '') + n + ' personil diproses sekaligus pada tahap ' + stageLabel + '. Tanda tangan digital akun Anda (sheet Login) otomatis disertakan untuk semuanya.')
+        : ('Tahap: ' + stageLabel + ' — tanda tangan digital akun Anda (sheet Login) otomatis disertakan.'))
+    : (multi
+        ? ('Seluruh ' + n + ' personil' + (groupLabel ? ' pada ' + groupLabel : '') + ' akan ditolak pada tahap "' + stageLabel + '" dan alur persetujuan dihentikan. Catatan wajib diisi.')
+        : ('Data akan ditolak pada tahap "' + stageLabel + '" dan alur persetujuan dihentikan. Catatan wajib diisi.'));
   document.getElementById('approveNote').value = '';
-  document.getElementById('approveNote').placeholder = act==='approve' ? 'Catatan (opsional)...' : 'Alasan penolakan (wajib diisi)...';
+  document.getElementById('approveNote').placeholder = approve ? 'Catatan (opsional)...' : 'Alasan penolakan (wajib diisi)...';
   const confirmBtn = document.getElementById('approveConfirmBtn');
-  confirmBtn.className = 'btn ' + (act==='approve' ? 'btn-green' : 'btn-red');
-  confirmBtn.textContent = act==='approve' ? ('Ya, ' + stageLabel) : 'Ya, Tolak';
+  confirmBtn.className = 'btn ' + (approve ? 'btn-green' : 'btn-red');
+  confirmBtn.textContent = approve ? ('Ya, ' + stageLabel + (multi ? ' Semua' : '')) : (multi ? 'Ya, Tolak Semua' : 'Ya, Tolak');
+  confirmBtn.disabled = false;
+  document.getElementById('approveCancelBtn').disabled = false;
   document.getElementById('approveModal').classList.add('show');
 }
 document.getElementById('approveCancelBtn').addEventListener('click', ()=>{
+  if(batchBusy) return;
   document.getElementById('approveModal').classList.remove('show');
 });
 document.getElementById('approveModal').addEventListener('click', (e)=>{
+  if(batchBusy) return;
   if(e.target.id === 'approveModal') document.getElementById('approveModal').classList.remove('show');
 });
 document.getElementById('approveConfirmBtn').addEventListener('click', async ()=>{
-  if(!pendingAction) return;
+  if(!pendingAction || batchBusy) return;
   const note = document.getElementById('approveNote').value.trim();
   if(pendingAction.decision === 'Ditolak' && !note){
     toast('err', 'Catatan wajib diisi saat menolak.');
     return;
   }
+
+  const action = pendingAction;
+  const total = action.rows.length;
+  const username = state.user.username;
+  const token = state.token;
   const btn = document.getElementById('approveConfirmBtn');
+  const cancelBtn = document.getElementById('approveCancelBtn');
   const original = btn.textContent;
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
-  try{
-    const res = await api('approve', {
-      username: state.user.username, token: state.token,
-      sheet: pendingAction.sheetName, row: pendingAction.rowIndex,
-      decision: pendingAction.decision, note: note
-    });
-    if(res.success){
-      toast('ok', pendingAction.decision === 'OK' ? 'Berhasil diproses.' : 'Data berhasil ditolak.');
-      document.getElementById('approveModal').classList.remove('show');
-      loadData(false);
-    } else if(!res.sessionExpired){
-      toast('err', res.message || 'Gagal memproses.');
+  const setProgress = (done)=>{
+    btn.innerHTML = '<span class="spinner"></span>' + (total > 1 ? '<span class="btn-loading-label">' + done + '/' + total + '</span>' : '');
+  };
+
+  batchBusy = true;
+  btn.disabled = true; cancelBtn.disabled = true;
+  setProgress(0);
+
+  // Satu klik → server dipanggil per personil (baris). Data tersimpan baris demi baris, jadi bila ada
+  // yang gagal, cukup klik lagi: hanya personil yang belum diproses yang akan ikut.
+  const queue = action.rows.slice();
+  const failed = [];
+  let okCount = 0, finished = 0, aborted = false;
+  const worker = async ()=>{
+    while(queue.length && !aborted){
+      const rowIndex = queue.shift();
+      try{
+        const res = await api('approve', {
+          username: username, token: token,
+          sheet: action.sheetName, row: rowIndex,
+          decision: action.decision, note: note
+        });
+        if(res.sessionExpired){ aborted = true; break; }
+        if(res.success) okCount++;
+        else failed.push({ row: rowIndex, message: res.message });
+      }catch(err){
+        failed.push({ row: rowIndex, message: err.message });
+      }
+      finished++;
+      setProgress(finished);
     }
-  }catch(err){
-    toast('err', err.message || 'Tidak dapat terhubung ke server.');
-  }finally{
-    btn.disabled = false; btn.textContent = original;
+  };
+  await Promise.all(Array.from({ length: Math.min(BATCH_CONCURRENCY, total) }, worker));
+
+  batchBusy = false;
+  btn.disabled = false; cancelBtn.disabled = false;
+  btn.textContent = original;
+
+  if(aborted){ // sesi berakhir: api() sudah menampilkan pesan & kembali ke halaman login
+    document.getElementById('approveModal').classList.remove('show');
+    return;
+  }
+
+  const approveMode = action.decision === 'OK';
+  const failMsg = failed.length ? (failed[0].message || 'Gagal memproses.') : '';
+  if(failed.length === 0){
+    toast('ok', total > 1
+      ? (total + ' personil berhasil ' + (approveMode ? 'diproses.' : 'ditolak.'))
+      : (approveMode ? 'Berhasil diproses.' : 'Data berhasil ditolak.'));
+  } else if(okCount > 0){
+    toast('err', okCount + ' dari ' + total + ' personil berhasil, ' + failed.length + ' gagal: ' + failMsg + ' Klik lagi untuk mengulang sisanya.', 8000);
+  } else {
+    toast('err', failMsg);
+  }
+
+  if(okCount > 0){
+    document.getElementById('approveModal').classList.remove('show');
+    loadData(false);
   }
 });
 
@@ -1945,7 +2289,7 @@ document.getElementById('saveSettingsBtn').addEventListener('click', async ()=>{
 ===================================================================== */
 document.addEventListener('keydown', (e)=>{
   if(e.key === 'Escape'){
-    document.getElementById('approveModal').classList.remove('show');
+    if(!batchBusy) document.getElementById('approveModal').classList.remove('show');
     closeLightbox();
     closeSidebarMobile();
     if(document.getElementById('settingsOverlay').classList.contains('show')) closeSettingsConfirm();
