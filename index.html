@@ -863,6 +863,78 @@
   }
 
   :focus-visible{ outline:2.5px solid var(--blue); outline-offset:2px; }
+
+  /* ===== Validasi dokumen: panel di tiap dokumen + halaman cek publik ===== */
+  .vp{ grid-column:1/-1; display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-top:10px; padding:14px 16px; border-radius:18px; border:1px solid rgba(10,132,255,.2); background:linear-gradient(135deg,rgba(10,132,255,.12),rgba(48,209,88,.12)); }
+  .vp > img{ width:88px; height:88px; flex-shrink:0; padding:5px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,.08); box-shadow:0 6px 16px rgba(10,132,255,.16); }
+  .vp-main{ flex:1; min-width:210px; }
+  .vp-t{ display:flex; align-items:center; gap:7px; font-size:14px; font-weight:800; color:var(--ink); }
+  .vp-t svg{ width:18px; height:18px; color:var(--blue); }
+  .vp-d{ margin:3px 0 9px; font-size:12px; line-height:1.45; font-weight:600; color:var(--ink-soft); }
+  .vp-u{ display:block; margin-bottom:10px; padding:7px 10px; border-radius:9px; background:rgba(255,255,255,.75); font-size:11.5px; font-weight:700; color:var(--blue-d); text-decoration:none; word-break:break-all; }
+  .vp-u:hover{ background:#fff; }
+  .vp-b{ display:flex; flex-wrap:wrap; gap:8px; }
+  .vp-b .btn{ width:auto; text-decoration:none; }
+  .vp-go{ color:#fff; background:linear-gradient(135deg,var(--blue),var(--blue-d)); }
+  .vm-head{ display:flex; gap:13px; align-items:center; margin-bottom:18px; }
+  .vm-head h3{ margin:0 0 2px; }
+  .vm-head .desc{ margin:0; }
+  .vm-ico{ width:46px; height:46px; flex-shrink:0; display:grid; place-items:center; color:#fff; border-radius:15px; background:linear-gradient(150deg,#5AC8FA,var(--blue) 55%,#34C759); box-shadow:0 8px 18px rgba(10,132,255,.32); }
+  .vm-ico svg{ width:24px; height:24px; }
+  .vm-row{ display:flex; gap:8px; align-items:flex-end; }
+  .vm-row .field{ flex:1; margin:0; min-width:0; }
+  .vm-row .btn{ width:auto; padding:13px 26px; flex-shrink:0; }
+  .vm-rec{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .vm-rec button{ border:0; cursor:pointer; font:inherit; font-size:12px; font-weight:700; color:var(--blue-d); background:rgba(10,132,255,.1); border-radius:99px; padding:5px 11px; }
+  .vm-rec button:hover{ background:rgba(10,132,255,.18); }
+  .vr{ margin-top:16px; overflow:hidden; border-radius:20px; background:rgba(255,255,255,.82); border:1px solid rgba(0,0,0,.07); box-shadow:0 10px 28px rgba(20,22,30,.08); animation:vrIn .45s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes vrIn{ from{ opacity:0; transform:translateY(10px) scale(.985); } to{ opacity:1; transform:none; } }
+  .vr-hero{ display:flex; gap:14px; align-items:center; padding:18px; color:#fff; }
+  .vr-ok .vr-hero{ background:linear-gradient(135deg,#166534,#16A34A); }
+  .vr-wip .vr-hero{ background:linear-gradient(135deg,#C2410C,#EA580C); }
+  .vr-bad .vr-hero{ background:linear-gradient(135deg,#BE123C,#E11D48); }
+  .vr-nf .vr-hero{ background:linear-gradient(135deg,#475569,#64748B); }
+  .vr-ic{ width:52px; height:52px; flex-shrink:0; display:grid; place-items:center; border-radius:50%; background:rgba(255,255,255,.22); box-shadow:0 0 0 6px rgba(255,255,255,.12); }
+  .vr-ic svg{ width:28px; height:28px; }
+  .vr-ok .vr-ic{ animation:vrPulse 1.6s ease-out .3s 1; }
+  @keyframes vrPulse{ 0%{ box-shadow:0 0 0 0 rgba(255,255,255,.55); } 100%{ box-shadow:0 0 0 18px rgba(255,255,255,0); } }
+  .vr-ic .ck{ stroke-dasharray:26; stroke-dashoffset:26; animation:vrDraw .5s ease .25s forwards; }
+  @keyframes vrDraw{ to{ stroke-dashoffset:0; } }
+  .vr-h{ font-size:19px; font-weight:800; letter-spacing:-.015em; line-height:1.2; }
+  .vr-s{ margin-top:3px; font-size:12.5px; font-weight:600; line-height:1.45; opacity:.95; }
+  .vr-b{ padding:16px 18px 14px; }
+  .vr-id{ display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:flex-end; }
+  .vr-id .k{ font-size:11.5px; font-weight:700; color:var(--ink-mute); }
+  .vr-id .n{ font-size:17px; font-weight:800; letter-spacing:-.01em; word-break:break-all; }
+  .vr-chips{ display:flex; gap:6px; flex-wrap:wrap; }
+  .vr-chip{ padding:4px 10px; border-radius:99px; font-size:11.5px; font-weight:700; background:rgba(10,132,255,.1); color:var(--blue-d); }
+  .vr-chip + .vr-chip{ background:rgba(48,209,88,.15); color:var(--green-d); }
+  .vr-bar{ height:7px; margin:14px 0 5px; border-radius:99px; background:rgba(0,0,0,.07); overflow:hidden; }
+  .vr-bar i{ display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--blue),var(--pink),var(--green)); transform-origin:left; animation:vrBar .8s cubic-bezier(.16,1,.3,1) .2s both; }
+  @keyframes vrBar{ from{ transform:scaleX(0); } to{ transform:none; } }
+  .vr-bt{ margin-bottom:14px; font-size:11.5px; font-weight:700; color:var(--ink-mute); }
+  .vr-st{ list-style:none; margin:0; padding:0; }
+  .vr-st li{ position:relative; display:flex; gap:12px; padding-bottom:15px; animation:vrIn .4s cubic-bezier(.16,1,.3,1) calc(.25s + var(--i)*.09s) both; }
+  .vr-st li:last-child{ padding-bottom:2px; }
+  .vr-st li:not(:last-child)::before{ content:""; position:absolute; left:15px; top:34px; bottom:2px; width:2px; border-radius:2px; background:rgba(0,0,0,.09); }
+  .vr-st li.d:not(:last-child)::before{ background:var(--c); opacity:.45; }
+  .vr-n{ width:32px; height:32px; flex-shrink:0; display:grid; place-items:center; border-radius:50%; font-size:13px; font-weight:800; color:var(--ink-mute); background:rgba(0,0,0,.06); }
+  .vr-n svg{ width:16px; height:16px; }
+  .vr-st li.d .vr-n{ color:#fff; background:var(--c); box-shadow:0 6px 14px rgba(0,0,0,.14); }
+  .vr-st li.x .vr-n{ color:#fff; background:#E11D48; }
+  .vr-l{ font-size:12px; font-weight:700; color:var(--c); }
+  .vr-st li.p .vr-l{ color:var(--ink-mute); }
+  .vr-st li.x .vr-l{ color:#E11D48; }
+  .vr-w{ font-size:14.5px; font-weight:800; color:var(--ink); }
+  .vr-dt{ font-size:12px; font-weight:600; color:var(--ink-mute); }
+  .vr-sg{ display:inline-block; margin-top:5px; padding:3px 9px; border-radius:99px; font-size:11px; font-weight:700; color:#15803D; background:rgba(48,209,88,.16); }
+  .vr-nt{ margin-top:5px; padding:7px 10px; border-radius:10px; background:rgba(225,29,72,.08); font-size:12.5px; font-weight:600; color:#9F1239; }
+  .vr-ft{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 18px; border-top:1px solid rgba(0,0,0,.06); background:rgba(0,0,0,.025); font-size:11.5px; font-weight:600; color:var(--ink-mute); }
+  .vr-sk{ padding:18px; }
+  .vr-sk i{ display:block; height:14px; margin-bottom:12px; border-radius:8px; background:linear-gradient(90deg,rgba(0,0,0,.06),rgba(0,0,0,.12),rgba(0,0,0,.06)); background-size:200% 100%; animation:vrSk 1.1s linear infinite; }
+  @keyframes vrSk{ to{ background-position:-200% 0; } }
+  @media (prefers-reduced-motion: reduce){ .vr, .vr *, .vr-sk i{ animation:none !important; } .vr-ic .ck{ stroke-dashoffset:0; } }
+  @media (max-width:520px){ .vp{ justify-content:center; text-align:center; } .vp-t, .vp-b{ justify-content:center; } .vm-row{ flex-direction:column; align-items:stretch; } .vm-row .btn{ width:100%; } }
 </style>
 </head>
 <body>
@@ -1396,7 +1468,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e)=>{
     const res = await api('login', { username, password });
     if(res.success){
       state.token = res.token;
-      state.user = res.user;
+      state.user = res.user; state.appUrl = res.appUrl || '';
       enterApp();
     } else {
       hideBoot();
@@ -1775,7 +1847,7 @@ function groupCardHtml(g, idx, sheet, headers, ctx){
         <div class="people-list">${peopleHtml}</div>
         <div class="section-title sp-top"><span>Jalur Persetujuan</span><div class="ln"></div></div>
         ${renderTimelineHtml(st)}
-        <div class="ef-actions"><button class="btn btn-ghost btn-sm" type="button" data-vlink="${esc(vlink)}" data-vsheet="${esc(state.currentModule)}">🔗 Salin link validasi</button></div>
+        ${vPanel(state.currentModule, vlink)}
         ${actionsHtml}
       </div>
     </div>
@@ -1969,7 +2041,7 @@ function renderCards(){
           <div class="kv-grid">${kvHtml}</div>
           <div class="section-title"><span>Jalur Persetujuan</span><div class="ln"></div></div>
           ${timelineHtml}
-          <div class="ef-actions"><button class="btn btn-ghost btn-sm" type="button" data-vlink="${esc(row[headers[0]])}" data-vsheet="${esc(state.currentModule)}">🔗 Salin link validasi</button></div>
+          ${vPanel(state.currentModule, row[headers[0]])}
           ${editFormHtml}
           ${actionsHtml}
         </div>
@@ -2299,34 +2371,84 @@ document.addEventListener('keydown', (e)=>{
 /* =====================================================================
    PUBLIK: cek validasi dokumen + atur kata sandi (tautan email)
 ===================================================================== */
-function pubOpen(h){
+function pubOpen(h, w){
   let m = document.getElementById('pubModal');
   if(!m){ m = document.createElement('div'); m.id='pubModal'; m.className='modal-overlay';
     m.innerHTML = '<div class="modal glass-solid" style="max-width:480px;max-height:88vh;overflow:auto;"><div id="pubBody"></div></div>';
     document.body.appendChild(m); m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('show'); }); }
-  document.getElementById('pubBody').innerHTML = h; m.classList.add('show');
+  document.getElementById('pubBody').innerHTML = h; m.firstChild.style.maxWidth = (w||480)+'px'; m.classList.add('show');
 }
 const pfld = (id,l,t,ph)=>`<div class="field"><label for="${id}">${l}</label><div class="field-box"><input id="${id}" type="${t||'text'}" placeholder="${ph||''}"></div></div>`;
+/* ---- link & QR validasi (dipakai di setiap dokumen) ---- */
+const ICON_SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.2 8.2-8 9-4.8-.8-8-4.5-8-9V6z"/><polyline points="8.5 12 11 14.5 15.5 9.5"/></svg>';
+const vBase = () => state.appUrl || (location.origin + location.pathname);
+const vUrl = (sheet, id) => vBase() + '?cek=' + encodeURIComponent(sheet + '|' + id);
+function vPanel(sheet, id){
+  id = String(id == null ? '' : id).trim(); if(!id) return '';
+  const u = vUrl(sheet, id);
+  return `<div class="vp"><img src="${esc(qrCodeUrl(u, 176))}" alt="QR validasi ${esc(id)}" width="88" height="88" loading="lazy">
+    <div class="vp-main"><div class="vp-t">${ICON_SHIELD}Validasi dokumen</div>
+      <div class="vp-d">Pindai QR atau buka tautan ini untuk memeriksa keaslian dan keabsahan dokumen ${esc(id)}.</div>
+      <a class="vp-u" href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a>
+      <div class="vp-b"><button class="btn btn-ghost btn-sm" type="button" data-vlink="${esc(id)}" data-vsheet="${esc(sheet)}">Salin link</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-vlink="${esc(id)}" data-vsheet="${esc(sheet)}" data-vact="share">Bagikan</button>
+        <a class="btn btn-sm vp-go" href="${esc(u)}" target="_blank" rel="noopener">Cek sekarang</a></div></div></div>`;
+}
+
+/* ---- halaman cek validasi (publik) ---- */
+const VREC = [];
+const VCOL = { blue:'#0A84FF', pink:'#FF375F', green:'#16A34A' }, VLBL = { Diketahui:'blue', Disetujui:'pink', Diterima:'green' };
+const vIco = k => ({
+  ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline class="ck" points="20 6 9 17 4 12"/></svg>',
+  wip: ICON_CLOCK, bad: ICON_X,
+  nf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>' })[k];
 function vHtml(r){
-  if(!r.found) return `<div class="login-error" style="display:block">${esc(r.message||'Dokumen tidak ditemukan.')}</div>`;
-  const ok = !r.rejected && r.stages.every(s=>s.done);
-  const st = r.rejected ? 'Ditolak oleh '+esc(r.rej.oleh)+' ('+esc(r.rej.tahap)+')' : ok ? 'Valid — semua tahap sudah ditandatangani' : 'Masih dalam proses persetujuan';
-  return `<div class="kv-grid"><div class="kv"><div class="k">Dokumen</div><div class="v">${esc(r.id)} · ${esc(r.sheet)}${r.departemen?' · '+esc(r.departemen):''}</div></div>
-    <div class="kv"><div class="k">Status</div><div class="v"><b>${st}</b></div></div>`
-    + r.stages.map(s=>`<div class="kv"><div class="k">${esc(s.label)}</div><div class="v">${s.done?'✓ '+esc(s.name)+' · '+esc(s.date)+(s.sigOk?' · tanda tangan tercatat':''):'Belum diproses'}</div></div>`).join('') + '</div>';
+  if(!r.found) return `<div class="vr vr-nf"><div class="vr-hero"><span class="vr-ic">${vIco('nf')}</span><div><div class="vr-h">Dokumen tidak ditemukan</div><div class="vr-s">${esc(r.message || 'Periksa kembali nomor dokumen, lalu coba lagi.')}</div></div></div></div>`;
+  const st = r.stages || [], done = st.filter(s=>s.done).length, rj = r.rej || {};
+  const ok = !r.rejected && st.length > 0 && done === st.length, k = r.rejected ? 'bad' : ok ? 'ok' : 'wip';
+  const H = { ok:['Dokumen valid','Terdaftar di sistem dan semua tahap persetujuan sudah ditandatangani.'],
+    wip:['Masih dalam proses','Terdaftar di sistem, tetapi belum semua tahap persetujuan selesai.'],
+    bad:['Dokumen ditolak','Ditolak oleh ' + (rj.oleh || '—') + (rj.tahap ? ' pada tahap ' + rj.tahap : '') + '.'] }[k];
+  const steps = st.map((s,i)=>{
+    const rejHere = r.rejected && !s.done && rj.tahap === s.label, c = VCOL[s.color || VLBL[s.label]] || VCOL.blue;
+    const cls = s.done ? 'd' : rejHere ? 'x' : 'p';
+    const node = s.done ? ICON_CHECK : rejHere ? ICON_X : (i + 1);
+    const body = s.done
+      ? `<div class="vr-w">${esc(s.name)}</div><div class="vr-dt">${esc(s.date)}</div>${s.sigOk ? '<span class="vr-sg">✓ Tanda tangan digital tercatat</span>' : ''}`
+      : rejHere ? `<div class="vr-w">${esc(rj.oleh || '')}</div><div class="vr-dt">Menolak · ${esc(rj.tanggal || '')}</div>${rj.catatan ? `<div class="vr-nt">${esc(rj.catatan)}</div>` : ''}`
+      : '<div class="vr-dt">Belum diproses</div>';
+    return `<li class="${cls}" style="--c:${c};--i:${i}"><span class="vr-n">${node}</span><div><div class="vr-l">${esc(s.label)}</div>${body}</div></li>`;
+  }).join('');
+  return `<div class="vr vr-${k}"><div class="vr-hero"><span class="vr-ic">${vIco(k)}</span><div><div class="vr-h">${H[0]}</div><div class="vr-s">${esc(H[1])}</div></div></div>
+    <div class="vr-b"><div class="vr-id"><div><div class="k">Nomor dokumen</div><div class="n">${esc(r.id)}</div></div>
+      <div class="vr-chips"><span class="vr-chip">${esc(r.sheet)}</span>${r.departemen ? `<span class="vr-chip">${esc(r.departemen)}</span>` : ''}</div></div>
+      <div class="vr-bar"><i style="width:${st.length ? Math.round(done / st.length * 100) : 0}%"></i></div>
+      <div class="vr-bt">${done} dari ${st.length} tahap persetujuan selesai</div>
+      <ol class="vr-st">${steps}</ol></div>
+    <div class="vr-ft"><span>Diperiksa ${esc(r.checkedAt || new Date().toLocaleString('id-ID'))}</span><button class="btn btn-ghost btn-sm" type="button" id="vAgain">Cek dokumen lain</button></div></div>`;
 }
 function openVerify(q){
-  pubOpen(`<h3>Cek Validasi Dokumen</h3><p class="desc">Masukkan nomor dokumen untuk melihat status persetujuan dan siapa yang menandatangani.</p>${pfld('vq','Nomor dokumen','text','mis. PK-0001')}<button class="btn btn-primary" id="vGo">Cek</button><div id="vRes" style="margin-top:14px;"></div>`);
+  let vs = '';
+  pubOpen(`<div class="vm-head"><span class="vm-ico">${ICON_SHIELD}</span><div><h3>Cek validasi dokumen</h3><p class="desc">Pastikan dokumen asli dan sah, lalu lihat siapa saja yang sudah menandatangani.</p></div></div>
+    <div class="vm-row">${pfld('vq','Nomor dokumen','text','mis. MSB/MEMO/033')}<button class="btn btn-primary" id="vGo" type="button">Cek</button></div>
+    <div id="vRec"></div><div id="vRes" aria-live="polite"></div>`, 520);
+  const inp = document.getElementById('vq'), btn = document.getElementById('vGo'), res = document.getElementById('vRes'), rec = document.getElementById('vRec');
+  const chips = ()=>{ rec.innerHTML = VREC.length ? '<div class="vm-rec">' + VREC.map(x=>`<button type="button" data-v="${esc(x)}">${esc(x)}</button>`).join('') + '</div>' : ''; };
   const go = async ()=>{
-    const v = document.getElementById('vq').value.trim(); if(!v) return;
-    const b = document.getElementById('vGo'); b.disabled = true; b.innerHTML = '<span class="spinner"></span>';
-    try{ document.getElementById('vRes').innerHTML = vHtml(await api('verify', { q: v })); }
-    catch(err){ document.getElementById('vRes').innerHTML = vHtml({ found:false, message: err.message }); }
-    b.disabled = false; b.textContent = 'Cek';
+    const v = inp.value.trim(); if(!v) return inp.focus();
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+    res.innerHTML = '<div class="vr vr-sk"><i style="width:55%"></i><i></i><i style="width:80%"></i></div>';
+    let r; try{ r = await api('verify', { q: v, sheet: vs }); } catch(err){ r = { found:false, message: err.message }; }
+    if(r.found && r.id){ const i = VREC.indexOf(r.id); if(i >= 0) VREC.splice(i, 1); VREC.unshift(r.id); VREC.length = Math.min(VREC.length, 4); chips(); }
+    res.innerHTML = vHtml(r); btn.disabled = false; btn.textContent = 'Cek';
   };
-  document.getElementById('vGo').onclick = go;
-  document.getElementById('vq').addEventListener('keydown', e=>{ if(e.key==='Enter') go(); });
-  if(q){ document.getElementById('vq').value = String(q).split('|').pop(); go(); }
+  btn.onclick = go;
+  inp.addEventListener('keydown', e=>{ if(e.key === 'Enter') go(); });
+  inp.addEventListener('input', ()=>{ vs = ''; });
+  rec.addEventListener('click', e=>{ const b = e.target.closest('[data-v]'); if(b){ inp.value = b.dataset.v; vs = ''; go(); } });
+  res.addEventListener('click', e=>{ if(e.target.closest('#vAgain')){ inp.value = ''; res.innerHTML = ''; inp.focus(); } });
+  chips();
+  if(q){ const s = String(q), i = s.indexOf('|'); vs = i >= 0 ? s.slice(0, i) : ''; inp.value = i >= 0 ? s.slice(i + 1) : s; go(); } else inp.focus();
 }
 function openForgot(){
   pubOpen(`<h3>Atur kata sandi</h3><p class="desc">Masukkan user login atau email. Tautan untuk membuat kata sandi dikirim ke email akun (berlaku 30 menit, sekali pakai).</p>${pfld('fgId','User login atau email')}<button class="btn btn-primary" id="fgGo">Kirim tautan</button>`);
@@ -2365,7 +2487,8 @@ document.getElementById('lnkForgot').addEventListener('click', e=>{ e.preventDef
 document.getElementById('lnkVerify').addEventListener('click', e=>{ e.preventDefault(); openVerify(); });
 document.addEventListener('click', e=>{
   const b = e.target.closest('[data-vlink]'); if(!b) return; e.stopPropagation();
-  const url = location.origin + location.pathname + '?cek=' + encodeURIComponent(b.dataset.vsheet + '|' + b.dataset.vlink);
+  const url = vUrl(b.dataset.vsheet, b.dataset.vlink);
+  if(b.dataset.vact === 'share' && navigator.share){ navigator.share({ title:'Validasi dokumen ' + b.dataset.vlink, text:'Cek keaslian dan keabsahan dokumen ' + b.dataset.vlink, url }).catch(()=>{}); return; }
   (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(()=>toast('ok','Link validasi disalin.')).catch(()=>prompt('Salin link validasi:', url));
 });
 (function(){ const p = new URLSearchParams(location.search); if(p.get('cek')) openVerify(p.get('cek')); else if(p.get('atur')) openSetPw(p.get('atur')); })();
