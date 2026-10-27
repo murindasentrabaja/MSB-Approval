@@ -865,14 +865,9 @@
   :focus-visible{ outline:2.5px solid var(--blue); outline-offset:2px; }
 
   /* =====================================================================
-     MEMO TULIS — isi surat (kalimat pembuka · deskripsi · kalimat penutup)
+     TEKS PANJANG — nilai kolom multi-baris tampil selebar kartu
   ===================================================================== */
   .kv .v.v-long{ white-space:pre-wrap; line-height:1.6; }
-  .memo-paper{ margin:2px 0 16px; padding:16px 18px; border-radius:16px; background:rgba(255,255,255,.8); border:1px solid rgba(0,0,0,.07); box-shadow:inset 4px 0 0 var(--blue), 0 8px 20px -12px rgba(15,23,42,.18); }
-  .memo-paper .mp-k{ display:block; margin-bottom:3px; font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-mute); }
-  .memo-paper .mp-t{ white-space:pre-wrap; word-break:break-word; font-size:13.5px; line-height:1.65; color:var(--ink-soft); }
-  .memo-paper .mp-body{ margin:12px 0; padding:11px 13px; border-radius:12px; background:rgba(10,132,255,.06); }
-  .memo-paper .mp-body .mp-t{ color:var(--ink); font-weight:600; }
 
   /* =====================================================================
      HALAMAN PUBLIK — modal, form cek, dan hasil validasi dokumen
@@ -925,9 +920,6 @@
   .vx-chips{ display:flex; gap:6px; flex-wrap:wrap; }
   .vx-chip{ padding:4px 10px; border-radius:99px; font-size:11.5px; font-weight:700; background:rgba(10,132,255,.1); color:var(--blue-d); }
   .vx-chip.dep{ background:rgba(48,209,88,.15); color:var(--green-d); }
-  .vx-oth{ display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-top:12px; padding:9px 11px; border-radius:12px; background:rgba(255,159,10,.1); font-size:11.5px; font-weight:700; color:var(--orange-d); }
-  .vx-oth button{ border:0; font:inherit; font-weight:800; padding:4px 10px; border-radius:99px; color:#fff; background:var(--orange); transition:transform .15s; }
-  .vx-oth button:hover{ transform:translateY(-1px); }
 
   .vx-st{ list-style:none; margin:16px 0 4px; padding:0; }
   .vx-s{ position:relative; padding-bottom:8px; animation:vxIn .45s var(--ease-spring) calc(.3s + var(--i)*.09s) both; }
@@ -1938,29 +1930,15 @@ function updateFilterCounts(counts){
 }
 
 /* =====================================================================
-   TAMPILAN NILAI KOLOM — teks panjang / multi-baris & surat memo
+   TAMPILAN NILAI KOLOM — teks panjang / multi-baris
 ===================================================================== */
 const labelOf = h => String(h).replace(/[\s,:;]+$/, '').trim();   // "Dibuat Oleh," → "Dibuat Oleh"
-const firstLine = s => String(s || '').split('\n').map(x=>x.trim()).find(Boolean) || '';
 
 // teks panjang atau ber-baris-baru tampil selebar kartu, baris barunya dipertahankan
 function kvCell(h, val){
   const s = String(val === undefined || val === null ? '' : val);
   const long = !isUrl(s) && !isImagePath(s) && (s.length > 70 || s.indexOf('\n') >= 0);
   return `<div class="kv${long ? ' kv-wide' : ''}"><div class="k">${esc(labelOf(h))}</div><div class="v${long ? ' v-long' : ''}">${renderValueHtml(h, val)}</div></div>`;
-}
-
-// sheet dengan kolom Kalimat Pembuka + Deskripsi + Kalimat Penutup (Memo_Tulis) tampil sebagai isi surat
-function findLetterCols(headers){
-  const open = findHeaderFor(headers, 'kalimat pembuka'), body = findHeaderFor(headers, 'deskripsi'), close = findHeaderFor(headers, 'kalimat penutup');
-  return open && body && close ? { open, body, close, cols:new Set([open, body, close]) } : null;
-}
-function memoPaperHtml(L, row){
-  const part = (h, cls)=>{
-    const v = cellStr(row, h);
-    return v ? `<div class="${cls || ''}"><span class="mp-k">${esc(labelOf(h))}</span><div class="mp-t">${esc(v)}</div></div>` : '';
-  };
-  return `<div class="memo-paper">${part(L.open)}${part(L.body, 'mp-body')}${part(L.close)}</div>`;
 }
 
 function renderCards(){
@@ -2022,7 +2000,6 @@ function renderCards(){
 
   // kolom ringkasan: ambil hingga 2 kolom pertama yang tidak kosong & bukan kolom approval
   const summaryCols = headers.filter(h => !SKIP_COLS.includes(h.toLowerCase())).slice(0,2);
-  const letter = findLetterCols(headers);   // Memo_Tulis: isi surat tampil sebagai kertas memo
 
   rows.sort((a,b)=> b.row._row - a.row._row); // terbaru dulu
 
@@ -2030,15 +2007,14 @@ function renderCards(){
     const rowKey = state.currentModule + '_' + row._row;
     const isOpen = state.openRows.has(rowKey);
     const title = summaryCols[0] ? esc(row[summaryCols[0]]) : ('Baris ' + row._row);
-    const sub = letter ? esc(firstLine(row[letter.body])) : (summaryCols[1] ? esc(row[summaryCols[1]]) : '');
+    const sub = summaryCols[1] ? esc(row[summaryCols[1]]) : '';
 
     const canActNow = !stageState.rejected && stageState.currentIndex !== -1 && sheet[stageState.stages[stageState.currentIndex].permKey];
     const editableFields = sheet.editableFields || [];
     const canEditNow = !!sheet.canEditFields && canActNow && editableFields.length > 0;
     const editableFieldSet = new Set(editableFields.map(normField));
 
-    const kvHtml = headers.filter(h => !SKIP_COLS.includes(h.toLowerCase()) && !(letter && letter.cols.has(h)) && !(canEditNow && editableFieldSet.has(normField(h)))).map(h=> kvCell(h, row[h])).join('');
-    const paperHtml = letter ? memoPaperHtml(letter, row) : '';
+    const kvHtml = headers.filter(h => !SKIP_COLS.includes(h.toLowerCase()) && !(canEditNow && editableFieldSet.has(normField(h)))).map(h=> kvCell(h, row[h])).join('');
 
     const timelineHtml = renderTimelineHtml(stageState);
 
@@ -2098,7 +2074,6 @@ function renderCards(){
       <div class="req-body">
         <div class="req-body-inner">
           <div class="kv-grid">${kvHtml}</div>
-          ${paperHtml}
           <div class="section-title"><span>Jalur Persetujuan</span><div class="ln"></div></div>
           ${timelineHtml}
           ${editFormHtml}
@@ -2518,9 +2493,7 @@ function vHtml(r){
     </li>`;
   }).join('');
 
-  const link   = vUrl(r.sheet, r.id);
-  const others = (r.others || []).length
-    ? `<div class="vx-oth">Nomor ini juga terdaftar di: ${r.others.map(n=>`<button type="button" data-sheet="${esc(n)}">${esc(vName(n))}</button>`).join('')}</div>` : '';
+  const link = vUrl(r.sheet, r.id);
   return `<div class="vx vx-${k}"><div class="vx-hero">${vRing(total ? done / total : 0, k === 'ok' ? ICON_CHECK : k === 'bad' ? ICON_X : ICON_CLOCK)}
       <div><div class="vx-ht">${head[0]}</div><div class="vx-hs">${esc(head[1])}</div></div></div>
     <div class="vx-b">
@@ -2528,7 +2501,6 @@ function vHtml(r){
         <div><div class="k">Nomor dokumen</div><div class="vx-num">${esc(r.id)}<button type="button" class="vx-ib" data-vcopy="${esc(r.id)}" title="Salin nomor">${ICON_COPY}</button></div></div>
         <div class="vx-chips"><span class="vx-chip">${esc(vName(r.sheet))}</span>${r.departemen ? `<span class="vx-chip dep">${esc(r.departemen)}</span>` : ''}</div>
       </div>
-      ${others}
       <ol class="vx-st">${steps}</ol>
     </div>
     <div class="vx-ft"><span>Diperiksa ${esc(new Date().toLocaleString('id-ID'))}</span>
@@ -2540,7 +2512,7 @@ function vHtml(r){
 }
 
 function openVerify(q){
-  let sheet = '';   // modul spesifik (dari tautan/QR atau pilihan "juga terdaftar di")
+  let sheet = '';   // modul spesifik (dari tautan/QR)
   pubOpen(`<div class="vm-head"><span class="vm-ico">${ICON_SHIELD}</span><div><h3>Cek validasi dokumen</h3><p class="desc">Pastikan dokumen asli dan sah, lalu lihat siapa saja yang sudah menandatangani.</p></div></div>
     <div class="vm-row">${pfld('vq', 'Nomor dokumen', 'text', 'mis. MSB/MEMO/033')}<button class="btn btn-primary" id="vGo" type="button">Cek</button></div>
     <div id="vRec"></div><div id="vRes" aria-live="polite"></div>`, 540);
@@ -2550,10 +2522,9 @@ function openVerify(q){
   const chips = ()=>{
     rec.innerHTML = VREC.length ? '<div class="vm-rec">' + VREC.map(x=>`<button type="button" data-v="${esc(x)}">${esc(x)}</button>`).join('') + '</div>' : '';
   };
-  const go = async (pick)=>{
+  const go = async ()=>{
     const v = inp.value.trim();
     if(!v) return inp.focus();
-    if(typeof pick === 'string') sheet = pick;
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
     res.innerHTML = '<div class="vx vx-sk"><i style="width:55%"></i><i></i><i style="width:80%"></i></div>';
     let r;
@@ -2573,7 +2544,6 @@ function openVerify(q){
   res.addEventListener('click', e=>{
     const head = e.target.closest('.vx-sh');
     if(head){ const on = head.parentElement.classList.toggle('open'); head.setAttribute('aria-expanded', on); return; }
-    const oth = e.target.closest('[data-sheet]');   if(oth) return go(oth.dataset.sheet);
     const cp  = e.target.closest('[data-vcopy]');   if(cp)  return vCopy(cp.dataset.vcopy, cp, cp.dataset.vlabel);
     const sh  = e.target.closest('[data-vshare]');
     if(sh) return navigator.share({ title:'Validasi dokumen ' + sh.dataset.vid, text:'Cek keaslian dan keabsahan dokumen ' + sh.dataset.vid, url:sh.dataset.vshare }).catch(()=>{});
