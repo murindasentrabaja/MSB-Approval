@@ -742,7 +742,7 @@
   }
 
   /* =====================================================================
-     KELOMPOK CUSTOMER -> TANGGAL PERMINTAAN KIRIM (Final Inspection)
+     KELOMPOK CUSTOMER -> BULAN PERMINTAAN PENGIRIMAN -> TANGGAL PENGIRIMAN (Final Inspection)
   ===================================================================== */
   .cg-tools{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:0 0 2px; }
   .cg-total{ flex:1; min-width:150px; font-size:12px; font-weight:700; color:var(--ink-mute); }
@@ -777,6 +777,18 @@
   .cg.open > .cg-head .chevron{ transform:rotate(180deg); }
   .cg-body{ display:none; padding:2px 12px 14px; }
   .cg.open > .cg-body{ display:block; }
+  .mg{ margin-top:10px; }
+  .mg-head{
+    display:flex; align-items:center; gap:10px; padding:10px 13px; cursor:pointer; user-select:none;
+    border-radius:14px; background:rgba(10,132,255,.07); border:1px solid rgba(10,132,255,.12); transition:background .15s;
+  }
+  .mg-head:hover{ background:rgba(10,132,255,.12); }
+  .mg-head > svg:first-child{ width:16px; height:16px; color:var(--blue-d); flex:0 0 auto; }
+  .mg-label{ font-size:13.5px; font-weight:800; letter-spacing:-.01em; color:var(--ink); }
+  .mg-n{ margin-left:auto; font-size:11px; font-weight:700; color:var(--ink-mute); white-space:nowrap; }
+  .mg-body{ display:none; padding-top:2px; }
+  .mg.open > .mg-body{ display:block; }
+  .mg.open > .mg-head .chevron{ transform:rotate(180deg); }
   .dg{ margin-top:10px; }
   .dg-head{ display:flex; align-items:center; gap:8px; margin:4px 2px 9px; }
   .dg-head svg{ width:15px; height:15px; color:var(--blue-d); flex:0 0 auto; }
@@ -2203,13 +2215,15 @@ function flatCardHtml(it, idx, ctx){
 }
 
 /* =====================================================================
-   PENGELOMPOKAN: CUSTOMER -> TANGGAL PERMINTAAN KIRIM (modul Final Inspection)
+   PENGELOMPOKAN: CUSTOMER -> BULAN PERMINTAAN PENGIRIMAN -> TANGGAL PENGIRIMAN (modul Final Inspection; yang terbaru di atas)
    Nama kolom dicari otomatis (tidak peka huruf besar/kecil), jadi tidak perlu diubah di spreadsheet.
 ===================================================================== */
 const CUSTOMER_GROUP_MODULES = ['final inspection'];
 const CUST_KEYS = ['customer','nama customer','nama pelanggan','pelanggan','cust','nama cust'];
-const SHIPDATE_KEYS = ['tanggal permintaan kirim','tgl permintaan kirim','tanggal permintaan pengiriman','tgl permintaan pengiriman',
-  'permintaan kirim','tanggal kirim diminta','tgl kirim diminta','tanggal kirim','tgl kirim','tanggal pengiriman','tgl pengiriman','delivery date'];
+const SHIPDATE_KEYS = ['tanggal pengiriman','tgl pengiriman','tanggal kirim','tgl kirim','tanggal permintaan kirim','tgl permintaan kirim',
+  'tanggal permintaan pengiriman','tgl permintaan pengiriman','permintaan kirim','tanggal kirim diminta','tgl kirim diminta','delivery date'];
+// kolom bulan (opsional): bila tidak ada, bulan diambil dari tanggal pengiriman
+const MONTH_KEYS = ['bulan permintaan pengiriman','bulan permintaan kirim','bulan pengiriman','bulan kirim','bulan permintaan','bulan'];
 
 function isCustomerGroupModule(name){
   return CUSTOMER_GROUP_MODULES.indexOf(normField(String(name||'').replace(/[_-]+/g,' '))) >= 0;
@@ -2222,15 +2236,21 @@ function findCustomerHeader(headers){
 }
 function findShipDateHeader(headers){
   const ship = /kirim|pengiriman|delivery/i, ask = /permintaan|diminta|request/i, dt = /tgl|tanggal|date/i;
+  const notMonth = h => !/bulan|month/i.test(h);
   return pickHeader(headers, SHIPDATE_KEYS)
-    || headers.find(h => ship.test(h) && ask.test(h))
-    || headers.find(h => ship.test(h) && dt.test(h))
+    || headers.find(h => notMonth(h) && ship.test(h) && dt.test(h))
+    || headers.find(h => notMonth(h) && ship.test(h) && ask.test(h))
+    || null;
+}
+function findMonthHeader(headers, dateH){
+  return pickHeader(headers, MONTH_KEYS)
+    || headers.find(h => h !== dateH && /bulan|month/i.test(h) && /kirim|pengiriman|delivery|permintaan/i.test(h))
     || null;
 }
 function customerGroupingFor(moduleName, headers){
   if(!isCustomerGroupModule(moduleName)) return null;
   const cust = findCustomerHeader(headers), date = findShipDateHeader(headers);
-  return (cust && date) ? { cust:cust, date:date } : null;
+  return (cust && date) ? { cust:cust, date:date, month:findMonthHeader(headers, date) } : null;
 }
 
 const BULAN_MAP = { jan:0, januari:0, feb:1, februari:1, mar:2, maret:2, apr:3, april:3, mei:4, may:4, jun:5, juni:5, jul:6, juli:6,
@@ -2255,13 +2275,35 @@ function parseShipDate(v){
 const pad2 = n => (n < 10 ? '0' : '') + n;
 const dateKeyOf = d => d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
 
+// membaca bulan dari kolom bulan: "Oktober 2026" · "Okt-26" · "2026-10" · "10/2026" · tanggal lengkap · "Oktober" (tahun menyusul dari tanggal)
+function parseMonthVal(v){
+  const s = String(v == null ? '' : v).trim();
+  if(!s) return null;
+  const d = parseShipDate(s);
+  if(d) return { y:d.getFullYear(), m:d.getMonth() };
+  let m;
+  if((m = s.match(/^(\d{4})[-\/.](\d{1,2})$/))) return (+m[2] >= 1 && +m[2] <= 12) ? { y:+m[1], m:+m[2]-1 } : null;
+  if((m = s.match(/^(\d{1,2})[-\/.](\d{4})$/))) return (+m[1] >= 1 && +m[1] <= 12) ? { y:+m[2], m:+m[1]-1 } : null;
+  if((m = s.match(/^([A-Za-z]+)\.?[\s\-\/,]*(\d{2,4})?$/))){
+    const mo = BULAN_MAP[m[1].toLowerCase()];
+    if(mo !== undefined){ let y = m[2] ? +m[2] : null; if(y !== null && y < 100) y += 2000; return { y:y, m:mo }; }
+  }
+  return null;
+}
+// urutan: yang TERBARU di atas; yang terbaca sebagai tanggal/bulan dulu, lalu teks apa adanya, terakhir yang kosong
 function cmpDateGroup(a, b){
   const ra = a.date ? 0 : (a.raw ? 1 : 2), rb = b.date ? 0 : (b.raw ? 1 : 2);
   if(ra !== rb) return ra - rb;
-  if(ra === 0) return a.date - b.date;           // tanggal terdekat di atas
-  return String(a.raw).localeCompare(String(b.raw), 'id');
+  if(ra === 0) return b.date - a.date;
+  return String(b.raw).localeCompare(String(a.raw), 'id');
 }
-function buildCustomerGroups(items, hCust, hDate){
+function cmpMonthGroup(a, b){
+  const ra = a.ym !== null ? 0 : (a.raw ? 1 : 2), rb = b.ym !== null ? 0 : (b.raw ? 1 : 2);
+  if(ra !== rb) return ra - rb;
+  if(ra === 0) return b.ym - a.ym;
+  return String(b.raw).localeCompare(String(a.raw), 'id');
+}
+function buildCustomerGroups(items, hCust, hDate, hMonth){
   const map = new Map();
   items.forEach(it=>{
     const raw = cellStr(it.row, hCust);
@@ -2269,28 +2311,45 @@ function buildCustomerGroups(items, hCust, hDate){
     const ck = normField(name);
     let g = map.get(ck);
     if(!g){
-      g = { key:'C|' + ck, name:name, noCust:!raw, dates:new Map(), n:0, counts:{ pending:0, diketahui:0, disetujui:0, diterima:0, rejected:0 } };
+      g = { key:'C|' + ck, name:name, noCust:!raw, months:new Map(), n:0, nDates:0, counts:{ pending:0, diketahui:0, disetujui:0, diterima:0, rejected:0 } };
       map.set(ck, g);
     }
     g.n++;
     if(g.counts[it.sk] !== undefined) g.counts[it.sk]++;
     const rawD = cellStr(it.row, hDate);
     const d = parseShipDate(rawD);
+    // bulan: dari kolom bulan bila ada, jika tidak dari tanggal pengiriman
+    const rawM = cellStr(it.row, hMonth);
+    let mv = parseMonthVal(rawM);
+    if(mv && mv.y === null) mv.y = d ? d.getFullYear() : new Date().getFullYear();
+    if(!mv && d) mv = { y:d.getFullYear(), m:d.getMonth() };
+    const mk = mv ? mv.y + '-' + pad2(mv.m + 1) : (rawM ? 'T|' + normField(rawM) : '~');
+    let mg = g.months.get(mk);
+    if(!mg){ mg = { key:mk, ym: mv ? mv.y * 12 + mv.m : null, y: mv ? mv.y : null, m: mv ? mv.m : null, raw:rawM, dates:new Map(), n:0 }; g.months.set(mk, mg); }
+    mg.n++;
     const dk = d ? dateKeyOf(d) : (rawD ? 'T|' + normField(rawD) : '~');
-    let dg = g.dates.get(dk);
-    if(!dg){ dg = { key:dk, date:d, raw:rawD, items:[] }; g.dates.set(dk, dg); }
+    let dg = mg.dates.get(dk);
+    if(!dg){ dg = { key:dk, date:d, raw:rawD, items:[] }; mg.dates.set(dk, dg); g.nDates++; }
     dg.items.push(it);
   });
   const arr = Array.from(map.values());
   arr.forEach(g=>{
-    g.dateList = Array.from(g.dates.values()).sort(cmpDateGroup);
-    g.dateList.forEach(dg=> dg.items.sort((a,b)=> a.row._row - b.row._row));
+    g.monthList = Array.from(g.months.values()).sort(cmpMonthGroup);
+    g.monthList.forEach(mg=>{
+      mg.dateList = Array.from(mg.dates.values()).sort(cmpDateGroup);
+      mg.dateList.forEach(dg=> dg.items.sort((a,b)=> b.row._row - a.row._row));   // baris terbaru di atas
+    });
   });
   arr.sort((a,b)=> (a.noCust - b.noCust) || a.name.localeCompare(b.name, 'id', { sensitivity:'base' }));
   return arr;
 }
+function monthLabel(mg){
+  if(mg.ym === null) return { text: mg.raw || 'Bulan pengiriman belum diisi', chip:'' };
+  const t = new Date();
+  return { text: BULAN_ID[mg.m] + ' ' + mg.y, chip: (mg.y === t.getFullYear() && mg.m === t.getMonth()) ? 'Bulan ini' : '' };
+}
 function shipDateLabel(dg){
-  if(!dg.date) return { text: dg.raw || 'Tanggal permintaan kirim belum diisi', chip:'' };
+  if(!dg.date) return { text: dg.raw || 'Tanggal pengiriman belum diisi', chip:'' };
   const d = dg.date, t = new Date();
   const today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
   const diff = Math.round((d - today) / 86400000);
@@ -2303,17 +2362,28 @@ function avatarText(name){
   return initials(String(name).replace(/^\s*(pt|cv|ud)\.?\s+/i, ''));
 }
 
-function customerBodyHtml(g, ctx){
-  let n = 0;
-  return g.dateList.map(dg=>{
-    const lb = shipDateLabel(dg);
-    return `<div class="dg">
+function monthKeyOf(gkey, mg){ return gkey + '|M|' + mg.key; }
+function dateGroupHtml(dg, ctx, st){
+  const lb = shipDateLabel(dg);
+  return `<div class="dg">
       <div class="dg-head">${CAL_SVG}<span class="dg-label">${esc(lb.text)}</span>${lb.chip ? `<span class="dg-chip">${lb.chip}</span>` : ''}<div class="ln"></div><span class="dg-n">${dg.items.length} dokumen</span></div>
-      <div class="dg-list">${dg.items.map(it=> flatCardHtml(it, n++, ctx)).join('')}</div>
+      <div class="dg-list">${dg.items.map(it=> flatCardHtml(it, st.n++, ctx)).join('')}</div>
+    </div>`;
+}
+function customerBodyHtml(g, ctx){
+  const st = { n:0 }, gkey = ctx.gkey;
+  return g.monthList.map((mg, idx)=>{
+    const mk = monthKeyOf(gkey, mg), lb = monthLabel(mg);
+    // bulan terbaru terbuka; bulan lama tertutup (kecuali sedang mencari / hanya ada satu bulan)
+    const open = state.groupOpen.has(mk) ? state.groupOpen.get(mk) : (idx === 0 || g.monthList.length === 1 || !!state.search);
+    return `<div class="mg ${open ? 'open' : ''}" data-mkey="${esc(mk)}">
+      <div class="mg-head" data-mtoggle="1">${CAL_SVG}<span class="mg-label">${esc(lb.text)}</span>${lb.chip ? `<span class="dg-chip">${lb.chip}</span>` : ''}<span class="mg-n">${mg.dateList.length} tanggal · ${mg.n} dokumen</span>${CHEVRON_SVG}</div>
+      <div class="mg-body">${mg.dateList.map(dg=> dateGroupHtml(dg, ctx, st)).join('')}</div>
     </div>`;
   }).join('');
 }
-function customerGroupHtml(g, gkey, ctx, open){
+function customerGroupHtml(g, gkey, ctx0, open){
+  const ctx = Object.assign({}, ctx0, { gkey:gkey });
   lazyGroups.set(gkey, ()=> customerBodyHtml(g, ctx));
   const badges = ['pending','diketahui','disetujui','diterima','rejected']
     .filter(k=> g.counts[k])
@@ -2323,7 +2393,7 @@ function customerGroupHtml(g, gkey, ctx, open){
       <span class="cg-av">${esc(avatarText(g.name))}</span>
       <div class="cg-main">
         <div class="cg-name">${esc(g.name)}</div>
-        <div class="cg-sub">${g.n} dokumen · ${g.dateList.length} tanggal permintaan kirim</div>
+        <div class="cg-sub">${g.n} dokumen · ${g.monthList.length} bulan · ${g.nDates} tanggal pengiriman</div>
       </div>
       <div class="cg-badges">${badges}</div>
       ${CHEVRON_SVG}
@@ -2332,12 +2402,18 @@ function customerGroupHtml(g, gkey, ctx, open){
   </div>`;
 }
 function renderCustomerGroups(list, items, sheet, headers, cgh){
-  const summaryCols = headers.filter(h => !SKIP_COLS.includes(h.toLowerCase()) && h !== cgh.cust && h !== cgh.date).slice(0,3);
+  const summaryCols = headers.filter(h => !SKIP_COLS.includes(h.toLowerCase()) && h !== cgh.cust && h !== cgh.date && h !== cgh.month).slice(0,3);
   const ctx = { sheet:sheet, headers:headers, summaryCols:summaryCols };
-  const groups = buildCustomerGroups(items, cgh.cust, cgh.date);
+  const groups = buildCustomerGroups(items, cgh.cust, cgh.date, cgh.month);
   // hasil sedikit (atau hasil pencarian/filter yang sempit) langsung terbuka; sisanya tertutup agar ringan
   const auto = groups.length <= 3 || items.length <= 40;
-  state.cgKeys = groups.map(g=> state.currentModule + '|' + g.key);
+  // kunci yang ikut dibuka/ditutup oleh tombol "Buka semua / Tutup semua": customer + semua bulannya
+  state.cgKeys = [];
+  groups.forEach(g=>{
+    const gk = state.currentModule + '|' + g.key;
+    state.cgKeys.push(gk);
+    g.monthList.forEach(mg=> state.cgKeys.push(monthKeyOf(gk, mg)));
+  });
   const html = groups.map(g=>{
     const gkey = state.currentModule + '|' + g.key;
     const open = state.groupOpen.has(gkey) ? state.groupOpen.get(gkey) : auto;
@@ -2425,14 +2501,14 @@ function renderCardsInner(list){
     return;
   }
 
-  // Final Inspection: kelompokkan per Customer, lalu per tanggal permintaan kirim
+  // Final Inspection: kelompokkan per Customer, lalu per bulan permintaan pengiriman, lalu per tanggal pengiriman
   const cgh = customerGroupingFor(state.currentModule, headers);
   if(cgh){
     renderCustomerGroups(list, items, sheet, headers, cgh);
     return;
   }
   const note = isCustomerGroupModule(state.currentModule)
-    ? '<div class="cg-note">Kolom Customer atau Tanggal Permintaan Kirim tidak ditemukan di sheet ini, jadi daftar ditampilkan tanpa pengelompokan. Pastikan judul kolomnya memuat kata "Customer" dan "Permintaan Kirim".</div>'
+    ? '<div class="cg-note">Kolom Customer atau Tanggal Pengiriman tidak ditemukan di sheet ini, jadi daftar ditampilkan tanpa pengelompokan. Pastikan judul kolomnya memuat kata "Customer" dan "Tanggal Pengiriman" (kolom "Bulan Permintaan Pengiriman" opsional).</div>'
     : '';
 
   // kolom ringkasan: ambil hingga 2 kolom pertama yang bukan kolom approval
@@ -2496,6 +2572,15 @@ function initCardEvents(){
     if(img){
       e.stopPropagation();
       openLightbox(img.closest('.img-cell').dataset.full);
+      return;
+    }
+
+    const mHead = e.target.closest('[data-mtoggle]');
+    if(mHead){
+      const mg = mHead.closest('.mg');
+      const open = !mg.classList.contains('open');
+      mg.classList.toggle('open', open);
+      state.groupOpen.set(mg.dataset.mkey, open);
       return;
     }
 
