@@ -384,7 +384,7 @@
   /* ---------- SIDEBAR ---------- */
   .sidebar{
     width:276px; flex-shrink:0; display:flex; flex-direction:column;
-    position:sticky; top:14px; height:calc(100vh - 28px);
+    position:sticky; top:14px; height:calc(100vh - 28px); height:calc(100dvh - 28px);
     margin:14px 0 14px 14px; padding:20px 16px 16px; border-radius:26px;
     z-index:40;
   }
@@ -394,37 +394,60 @@
   .sidebar-brand .t2{ font-size:11px; color:var(--ink-mute); font-weight:700; margin-top:1px; letter-spacing:.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .sidebar-close-btn{ display:none; margin-left:auto; flex-shrink:0; }
 
-  .sidebar-nav{ flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:5px; padding-right:2px; }
+  /* overflow-x:hidden + scrollbar-gutter: scrollbar horizontal/vertikal tidak lagi muncul-hilang saat hover/buka-tutup grup (penyebab menu "melompat") */
+  .sidebar-nav{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; scrollbar-gutter:stable; display:flex; flex-direction:column; gap:2px; padding:2px 4px 6px 2px; }
   .sidebar-nav::-webkit-scrollbar{ width:5px; }
   .sidebar-nav::-webkit-scrollbar-thumb{ background:rgba(0,0,0,0.12); border-radius:10px; }
   .side-empty{ padding:16px 10px; font-size:12.5px; color:var(--ink-mute); text-align:center; }
 
-  .side-link{
-    display:flex; align-items:center; gap:11px; width:100%; text-align:left;
-    padding:9px 13px; border-radius:15px; border:1px solid transparent; background:none;
-    font-size:13.5px; font-weight:700; color:var(--ink-soft);
-    transition:transform .18s var(--ease-spring), background .15s, box-shadow .2s;
+  /* ---- Grup menu (bisa dilipat) ---- */
+  .nav-group + .nav-group{ margin-top:6px; }
+  .nav-group-head{
+    display:flex; align-items:center; gap:8px; width:100%; text-align:left; background:none; border:0; cursor:pointer;
+    padding:9px 10px 7px; border-radius:10px; font-family:inherit;
+    font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-mute);
+    transition:background .15s, color .15s;
   }
-  .side-link:hover{ background:rgba(0,0,0,0.045); transform:translateX(2px); }
-  .side-link:active{ transform:translateX(2px) scale(.97); }
-  /* icon 3D berwarna & interaktif */
+  .nav-group-head .ng-title{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .nav-group-head .ng-cnt{ font-size:10px; padding:1px 6px; border-radius:100px; background:rgba(255,159,10,.16); color:var(--orange-d); letter-spacing:0; }
+  .nav-group:not(.collapsed) .ng-cnt{ display:none; }   /* jumlah ringkas hanya tampil saat grup dilipat */
+  .nav-group-head .ng-chev{ width:14px; height:14px; flex-shrink:0; transition:transform .22s ease; }
+  .nav-group.collapsed .ng-chev{ transform:rotate(-90deg); }
+  .nav-group-head:focus-visible, .side-link:focus-visible{ outline:2px solid var(--blue); outline-offset:1px; }
+  .nav-group-body{ display:grid; grid-template-rows:1fr; transition:grid-template-rows .24s ease; }
+  .ng-inner{ min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:3px; padding:2px 2px 6px; }
+  .nav-group.collapsed .nav-group-body{ grid-template-rows:0fr; }
+  .nav-group.collapsed .ng-inner{ visibility:hidden; transition:visibility 0s linear .24s; }
+
+  /* ---- Item menu: TANPA transform pada baris, sehingga ukurannya tidak berubah saat hover/klik ---- */
+  .side-link{
+    display:flex; align-items:center; gap:11px; width:100%; text-align:left; cursor:pointer; font-family:inherit;
+    padding:8px 12px; border-radius:14px; border:1px solid transparent; background:none;
+    font-size:13.5px; font-weight:700; line-height:1.25; color:var(--ink-soft);
+    transition:background .15s, box-shadow .2s, color .15s;
+  }
+  .side-link:active{ background:rgba(0,0,0,0.07); }
   .side-icon{
     width:36px; height:36px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
     color:#fff; position:relative;
     box-shadow:0 5px 12px -3px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.55), inset 0 -6px 10px -4px rgba(0,0,0,.18);
-    transition:transform .28s var(--ease-spring), box-shadow .28s;
-    transform-style:preserve-3d;
+    transition:box-shadow .2s;
   }
   .side-icon svg{ width:16px; height:16px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.15)); }
-  .side-link:hover .side-icon{ transform:scale(1.1) rotate(-6deg) translateY(-1px); box-shadow:0 8px 16px -3px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.65), inset 0 -6px 10px -4px rgba(0,0,0,.18); }
-  .side-link:active .side-icon{ transform:scale(.94) rotate(0deg); }
-  .side-label{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* efek hover hanya untuk perangkat dengan mouse; di layar sentuh :hover "menempel" setelah ketukan */
+  @media (hover:hover) and (pointer:fine){
+    .side-link:hover{ background:rgba(0,0,0,0.045); }
+    .nav-group-head:hover{ background:rgba(0,0,0,0.04); color:var(--ink-soft); }
+    .side-link:hover .side-icon{ box-shadow:0 8px 16px -3px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.65), inset 0 -6px 10px -4px rgba(0,0,0,.18); }
+  }
+  @media (hover:none){ .side-link:hover::after{ opacity:0 !important; animation:none !important; } }
+  /* nama tampilan lebih panjang: boleh 2 baris */
+  .side-label{ flex:1; min-width:0; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; word-break:break-word; }
   .side-link .cnt{
     font-size:10.5px; padding:2px 7px; border-radius:100px; background:rgba(0,0,0,0.07); color:var(--ink-mute); font-weight:800; flex-shrink:0;
   }
-  .side-link.active{ background:var(--ink); color:#fff; box-shadow:0 8px 20px rgba(21,22,26,0.24); transform:translateX(0); }
+  .side-link.active, .side-link.active:hover{ background:var(--ink); color:#fff; box-shadow:0 4px 14px rgba(21,22,26,0.22); }
   .side-link.active .cnt{ background:rgba(255,255,255,0.18); color:#fff; }
-  .side-link.active .side-icon{ box-shadow:0 4px 10px -2px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.7), inset 0 -6px 10px -4px rgba(0,0,0,.2); }
 
   .sidebar-footer{ border-top:1px solid rgba(0,0,0,0.07); padding-top:14px; margin-top:12px; display:flex; flex-direction:column; gap:10px; }
   .sidebar-user{ display:flex; align-items:center; gap:10px; padding:4px 4px; }
@@ -528,6 +551,8 @@
   .sf-btn[data-f="diketahui"] .sf-cnt{ background:rgba(10,132,255,0.16); color:var(--blue-d); }
   .sf-btn[data-f="disetujui"] .sf-cnt{ background:rgba(255,55,95,0.16); color:var(--pink-d); }
   .sf-btn[data-f="diterima"] .sf-cnt{ background:rgba(48,209,88,0.18); color:var(--green-d); }
+  .sf-btn[data-f="diminta"] .sf-cnt, .sf-btn[data-f="dibuat"] .sf-cnt, .sf-btn[data-f="diperiksa"] .sf-cnt{ background:rgba(255,159,10,0.18); color:var(--orange-d); }
+  .sf-btn.sf-extra:not(.show){ display:none; }   /* Dibuat/Diminta/Diperiksa: tampil hanya bila modul ini punya dokumen di tahap itu */
   .sf-btn[data-f="rejected"] .sf-cnt{ background:rgba(255,69,58,0.16); color:var(--red-d); }
   .sf-btn.active[data-f]:not([data-f="all"]) .sf-cnt{ background:rgba(255,255,255,0.26); color:#fff; }
 
@@ -550,6 +575,7 @@
   .req-card.st-diketahui::before{ background:var(--blue); }
   .req-card.st-disetujui::before{ background:var(--pink); }
   .req-card.st-diterima::before{ background:var(--green); }
+  .req-card.st-diminta::before, .req-card.st-dibuat::before, .req-card.st-diperiksa::before{ background:var(--orange); }
   .req-card.st-rejected::before{ background:var(--red); }
 
   .req-head{
@@ -568,6 +594,7 @@
   .badge.st-diketahui{ background:rgba(10,132,255,0.14); color:var(--blue-d); }
   .badge.st-disetujui{ background:rgba(255,55,95,0.14); color:var(--pink-d); }
   .badge.st-diterima{ background:rgba(48,209,88,0.16); color:var(--green-d); }
+  .badge.st-diminta, .badge.st-dibuat, .badge.st-diperiksa{ background:rgba(255,159,10,0.16); color:var(--orange-d); }
   .badge.st-rejected{ background:rgba(255,69,58,0.13); color:var(--red-d); }
 
   .chevron{ width:16px; height:16px; color:var(--ink-mute); transition:transform .2s; flex:0 0 auto; }
@@ -662,6 +689,7 @@
   .stage-action-panel.stage-blue{ background:linear-gradient(160deg, rgba(10,132,255,.10), rgba(255,255,255,.35)); border-color:rgba(10,132,255,.26); }
   .stage-action-panel.stage-pink{ background:linear-gradient(160deg, rgba(255,55,95,.10), rgba(255,255,255,.35)); border-color:rgba(255,55,95,.26); }
   .stage-action-panel.stage-green{ background:linear-gradient(160deg, rgba(48,209,88,.10), rgba(255,255,255,.35)); border-color:rgba(48,209,88,.26); }
+  .stage-action-panel.stage-orange{ background:linear-gradient(160deg, rgba(255,159,10,.12), rgba(255,255,255,.35)); border-color:rgba(255,159,10,.30); }
   .sap-head{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
   .sap-eyebrow{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; font-weight:800; color:var(--ink-mute); }
   .sap-title{ font-size:14px; font-weight:800; color:var(--ink); margin-top:1px; }
@@ -773,6 +801,7 @@
   .mc.st-diketahui{ background:rgba(10,132,255,0.14); color:var(--blue-d); }
   .mc.st-disetujui{ background:rgba(255,55,95,0.14); color:var(--pink-d); }
   .mc.st-diterima{ background:rgba(48,209,88,0.16); color:var(--green-d); }
+  .mc.st-diminta, .mc.st-dibuat, .mc.st-diperiksa{ background:rgba(255,159,10,0.16); color:var(--orange-d); }
   .mc.st-rejected{ background:rgba(255,69,58,0.13); color:var(--red-d); }
   .cg.open > .cg-head .chevron{ transform:rotate(180deg); }
   .cg-body{ display:none; padding:2px 12px 14px; }
@@ -886,6 +915,7 @@
   .chk.on.chk-diketahui{ background:var(--blue); border-color:var(--blue); }
   .chk.on.chk-disetujui{ background:var(--pink); border-color:var(--pink); }
   .chk.on.chk-diterima{ background:var(--green); border-color:var(--green); }
+  .chk.on.chk-diminta, .chk.on.chk-dibuat, .chk.on.chk-diperiksa{ background:var(--orange); border-color:var(--orange); }
   .chk svg{ width:12px; height:12px; color:#fff; display:none; }
   .chk.on svg{ display:block; }
 
@@ -897,14 +927,16 @@
   ===================================================================== */
   @media (max-width:900px){
     body.sidebar-lock{ overflow:hidden; }
+    /* drawer hanya bergeser (tanpa scale .98 -> 1 yang membuatnya terlihat mengecil-membesar); bayangan & visibility
+       dimatikan saat tertutup supaya tidak ada garis bayangan di tepi kiri layar */
     .sidebar{
-      position:fixed; top:0; left:0; height:100vh; margin:0; border-radius:0 24px 24px 0;
-      width:84vw; max-width:300px; transform:translateX(-105%) scale(.98);
-      transition:transform .38s var(--ease-spring), box-shadow .38s var(--ease-spring);
-      box-shadow:20px 0 60px rgba(15,17,23,.22);
+      position:fixed; top:0; left:0; height:100vh; height:100dvh; margin:0; border-radius:0 24px 24px 0;
+      width:84vw; max-width:300px; transform:translateX(-102%); will-change:transform;
+      transition:transform .3s cubic-bezier(.22,.8,.3,1), box-shadow .3s ease, visibility 0s linear .3s;
+      box-shadow:none; visibility:hidden;
       z-index:999; pointer-events:auto;
     }
-    .sidebar.open{ transform:translateX(0) scale(1); box-shadow:28px 0 76px rgba(15,17,23,.34); }
+    .sidebar.open{ transform:translateX(0); box-shadow:24px 0 64px rgba(15,17,23,.30); visibility:visible; transition-delay:0s; }
     .sidebar-nav{ overscroll-behavior:contain; }
     .sidebar-close-btn{ display:flex; }
     .hamburger-btn{ display:flex; }
@@ -913,7 +945,7 @@
     .sidebar-close-btn:active svg{ transform:rotate(90deg) scale(.88); }
   }
   @media (max-width:900px) and (prefers-reduced-motion: reduce){
-    .sidebar{ transition:transform .01s linear; }
+    .sidebar{ transition:transform .01s linear, visibility 0s linear .01s; }
     .sidebar-close-btn svg{ transition:none; }
   }
   @media (max-width:640px){
@@ -1178,6 +1210,9 @@
           <div class="status-filter" id="statusFilter">
             <button class="sf-btn active" data-f="all">Semua <span class="sf-cnt" data-cnt="all">0</span></button>
             <button class="sf-btn" data-f="pending">Pending <span class="sf-cnt sf-cnt-pending" data-cnt="pending">0</span></button>
+            <button class="sf-btn sf-extra" data-f="dibuat">Dibuat <span class="sf-cnt" data-cnt="dibuat">0</span></button>
+            <button class="sf-btn sf-extra" data-f="diminta">Diminta <span class="sf-cnt" data-cnt="diminta">0</span></button>
+            <button class="sf-btn sf-extra" data-f="diperiksa">Diperiksa <span class="sf-cnt" data-cnt="diperiksa">0</span></button>
             <button class="sf-btn" data-f="diketahui">Diketahui <span class="sf-cnt sf-cnt-diketahui" data-cnt="diketahui">0</span></button>
             <button class="sf-btn" data-f="disetujui">Disetujui <span class="sf-cnt sf-cnt-disetujui" data-cnt="disetujui">0</span></button>
             <button class="sf-btn" data-f="diterima">Diterima <span class="sf-cnt sf-cnt-diterima" data-cnt="diterima">0</span></button>
@@ -1221,12 +1256,9 @@
       <div class="perm-table-wrap">
         <table class="perm-table">
           <thead>
-            <tr>
+            <tr id="permHead">
               <th>User</th>
               <th class="center" style="width:80px;">Lihat</th>
-              <th class="center" style="width:90px;">Diketahui</th>
-              <th class="center" style="width:90px;">Disetujui</th>
-              <th class="center" style="width:90px;">Diterima</th>
             </tr>
           </thead>
           <tbody id="permTableBody"></tbody>
@@ -1313,10 +1345,16 @@ function findHeaderFor(headers, fieldName){
 ===================================================================== */
 const STATUS_HEADER = 'Status';
 const STAGE_DEFS = [
-  { key:'diketahui', label:'Diketahui', permKey:'canDiketahui', color:'blue'  },
-  { key:'disetujui', label:'Disetujui', permKey:'canDisetujui', color:'pink'  },
-  { key:'diterima',  label:'Diterima',  permKey:'canDiterima',  color:'green' }
+  { key:'dibuat',    label:'Dibuat',    permKey:'canDibuat',    color:'orange' },
+  { key:'diminta',   label:'Diminta',   permKey:'canDiminta',   color:'orange' },
+  { key:'diperiksa', label:'Diperiksa', permKey:'canDiperiksa', color:'orange' },
+  { key:'diketahui', label:'Diketahui', permKey:'canDiketahui', color:'blue'   },
+  { key:'disetujui', label:'Disetujui', permKey:'canDisetujui', color:'pink'   },
+  { key:'diterima',  label:'Diterima',  permKey:'canDiterima',  color:'green'  }
 ];
+// urutan tahap di setiap dokumen ditentukan server (urutan kolom di sheet); daftar ini hanya untuk label, warna & filter
+const STATUS_KEYS = ['pending'].concat(STAGE_DEFS.map(sd=>sd.key), ['rejected']);
+function newCounts(all){ const o = { all:all }; STATUS_KEYS.forEach(k=>{ o[k] = 0; }); return o; }
 const REJECT_COLS = { oleh:'Ditolak Oleh', tanggal:'Tanggal Ditolak', catatan:'Catatan Ditolak', tahap:'Ditolak Pada Tahap' };
 
 function stageColKeys(label){
@@ -1496,14 +1534,12 @@ function overallStatusKey(st){
   if(st.rejected) return 'rejected';
   if(st.currentIndex === -1) return 'diterima';
   if(st.currentIndex === 0) return 'pending';
-  return st.stages[st.currentIndex-1].key; // 'diketahui' atau 'disetujui' selesai, menunggu tahap berikutnya
+  return st.stages[st.currentIndex-1].key; // tahap terakhir yang selesai (mis. 'diminta', 'diketahui', 'disetujui'), menunggu tahap berikutnya
 }
 function statusLabel(key){
-  if(key==='diketahui') return 'Diketahui';
-  if(key==='disetujui') return 'Disetujui';
-  if(key==='diterima') return 'Diterima';
   if(key==='rejected') return 'Ditolak';
-  return 'Pending';
+  const sd = STAGE_DEFS.find(s=>s.key===key);
+  return sd ? sd.label : 'Pending';
 }
 function renderTimelineHtml(st){
   const rejIdx = st.rejected ? st.stages.findIndex(sd=>sd.label===st.rejectInfo.tahap) : -1;
@@ -1761,35 +1797,146 @@ const ICON_MODULE_SET = [
 ];
 const CHIP_CLASSES = ['chip-blue','chip-green','chip-orange','chip-pink','chip-yellow','chip-red'];
 
-function renderModuleNav(){
-  const nav = document.getElementById('moduleNav');
-  const modules = Object.keys(state.data);
-  if(modules.length === 0){ nav.innerHTML='<div class="side-empty">Belum ada modul data.</div>'; return; }
+/* Kunci = nama sheet PERSIS seperti di spreadsheet (dipakai server & hak akses, jangan diubah).
+   Label = nama tampilan yang profesional. Satu entri boleh punya beberapa nama sheet: [['A','B'], 'Label'].
+   Sheet yang belum terdaftar tetap tampil di grup "Lainnya" dengan nama yang dirapikan otomatis. */
+const NAV_GROUPS = [
+  { key:'rekrutmen', title:'Rekrutmen & Pengangkatan', chip:'chip-blue', items:[
+    [['HRD_Permintaan SDM','Permintaan SDM'], 'Permintaan Tenaga Kerja'],
+    ['Rencana Kebutuhan Tenaga Kerja', 'Rencana Kebutuhan Tenaga Kerja'],
+    ['Wawancara', 'Hasil Wawancara & Seleksi'],
+    ['Surat Terima', 'Surat Penerimaan Karyawan'],
+    ['Evaluasi Percobaan', 'Evaluasi Masa Percobaan'],
+    ['SK Tetap', 'SK Pengangkatan Karyawan Tetap'] ]},
+  { key:'kepegawaian', title:'Administrasi Kepegawaian', chip:'chip-green', items:[
+    ['Izin_Terpadu', 'Perizinan Karyawan'],
+    ['SPL', 'Surat Perintah Lembur'],
+    ['Surat Tugas', 'Surat Tugas Karyawan'] ]},
+  { key:'pemeliharaan', title:'Pemeliharaan & Kalibrasi', chip:'chip-orange', items:[
+    ['Perbaikan', 'Permintaan Perbaikan Alat & Mesin'],
+    ['Mohon_Perawatan', 'Permohonan Perawatan Alat'],
+    ['Data_Perawatan', 'Catatan Perawatan Alat'],
+    ['Lap_Perawatan', 'Laporan Perawatan Alat'],
+    ['Lap_Perbaikan', 'Laporan Perbaikan Alat'],
+    ['Data_Alat', 'Data Alat & Peralatan'],
+    ['Kalibrasi', 'Permintaan Kalibrasi Alat'],
+    ['Sparepart', 'Permintaan Suku Cadang'],
+    ['Kebutuhan_Sparepart', 'Kebutuhan Suku Cadang'] ]},
+  { key:'armada', title:'Armada & Kendaraan', chip:'chip-pink', items:[
+    ['Pemakaian Kendaraan', 'Pemakaian Kendaraan Operasional'],
+    ['Service_Req', 'Permintaan Servis Kendaraan'],
+    ['Lap_Service', 'Laporan Servis Kendaraan'] ]},
+  { key:'umum', title:'Administrasi Umum', chip:'chip-yellow', items:[
+    ['Memo', 'Memo Permintaan Barang'],
+    ['Memo_Tulis', 'Memo Internal'],
+    ['Memo_Sewa', 'Memo Penyewaan Unit'],
+    ['SPAK', 'Permintaan Alat Kerja (SPAK)'],
+    ['Serah_Terima', 'Serah Terima Inventaris'] ]},
+  { key:'mutu', title:'Quality Control', chip:'chip-red', items:[
+    ['Final Inspection', 'Inspeksi Akhir Produk'],
+    ['Material_Filling', 'Inspeksi Material Filling'] ]}
+];
+const NAV_OTHER = { key:'lainnya', title:'Lainnya', chip:'chip-blue' };
+const NAV_LOOKUP = {};
+(function(){
+  let order = 0;
+  NAV_GROUPS.forEach(g=> g.items.forEach((it, idx)=>{
+    order++;
+    [].concat(it[0]).forEach(k=>{ NAV_LOOKUP[String(k).toLowerCase().trim()] = { group:g.key, label:it[1], icon:idx, order:order }; });
+  }));
+})();
+function navMeta(name){
+  const m = NAV_LOOKUP[String(name||'').toLowerCase().trim()];
+  return m || { group:NAV_OTHER.key, label:String(name||'').replace(/_/g,' ').replace(/\s+/g,' ').trim(), icon:0, order:1e6 };
+}
+function moduleLabel(name){ return navMeta(name).label; }
 
-  nav.innerHTML = modules.map((name, i) => {
-    const sheet = state.data[name];
-    const inProgress = countInProgress(sheet);
-    const chipClass = CHIP_CLASSES[i % CHIP_CLASSES.length];
-    const iconSvg = ICON_MODULE_SET[i % ICON_MODULE_SET.length];
-    const active = name === state.currentModule;
-    return `<button class="side-link ${active?'active':''}" data-module="${esc(name)}">
-      <span class="side-icon ${chipClass}">${iconSvg}</span>
-      <span class="side-label">${esc(name)}</span>
-      ${inProgress>0 ? `<span class="cnt">${inProgress}</span>` : ''}
-    </button>`;
-  }).join('');
+/* grup mana yang terbuka (preferensi per perangkat) */
+const NAV_OPEN_KEY = 'msb_approval_nav_open';
+const navOpen = new Map();
+try{ const raw = localStorage.getItem(NAV_OPEN_KEY); if(raw){ const o = JSON.parse(raw); Object.keys(o).forEach(k=>navOpen.set(k, !!o[k])); } }catch(e){}
+function saveNavOpen(){ try{ const o = {}; navOpen.forEach((v,k)=>{ o[k] = v; }); localStorage.setItem(NAV_OPEN_KEY, JSON.stringify(o)); }catch(e){} }
 
+function navModel(){
+  const groups = NAV_GROUPS.concat([NAV_OTHER]).map(g=>({ key:g.key, title:g.title, chip:g.chip, items:[] }));
+  const byKey = {}; groups.forEach(g=>{ byKey[g.key] = g; });
+  Object.keys(state.data).forEach(name=>{
+    const m = navMeta(name), g = byKey[m.group] || byKey[NAV_OTHER.key];
+    g.items.push({ name:name, label:m.label, icon:m.icon, order:m.order, cnt:countInProgress(state.data[name]) });
+  });
+  groups.forEach(g=> g.items.sort((x,y)=> x.order - y.order || x.label.localeCompare(y.label, 'id')));
+  return groups.filter(g=>g.items.length);
+}
+
+const NAV_CHEV = '<svg class="ng-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+function buildNavGroup(g){
+  const items = g.items.map(it=>
+    `<button type="button" class="side-link" data-module="${esc(it.name)}" title="${esc(it.label)}">` +
+      `<span class="side-icon ${g.chip}">${ICON_MODULE_SET[it.icon % ICON_MODULE_SET.length]}</span>` +
+      `<span class="side-label">${esc(it.label)}</span><span class="cnt" hidden></span></button>`).join('');
+  return `<section class="nav-group" data-group="${esc(g.key)}">` +
+    `<button type="button" class="nav-group-head" data-ngtoggle="${esc(g.key)}" aria-expanded="true"><span class="ng-title">${esc(g.title)}</span><span class="ng-cnt" hidden></span>${NAV_CHEV}</button>` +
+    `<div class="nav-group-body"><div class="ng-inner">${items}</div></div></section>`;
+}
+
+/* Struktur menu hanya digambar ulang bila daftar modul berubah. Selebihnya (menu aktif, angka, buka/tutup grup)
+   diperbarui di tempat — elemen yang sedang di-hover/diklik tidak pernah diganti, jadi tidak berkedip. */
+function syncNavState(nav, groups){
+  const cnt = {}, sum = {};
+  let total = 0;
+  groups.forEach(g=>{ sum[g.key] = 0; g.items.forEach(it=>{ cnt[it.name] = it.cnt; sum[g.key] += it.cnt; total++; }); });
   nav.querySelectorAll('.side-link').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      state.currentModule = btn.dataset.module;
-      state.openRows = new Set();
-      renderModuleNav();
-      renderCards();
-      closeSidebarMobile();
-      loadData(false, { sheet: state.currentModule, quiet:true, queue:true });
-    });
+    const name = btn.dataset.module, on = name === state.currentModule, n = cnt[name] || 0, c = btn.querySelector('.cnt');
+    btn.classList.toggle('active', on);
+    if(on) btn.setAttribute('aria-current', 'page'); else btn.removeAttribute('aria-current');
+    if(c){ c.hidden = n <= 0; if(n > 0 && c.textContent !== String(n)) c.textContent = n; }
+  });
+  groups.forEach(g=>{
+    const sec = nav.querySelector('.nav-group[data-group="' + g.key + '"]');
+    if(!sec) return;
+    if(!navOpen.has(g.key)) navOpen.set(g.key, g.items.some(it=>it.name === state.currentModule) || total <= 10);   // default sekali saja, lalu stabil
+    const open = navOpen.get(g.key), s = sum[g.key] || 0, gc = sec.querySelector('.ng-cnt');
+    sec.classList.toggle('collapsed', !open);
+    sec.querySelector('.nav-group-head').setAttribute('aria-expanded', open ? 'true' : 'false');
+    gc.hidden = s <= 0; gc.textContent = s > 0 ? String(s) : '';
   });
 }
+
+function renderModuleNav(){
+  const nav = document.getElementById('moduleNav');
+  const groups = navModel();
+  if(!groups.length){ nav.innerHTML = '<div class="side-empty">Belum ada menu yang bisa diakses.</div>'; nav.dataset.sig = ''; return; }
+  const sig = groups.map(g=> g.key + ':' + g.items.map(i=>i.name).join('\u0001')).join('|');
+  if(nav.dataset.sig !== sig){
+    const keep = nav.scrollTop;
+    nav.innerHTML = groups.map(buildNavGroup).join('');
+    nav.dataset.sig = sig;
+    nav.scrollTop = keep;
+  }
+  syncNavState(nav, groups);
+}
+
+/* satu listener (delegasi) untuk seluruh menu — tidak dipasang ulang pada setiap render */
+document.getElementById('moduleNav').addEventListener('click', (e)=>{
+  const head = e.target.closest('[data-ngtoggle]');
+  if(head){
+    const sec = head.closest('.nav-group'), open = sec.classList.contains('collapsed');
+    sec.classList.toggle('collapsed', !open);
+    head.setAttribute('aria-expanded', open ? 'true' : 'false');
+    navOpen.set(head.dataset.ngtoggle, open); saveNavOpen();
+    return;
+  }
+  const btn = e.target.closest('.side-link');
+  if(!btn) return;
+  const name = btn.dataset.module;
+  if(name === state.currentModule){ closeSidebarMobile(); return; }   // sudah aktif: cukup tutup drawer
+  state.currentModule = name;
+  state.openRows = new Set();
+  renderModuleNav();
+  renderCards();
+  closeSidebarMobile();
+  loadData(false, { sheet: name, quiet:true, queue:true });
+});
 
 /* =====================================================================
    SIDEBAR (drawer di mobile)
@@ -1936,7 +2083,7 @@ function countInProgress(sheet){
   const keys = gh
     ? buildGroups(sheet, gh).map(g=> overallStatusKey(getGroupState(g.rows).state))
     : sheet.rows.map(r=> overallStatusKey(getRowStageState(r)));
-  sheet._inProg = keys.filter(sk=> sk==='pending' || sk==='diketahui' || sk==='disetujui').length;
+  sheet._inProg = keys.filter(sk=> sk!=='diterima' && sk!=='rejected').length;   // belum selesai & belum ditolak
   return sheet._inProg;
 }
 
@@ -2047,7 +2194,7 @@ function renderGroupedList(list, sheet, headers, groupHeader){
   });
 
   // hitung per ID Lembur (bukan per baris personil)
-  const filterCounts = { all: groups.length, pending:0, diketahui:0, disetujui:0, diterima:0, rejected:0 };
+  const filterCounts = newCounts(groups.length);
   groups.forEach(g => { if(filterCounts[g.sk] !== undefined) filterCounts[g.sk]++; });
   updateFilterCounts(filterCounts);
 
@@ -2085,6 +2232,10 @@ function updateFilterCounts(counts){
   document.querySelectorAll('.sf-cnt').forEach(span=>{
     const key = span.dataset.cnt;
     span.textContent = counts && counts[key] !== undefined ? counts[key] : 0;
+  });
+  // tombol Dibuat / Diminta / Diperiksa hanya tampil bila modul ini punya dokumen di tahap itu (atau tombolnya sedang dipilih)
+  document.querySelectorAll('.sf-btn.sf-extra').forEach(btn=>{
+    btn.classList.toggle('show', !!(counts && counts[btn.dataset.f]) || btn.dataset.f === state.statusFilterVal);
   });
 }
 
@@ -2311,7 +2462,7 @@ function buildCustomerGroups(items, hCust, hDate, hMonth){
     const ck = normField(name);
     let g = map.get(ck);
     if(!g){
-      g = { key:'C|' + ck, name:name, noCust:!raw, months:new Map(), n:0, nDates:0, counts:{ pending:0, diketahui:0, disetujui:0, diterima:0, rejected:0 } };
+      g = { key:'C|' + ck, name:name, noCust:!raw, months:new Map(), n:0, nDates:0, counts:newCounts(0) };
       map.set(ck, g);
     }
     g.n++;
@@ -2385,7 +2536,7 @@ function customerBodyHtml(g, ctx){
 function customerGroupHtml(g, gkey, ctx0, open){
   const ctx = Object.assign({}, ctx0, { gkey:gkey });
   lazyGroups.set(gkey, ()=> customerBodyHtml(g, ctx));
-  const badges = ['pending','diketahui','disetujui','diterima','rejected']
+  const badges = STATUS_KEYS
     .filter(k=> g.counts[k])
     .map(k=> `<span class="mc st-${k}" title="${g.counts[k]} ${statusLabel(k)}">${g.counts[k]} ${statusLabel(k)}</span>`).join('');
   return `<div class="cg ${open ? 'open' : ''}" data-gkey="${esc(gkey)}">
@@ -2444,7 +2595,7 @@ function renderCardsInner(list){
   const modules = Object.keys(state.data);
 
   if(modules.length === 0){
-    updateFilterCounts({ all:0, pending:0, diketahui:0, disetujui:0, diterima:0, rejected:0 });
+    updateFilterCounts(newCounts(0));
     list.innerHTML = `<div class="empty-state">
       <div class="ic">🔒</div>
       <div class="t">Belum ada data yang bisa diakses</div>
@@ -2455,7 +2606,7 @@ function renderCardsInner(list){
 
   const sheet = state.data[state.currentModule];
   if(!sheet){
-    updateFilterCounts({ all:0, pending:0, diketahui:0, disetujui:0, diterima:0, rejected:0 });
+    updateFilterCounts(newCounts(0));
     list.innerHTML='';
     return;
   }
@@ -2476,7 +2627,7 @@ function renderCardsInner(list){
   });
 
   // hitung jumlah per status untuk badge pada tombol filter (Semua/Pending/Diketahui/Disetujui/Diterima/Ditolak)
-  const filterCounts = { all: items.length, pending:0, diketahui:0, disetujui:0, diterima:0, rejected:0 };
+  const filterCounts = newCounts(items.length);
   items.forEach(r => { if(filterCounts[r.sk] !== undefined) filterCounts[r.sk]++; });
   updateFilterCounts(filterCounts);
 
@@ -2779,7 +2930,7 @@ function closeSettingsConfirm(force){
 function renderSettingsTabs(){
   const wrap = document.getElementById('settingsSheetTabs');
   wrap.innerHTML = state.settings.sheets.map(s =>
-    `<button class="sheet-tab ${s===state.settingsCurrentSheet?'active':''}" data-sheet="${esc(s)}">${esc(s)}</button>`
+    `<button class="sheet-tab ${s===state.settingsCurrentSheet?'active':''}" data-sheet="${esc(s)}" title="Sheet: ${esc(s)}">${esc(moduleLabel(s))}</button>`
   ).join('');
   wrap.querySelectorAll('.sheet-tab').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -2790,10 +2941,19 @@ function renderSettingsTabs(){
   });
 }
 
+// tahap yang ada di sheet ini (dikirim server, sesuai kolom "<Tahap> Oleh (Status)" di sheet itu)
+function permStages(sheetName){
+  const st = state.settings.stages && state.settings.stages[sheetName];
+  return st || STAGE_DEFS.filter(sd=> ['diketahui','disetujui','diterima'].indexOf(sd.key) >= 0);
+}
+
 function renderPermTable(){
   const body = document.getElementById('permTableBody');
   const sheetName = state.settingsCurrentSheet;
-  if(!sheetName){ body.innerHTML = '<tr><td colspan="5" style="padding:20px;">Tidak ada modul data.</td></tr>'; return; }
+  const stages = sheetName ? permStages(sheetName) : [];
+  document.getElementById('permHead').innerHTML = '<th>User</th><th class="center" style="width:80px;">Lihat</th>'
+    + stages.map(sd=> `<th class="center" style="width:90px;">${esc(sd.label)}</th>`).join('');
+  if(!sheetName){ body.innerHTML = '<tr><td colspan="2" style="padding:20px;">Tidak ada modul data.</td></tr>'; return; }
 
   const cellHtml = (username, isAdminRow, perm, type, colorClass) => {
     const on = perm[type] || isAdminRow;
@@ -2802,16 +2962,14 @@ function renderPermTable(){
 
   body.innerHTML = state.settings.users.map(u=>{
     const isAdminRow = !!u.isAdmin;
-    const perm = (state.settings.matrix[u.username] && state.settings.matrix[u.username][sheetName]) || { view:false, diketahui:false, disetujui:false, diterima:false };
+    const perm = (state.settings.matrix[u.username] && state.settings.matrix[u.username][sheetName]) || { view:false };
     return `<tr data-user="${esc(u.username)}">
       <td>
         <div class="perm-user">${esc(u.username)} ${isAdminRow?'<span style="color:var(--blue);font-size:11px;">(developer)</span>':''}</div>
         <div class="dep">${esc(u.department||'')}${u.role?' · '+esc(u.role):''}</div>
       </td>
       ${cellHtml(u.username, isAdminRow, perm, 'view', 'chk-view')}
-      ${cellHtml(u.username, isAdminRow, perm, 'diketahui', 'chk-diketahui')}
-      ${cellHtml(u.username, isAdminRow, perm, 'disetujui', 'chk-disetujui')}
-      ${cellHtml(u.username, isAdminRow, perm, 'diterima', 'chk-diterima')}
+      ${stages.map(sd=> cellHtml(u.username, isAdminRow, perm, sd.key, 'chk-' + sd.key)).join('')}
     </tr>`;
   }).join('');
 
@@ -2821,7 +2979,7 @@ function renderPermTable(){
       const username = tr.dataset.user;
       const type = chk.dataset.type;
       if(!state.settings.matrix[username]) state.settings.matrix[username] = {};
-      if(!state.settings.matrix[username][sheetName]) state.settings.matrix[username][sheetName] = { view:false, diketahui:false, disetujui:false, diterima:false };
+      if(!state.settings.matrix[username][sheetName]) state.settings.matrix[username][sheetName] = { view:false };
       const cur = state.settings.matrix[username][sheetName];
       cur[type] = !cur[type];
       if(type !== 'view' && cur[type]) cur.view = true; // tahap manapun otomatis butuh "Lihat"
@@ -2896,11 +3054,12 @@ const ICON_CHEV   = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="c
 const vBase = () => state.appUrl || (location.origin + location.pathname);
 const vUrl  = (sheet, id) => vBase() + '?cek=' + encodeURIComponent(sheet + '|' + id);
 const VREC  = [];   // riwayat cek selama halaman terbuka
-const VCOL  = { blue:'#0A84FF', pink:'#FF375F', green:'#16A34A' };
-const VLBL  = { Diketahui:'blue', Disetujui:'pink', Diterima:'green' };
+const VCOL  = { blue:'#0A84FF', pink:'#FF375F', green:'#16A34A', orange:'#FF9F0A' };
+const VLBL  = {};   // label tahap -> warna (halaman validasi tidak menerima warna dari server)
+STAGE_DEFS.forEach(sd=>{ VLBL[sd.label] = sd.color; });
 const VBLN  = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 
-const vName = s => String(s || '').replace(/_/g, ' ');
+const vName = s => moduleLabel(s);   // nama tampilan profesional (lihat NAV_GROUPS)
 function vDate(s){
   const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(String(s || ''));
   return m ? (+m[3]) + ' ' + VBLN[+m[2] - 1] + ' ' + m[1] + ' · ' + m[4] + ':' + m[5] : String(s || '');
